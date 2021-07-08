@@ -4,12 +4,17 @@
 
     <groupId>io.amethystmc</groupId>
     <artifactId>Amethyst-super</artifactId>
-    <version>1.17.1-R0.1</version>
+    <version>1.17.1-R0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Amethyst-Super</name>
     <description>Super project for Amethyst.</description>
     <url>https://github.com/DenaryDev/Amethyst</url>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>16</java.version>
+    </properties>
 
     <modules>
         <module>Amethyst-Proxy</module>
@@ -19,8 +24,4 @@
         <defaultGoal>clean install</defaultGoal>
     </build>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>16</java.version>
-    </properties>
 </project>
