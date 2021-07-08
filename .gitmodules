@@ -1,0 +1,6 @@
+[submodule "Waterfall"]
+	path = Flamecord/Waterfall
+	url = https://github.com/WaterfallMC/Waterfall.git
+[submodule "FlameCord"]
+	path = FlameCord
+	url = https://github.com/2lstudios-mc/FlameCord.git
