@@ -1,0 +1,181 @@
+From 3456928c0bee142f7bb00dfd28e88263264af88a Mon Sep 17 00:00:00 2001
+From: Denary Planet <denaryplanet@gmail.com>
+Date: Fri, 9 Jul 2021 20:00:55 +0500
+Subject: [PATCH] Amethyst rebrand
+
+
+diff --git a/bootstrap/src/main/java/net/md_5/bungee/Bootstrap.java b/bootstrap/src/main/java/net/md_5/bungee/Bootstrap.java
+index 9838f5c5..67237c2c 100644
+--- a/bootstrap/src/main/java/net/md_5/bungee/Bootstrap.java
++++ b/bootstrap/src/main/java/net/md_5/bungee/Bootstrap.java
+@@ -5,9 +5,9 @@ public class Bootstrap
+ 
+     public static void main(String[] args) throws Exception
+     {
+-        if ( Float.parseFloat( System.getProperty( "java.class.version" ) ) < 52.0 )
++        if ( Float.parseFloat( System.getProperty( "java.class.version" ) ) < 60.0 )
+         {
+-            System.err.println( "*** ERROR *** FlameCord requires Java 8 or above to function! Please download and install it!" );
++            System.err.println( "*** ERROR *** Amethyst requires Java 16 or above to function! Please download and install it!" );
+             System.out.println( "You can check your Java version with the command: java -version" );
+             return;
+         }
+diff --git a/log/src/main/java/net/md_5/bungee/log/LogDispatcher.java b/log/src/main/java/net/md_5/bungee/log/LogDispatcher.java
+index 49dce84b..3ca6ef74 100644
+--- a/log/src/main/java/net/md_5/bungee/log/LogDispatcher.java
++++ b/log/src/main/java/net/md_5/bungee/log/LogDispatcher.java
+@@ -12,7 +12,7 @@ public class LogDispatcher extends Thread
+ 
+     public LogDispatcher(BungeeLogger logger)
+     {
+-        super( "FlameCord Logger Thread" );
++        super( "Amethyst Logger Thread" );
+         this.logger = logger;
+     }
+ 
+diff --git a/module/cmd-alert/src/main/resources/plugin.yml b/module/cmd-alert/src/main/resources/plugin.yml
+index 8ed58084..9dcf1704 100644
+--- a/module/cmd-alert/src/main/resources/plugin.yml
++++ b/module/cmd-alert/src/main/resources/plugin.yml
+@@ -1,5 +1,5 @@
+ name: ${project.name}
+ main: net.md_5.bungee.module.cmd.alert.PluginAlert
+-version: ${describe}
++version: ${project.version}
+ description: ${project.description}
+ author: ${module.author}
+diff --git a/module/cmd-find/src/main/resources/plugin.yml b/module/cmd-find/src/main/resources/plugin.yml
+index e0f346f9..34efb98d 100644
+--- a/module/cmd-find/src/main/resources/plugin.yml
++++ b/module/cmd-find/src/main/resources/plugin.yml
+@@ -1,5 +1,5 @@
+ name: ${project.name}
+ main: net.md_5.bungee.module.cmd.find.PluginFind
+-version: ${describe}
++version: ${project.version}
+ description: ${project.description}
+ author: ${module.author}
+diff --git a/module/cmd-list/src/main/resources/plugin.yml b/module/cmd-list/src/main/resources/plugin.yml
+index 272e64eb..c5999f77 100644
+--- a/module/cmd-list/src/main/resources/plugin.yml
++++ b/module/cmd-list/src/main/resources/plugin.yml
+@@ -1,5 +1,5 @@
+ name: ${project.name}
+ main: net.md_5.bungee.module.cmd.list.PluginList
+-version: ${describe}
++version: ${project.version}
+ description: ${project.description}
+ author: ${module.author}
+diff --git a/module/cmd-send/src/main/resources/plugin.yml b/module/cmd-send/src/main/resources/plugin.yml
+index a613e78b..8f0d0edd 100644
+--- a/module/cmd-send/src/main/resources/plugin.yml
++++ b/module/cmd-send/src/main/resources/plugin.yml
+@@ -1,5 +1,5 @@
+ name: ${project.name}
+ main: net.md_5.bungee.module.cmd.send.PluginSend
+-version: ${describe}
++version: ${project.version}
+ description: ${project.description}
+ author: ${module.author}
+diff --git a/module/cmd-server/src/main/resources/plugin.yml b/module/cmd-server/src/main/resources/plugin.yml
+index 006f3e3f..b0b87841 100644
+--- a/module/cmd-server/src/main/resources/plugin.yml
++++ b/module/cmd-server/src/main/resources/plugin.yml
+@@ -1,5 +1,5 @@
+ name: ${project.name}
+ main: net.md_5.bungee.module.cmd.server.PluginServer
+-version: ${describe}
++version: ${project.version}
+ description: ${project.description}
+ author: ${module.author}
+diff --git a/module/reconnect-yaml/src/main/resources/plugin.yml b/module/reconnect-yaml/src/main/resources/plugin.yml
+index 451e3c61..9757ba83 100644
+--- a/module/reconnect-yaml/src/main/resources/plugin.yml
++++ b/module/reconnect-yaml/src/main/resources/plugin.yml
+@@ -1,5 +1,5 @@
+ name: ${project.name}
+ main: net.md_5.bungee.module.reconnect.yaml.PluginYaml
+-version: ${describe}
++version: ${project.version}
+ description: ${project.description}
+ author: ${module.author}
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index 63ae00a8..7dcf6669 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -198,7 +198,7 @@ public class BungeeCord extends ProxyServer
+     public BungeeCord() throws IOException
+     {
+         // Java uses ! to indicate a resource inside of a jar/zip/other container. Running Bungee from within a directory that has a ! will cause this to muck up.
+-        Preconditions.checkState( new File( "." ).getAbsolutePath().indexOf( '!' ) == -1, "Cannot use FlameCord in directory with ! in path." );
++        Preconditions.checkState( new File( "." ).getAbsolutePath().indexOf( '!' ) == -1, "Cannot use Amethyst in directory with ! in path." );
+ 
+         try
+         {
+@@ -561,13 +561,13 @@ public class BungeeCord extends ProxyServer
+     @Override
+     public String getName()
+     {
+-        return "FlameCord";
++        return "Amethyst";
+     }
+ 
+     @Override
+     public String getVersion()
+     {
+-        return "0.6.0";
++        return "1.17.1-1";
+     }
+ 
+     public void reloadMessages()
+@@ -868,7 +868,7 @@ public class BungeeCord extends ProxyServer
+                 }
+             }
+         } catch (final Exception exception) {
+-            logger.warning("Reconnect module is not able to work on FlameCord!");
++            logger.warning("Reconnect module is not able to work on Amethyst!");
+         }
+ 
+         // Flamecord - Commands (Had to make it like this because of maven limitations)
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
+index aeda7963..dd6d71b7 100644
+--- a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
++++ b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
+@@ -17,6 +17,6 @@ public class CommandBungee extends Command
+     public void execute(CommandSender sender, String[] args)
+     {
+         // FlameCord - Use custom version message
+-        sender.sendMessage( ChatColor.translateAlternateColorCodes( '&', "&eThis server is running &c" + ProxyServer.getInstance().getName() + "&e version &a" + ProxyServer.getInstance().getVersion() + "&e by &bLinsaFTW & Sammwy&e." ) );
++        sender.sendMessage( ChatColor.translateAlternateColorCodes( '&', "&eThis server is running &c" + ProxyServer.getInstance().getName() + "&e version &a" + ProxyServer.getInstance().getVersion() + "&e by &bDenaryDev&e." ) );
+     }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
+index 5ab4db18..4eba24fa 100644
+--- a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
++++ b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
+@@ -23,7 +23,7 @@ public class CommandReload extends Command
+         BungeeCord.getInstance().startListeners();
+         BungeeCord.getInstance().getPluginManager().callEvent( new ProxyReloadEvent( sender ) );
+ 
+-        sender.sendMessage( ChatColor.BOLD.toString() + ChatColor.RED.toString() + "FlameCord has been reloaded."
+-                + " This is NOT advisable and you will not be supported with any issues that arise! Please restart FlameCord ASAP." );
++        sender.sendMessage( ChatColor.BOLD.toString() + ChatColor.RED.toString() + "Amethyst has been reloaded."
++                + " This is NOT advisable and you will not be supported with any issues that arise! Please restart Amethyst ASAP." );
+     }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java b/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java
+index 2ba0ab64..d562af47 100644
+--- a/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java
++++ b/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java
+@@ -20,7 +20,7 @@ public class JenkinsModuleSource implements ModuleSource
+         {
+             final String url = String.format(
+                 "https://papermc.io/api/v2/projects/%1$s/versions/%2$s/builds/%3$s/downloads/%4$s-%2$s-%3$s.jar",
+-                "flamecord", // FlameCord
++                "amethyst", // Amethyst
+                 net.md_5.bungee.api.ProxyServer.getInstance().getVersion().split(":")[2].split("-")[0],
+                 version.getBuild(),
+                 module.getName()
+-- 
+2.29.2.windows.3
+

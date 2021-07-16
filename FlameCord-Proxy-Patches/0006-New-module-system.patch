@@ -1,0 +1,1925 @@
+From 350b971959d344415fe647631bcae3b971773714 Mon Sep 17 00:00:00 2001
+From: Denary Planet <denaryplanet@gmail.com>
+Date: Sun, 11 Jul 2021 04:13:30 +0500
+Subject: [PATCH] New module system
+
+
+diff --git a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java b/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
+index f98e878b..a793fe7b 100644
+--- a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
++++ b/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
+@@ -31,17 +31,19 @@ public class MessagesConfiguration {
+ 			}
+ 
+ 			// Commands
+-			setIfUnexistant( "command_alert", "&c&l(&4&lОбьявление&c&l) &с&l", configuration );
++			setIfUnexistant( "command_alert", "&8&l[&c&lОбьявление&8&l] &c", configuration );
+ 			setIfUnexistant( "command_alert_message_needed", "&cВы должны указать сообщение.", configuration );
+-			setIfUnexistant( "command_find_online_at", "&7&l(&5Amethyst&7&l) &fИгрок &e{0} &fиграет на сервере &e{1}", configuration );
+-			setIfUnexistant( "command_firewall_info","&7&l(&5Amethyst&7&l) &fСуществует &e{0} &fадресов брандмауэра. &fБрандмауэр очистится через &e{1} &fсек.", configuration );
+-			setIfUnexistant( "command_flamecord_usage", "&7&l(&5Amethyst&7&l) &fИспользуйте /flame help для просмотра доступных команд", configuration );
+-			setIfUnexistant( "command_flamecord_help", """
++			setIfUnexistant( "command_amethyst_firewall","&7&l(&5Amethyst&7&l) &fСуществует &e{0} &fадресов брандмауэра. &fБрандмауэр очистится через &e{1} &fсек.", configuration );
++			setIfUnexistant( "command_amethyst_help", """
+ 						&7&m-----------------&r&7&l(&5Amethyst&7&l)&r&7&m-----------------
+-						&8&l* &6/flame firewall &7- &eПоказывает информацию о брандмауэре!
+-						&8&l* &6/flame help &7- &eПоказывает это сообщение!
+-						&8&l* &6/flame about &7- &eИнформация про Amethyst
++						&8&l* &6/amethyst about &7- &eПоказывает информацию про
++						&e   ядро сервера.
++						&8&l* &6/amethyst firewall &7- &eПоказывает информацию о
++						&e   брандмауэре.
++						&8&l* &6/amethyst help &7- &eПоказывает это сообщение.
+ 						&r""", configuration );
++			setIfUnexistant( "command_amethyst_usage", "&7&l(&5Amethyst&7&l) &fИспользуйте /amethyst help для просмотра доступных команд", configuration );
++			setIfUnexistant( "command_find_online_at", "&7&l(&5Amethyst&7&l) &fИгрок &e{0} &fиграет на сервере &e{1}", configuration );
+ 			setIfUnexistant( "command_ip", "&7&l(&5Amethyst&7&l) &fIP игрока &e{0}&f: &e{1}", configuration );
+ 			setIfUnexistant( "command_list_header", """
+ 						&7&m-----------------&r&7&l(&5Amethyst&7&l)&r&7&m-----------------
+diff --git a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/ModulesConfiguration.java b/flame/src/main/java/dev/_2lstudios/flamecord/configuration/ModulesConfiguration.java
+index e82c4844..7aed8dd8 100644
+--- a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/ModulesConfiguration.java
++++ b/flame/src/main/java/dev/_2lstudios/flamecord/configuration/ModulesConfiguration.java
+@@ -13,6 +13,9 @@ public class ModulesConfiguration {
+         // Alert Module
+         public boolean alertEnabled = true;
+ 
++        // AlertRaw Module
++        public boolean alertRawEnabled = true;
++
+         // Find Module
+         public boolean findEnabled = true;
+ 
+@@ -49,6 +52,8 @@ public class ModulesConfiguration {
+ 
+                         this.alertEnabled = setIfUnexistant("alert.enabled", this.alertEnabled, configuration);
+ 
++                        this.alertRawEnabled = setIfUnexistant("alertraw.enabled", this.alertRawEnabled, configuration);
++
+                         this.findEnabled = setIfUnexistant("find.enabled", this.findEnabled, configuration);
+ 
+                         this.ipEnabled = setIfUnexistant("ip.enabled", this.ipEnabled, configuration);
+@@ -74,10 +79,6 @@ public class ModulesConfiguration {
+                 }
+         }
+ 
+-        private String setIfUnexistant(final String arg1, final String arg2, final Configuration configuration) {
+-                return (String) setIfUnexistant(arg1, (Object) arg2, configuration);
+-        }
+-
+         private boolean setIfUnexistant(final String arg1, final boolean arg2, final Configuration configuration) {
+                 return (boolean) setIfUnexistant(arg1, (Object) arg2, configuration);
+         }
+diff --git a/module/cmd-alert/pom.xml b/module/cmd-alert/pom.xml
+deleted file mode 100644
+index eaea1cd5..00000000
+--- a/module/cmd-alert/pom.xml
++++ /dev/null
+@@ -1,19 +0,0 @@
+-
+-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+-    <modelVersion>4.0.0</modelVersion>
+-
+-    <parent>
+-        <groupId>io.amethystmc</groupId>
+-        <artifactId>amethyst-module</artifactId>
+-        <version>1.17.1-R0.1-SNAPSHOT</version>
+-        <relativePath>../pom.xml</relativePath>
+-    </parent>
+-
+-    <artifactId>amethyst-module-cmd-alert</artifactId>
+-    <version>1.17.1-R0.1-SNAPSHOT</version>
+-    <packaging>jar</packaging>
+-
+-    <name>cmd_alert</name>
+-    <description>Provides the alert and alertraw commands</description>
+-</project>
+diff --git a/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/PluginAlert.java b/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/PluginAlert.java
+deleted file mode 100644
+index b6f84865..00000000
+--- a/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/PluginAlert.java
++++ /dev/null
+@@ -1,14 +0,0 @@
+-package net.md_5.bungee.module.cmd.alert;
+-
+-import net.md_5.bungee.api.plugin.Plugin;
+-
+-public class PluginAlert extends Plugin
+-{
+-
+-    @Override
+-    public void onEnable()
+-    {
+-        getProxy().getPluginManager().registerCommand( this, new CommandAlert() );
+-        getProxy().getPluginManager().registerCommand( this, new CommandAlertRaw() );
+-    }
+-}
+diff --git a/module/cmd-alert/src/main/resources/plugin.yml b/module/cmd-alert/src/main/resources/plugin.yml
+deleted file mode 100644
+index 9dcf1704..00000000
+--- a/module/cmd-alert/src/main/resources/plugin.yml
++++ /dev/null
+@@ -1,5 +0,0 @@
+-name: ${project.name}
+-main: net.md_5.bungee.module.cmd.alert.PluginAlert
+-version: ${project.version}
+-description: ${project.description}
+-author: ${module.author}
+diff --git a/module/cmd-find/pom.xml b/module/cmd-find/pom.xml
+deleted file mode 100644
+index ceb89759..00000000
+--- a/module/cmd-find/pom.xml
++++ /dev/null
+@@ -1,19 +0,0 @@
+-
+-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+-    <modelVersion>4.0.0</modelVersion>
+-
+-    <parent>
+-        <groupId>io.amethystmc</groupId>
+-        <artifactId>amethyst-module</artifactId>
+-        <version>1.17.1-R0.1-SNAPSHOT</version>
+-        <relativePath>../pom.xml</relativePath>
+-    </parent>
+-
+-    <artifactId>amethyst-module-cmd-find</artifactId>
+-    <version>1.17.1-R0.1-SNAPSHOT</version>
+-    <packaging>jar</packaging>
+-
+-    <name>cmd_find</name>
+-    <description>Provides the find command</description>
+-</project>
+diff --git a/module/cmd-find/src/main/java/net/md_5/bungee/module/cmd/find/CommandFind.java b/module/cmd-find/src/main/java/net/md_5/bungee/module/cmd/find/CommandFind.java
+deleted file mode 100644
+index 6790af6c..00000000
+--- a/module/cmd-find/src/main/java/net/md_5/bungee/module/cmd/find/CommandFind.java
++++ /dev/null
+@@ -1,34 +0,0 @@
+-package net.md_5.bungee.module.cmd.find;
+-
+-import net.md_5.bungee.api.CommandSender;
+-import net.md_5.bungee.api.ProxyServer;
+-import net.md_5.bungee.api.connection.ProxiedPlayer;
+-import net.md_5.bungee.command.PlayerCommand;
+-
+-public class CommandFind extends PlayerCommand
+-{
+-
+-    public CommandFind()
+-    {
+-        super( "find", "bungeecord.command.find" );
+-    }
+-
+-    @Override
+-    public void execute(CommandSender sender, String[] args)
+-    {
+-        if ( args.length != 1 )
+-        {
+-            sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "error_username_needed" ) );
+-        } else
+-        {
+-            ProxiedPlayer player = ProxyServer.getInstance().getPlayer( args[0] );
+-            if ( player == null || player.getServer() == null )
+-            {
+-                sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "error_user_not_online" ) );
+-            } else
+-            {
+-                sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "command_find_user_online_at", player.getName(), player.getServer().getInfo().getName() ) );
+-            }
+-        }
+-    }
+-}
+diff --git a/module/cmd-find/src/main/java/net/md_5/bungee/module/cmd/find/PluginFind.java b/module/cmd-find/src/main/java/net/md_5/bungee/module/cmd/find/PluginFind.java
+deleted file mode 100644
+index 63757214..00000000
+--- a/module/cmd-find/src/main/java/net/md_5/bungee/module/cmd/find/PluginFind.java
++++ /dev/null
+@@ -1,13 +0,0 @@
+-package net.md_5.bungee.module.cmd.find;
+-
+-import net.md_5.bungee.api.plugin.Plugin;
+-
+-public class PluginFind extends Plugin
+-{
+-
+-    @Override
+-    public void onEnable()
+-    {
+-        getProxy().getPluginManager().registerCommand( this, new CommandFind() );
+-    }
+-}
+diff --git a/module/cmd-find/src/main/resources/plugin.yml b/module/cmd-find/src/main/resources/plugin.yml
+deleted file mode 100644
+index 34efb98d..00000000
+--- a/module/cmd-find/src/main/resources/plugin.yml
++++ /dev/null
+@@ -1,5 +0,0 @@
+-name: ${project.name}
+-main: net.md_5.bungee.module.cmd.find.PluginFind
+-version: ${project.version}
+-description: ${project.description}
+-author: ${module.author}
+diff --git a/module/cmd-list/pom.xml b/module/cmd-list/pom.xml
+deleted file mode 100644
+index 0ebf4530..00000000
+--- a/module/cmd-list/pom.xml
++++ /dev/null
+@@ -1,19 +0,0 @@
+-
+-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+-    <modelVersion>4.0.0</modelVersion>
+-
+-    <parent>
+-        <groupId>io.amethystmc</groupId>
+-        <artifactId>amethyst-module</artifactId>
+-        <version>1.17.1-R0.1-SNAPSHOT</version>
+-        <relativePath>../pom.xml</relativePath>
+-    </parent>
+-
+-    <artifactId>amethyst-module-cmd-list</artifactId>
+-    <version>1.17.1-R0.1-SNAPSHOT</version>
+-    <packaging>jar</packaging>
+-
+-    <name>cmd_list</name>
+-    <description>Provides the glist command</description>
+-</project>
+diff --git a/module/cmd-list/src/main/java/net/md_5/bungee/module/cmd/list/CommandList.java b/module/cmd-list/src/main/java/net/md_5/bungee/module/cmd/list/CommandList.java
+deleted file mode 100644
+index 0334eb3c..00000000
+--- a/module/cmd-list/src/main/java/net/md_5/bungee/module/cmd/list/CommandList.java
++++ /dev/null
+@@ -1,50 +0,0 @@
+-package net.md_5.bungee.module.cmd.list;
+-
+-import java.util.ArrayList;
+-import java.util.Collections;
+-import java.util.List;
+-import net.md_5.bungee.Util;
+-import net.md_5.bungee.api.ChatColor;
+-import net.md_5.bungee.api.CommandSender;
+-import net.md_5.bungee.api.ProxyServer;
+-import net.md_5.bungee.api.config.ServerInfo;
+-import net.md_5.bungee.api.connection.ProxiedPlayer;
+-import net.md_5.bungee.api.plugin.Command;
+-
+-/**
+- * Command to list all players connected to the proxy.
+- */
+-public class CommandList extends Command
+-{
+-
+-    public CommandList()
+-    {
+-        super( "glist", "bungeecord.command.list" );
+-    }
+-
+-    @Override
+-    public void execute(CommandSender sender, String[] args)
+-    {
+-        sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "command_list_header" ) );
+-        for ( ServerInfo server : ProxyServer.getInstance().getServersCopy().values() )
+-        {
+-            if ( !server.canAccess( sender ) )
+-            {
+-                continue;
+-            }
+-
+-            List<String> players = new ArrayList<>();
+-            for ( ProxiedPlayer player : server.getPlayers() )
+-            {
+-                players.add( player.getDisplayName() );
+-            }
+-            players.sort( String.CASE_INSENSITIVE_ORDER );
+-
+-            sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "command_list_server", server.getName(), server.getPlayers().size(), Util.format( players, ", " ) ) );
+-        }
+-
+-        sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "command_list_total", ProxyServer.getInstance().getOnlineCount() ) );
+-
+-        sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "command_list_footer" ) );
+-    }
+-}
+diff --git a/module/cmd-list/src/main/java/net/md_5/bungee/module/cmd/list/PluginList.java b/module/cmd-list/src/main/java/net/md_5/bungee/module/cmd/list/PluginList.java
+deleted file mode 100644
+index e2a196c1..00000000
+--- a/module/cmd-list/src/main/java/net/md_5/bungee/module/cmd/list/PluginList.java
++++ /dev/null
+@@ -1,13 +0,0 @@
+-package net.md_5.bungee.module.cmd.list;
+-
+-import net.md_5.bungee.api.plugin.Plugin;
+-
+-public class PluginList extends Plugin
+-{
+-
+-    @Override
+-    public void onEnable()
+-    {
+-        getProxy().getPluginManager().registerCommand( this, new CommandList() );
+-    }
+-}
+diff --git a/module/cmd-list/src/main/resources/plugin.yml b/module/cmd-list/src/main/resources/plugin.yml
+deleted file mode 100644
+index c5999f77..00000000
+--- a/module/cmd-list/src/main/resources/plugin.yml
++++ /dev/null
+@@ -1,5 +0,0 @@
+-name: ${project.name}
+-main: net.md_5.bungee.module.cmd.list.PluginList
+-version: ${project.version}
+-description: ${project.description}
+-author: ${module.author}
+diff --git a/module/cmd-send/pom.xml b/module/cmd-send/pom.xml
+deleted file mode 100644
+index 3adeec7c..00000000
+--- a/module/cmd-send/pom.xml
++++ /dev/null
+@@ -1,19 +0,0 @@
+-
+-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+-    <modelVersion>4.0.0</modelVersion>
+-
+-    <parent>
+-        <groupId>io.amethystmc</groupId>
+-        <artifactId>amethyst-module</artifactId>
+-        <version>1.17.1-R0.1-SNAPSHOT</version>
+-        <relativePath>../pom.xml</relativePath>
+-    </parent>
+-
+-    <artifactId>amethyst-module-cmd-send</artifactId>
+-    <version>1.17.1-R0.1-SNAPSHOT</version>
+-    <packaging>jar</packaging>
+-
+-    <name>cmd_send</name>
+-    <description>Provides the gsend command</description>
+-</project>
+diff --git a/module/cmd-send/src/main/java/net/md_5/bungee/module/cmd/send/PluginSend.java b/module/cmd-send/src/main/java/net/md_5/bungee/module/cmd/send/PluginSend.java
+deleted file mode 100644
+index 4d4cf822..00000000
+--- a/module/cmd-send/src/main/java/net/md_5/bungee/module/cmd/send/PluginSend.java
++++ /dev/null
+@@ -1,13 +0,0 @@
+-package net.md_5.bungee.module.cmd.send;
+-
+-import net.md_5.bungee.api.plugin.Plugin;
+-
+-public class PluginSend extends Plugin
+-{
+-
+-    @Override
+-    public void onEnable()
+-    {
+-        getProxy().getPluginManager().registerCommand( this, new CommandSend() );
+-    }
+-}
+diff --git a/module/cmd-send/src/main/resources/plugin.yml b/module/cmd-send/src/main/resources/plugin.yml
+deleted file mode 100644
+index 8f0d0edd..00000000
+--- a/module/cmd-send/src/main/resources/plugin.yml
++++ /dev/null
+@@ -1,5 +0,0 @@
+-name: ${project.name}
+-main: net.md_5.bungee.module.cmd.send.PluginSend
+-version: ${project.version}
+-description: ${project.description}
+-author: ${module.author}
+diff --git a/module/cmd-server/pom.xml b/module/cmd-server/pom.xml
+deleted file mode 100644
+index 048ef12e..00000000
+--- a/module/cmd-server/pom.xml
++++ /dev/null
+@@ -1,19 +0,0 @@
+-
+-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+-    <modelVersion>4.0.0</modelVersion>
+-
+-    <parent>
+-        <groupId>io.amethystmc</groupId>
+-        <artifactId>amethyst-module</artifactId>
+-        <version>1.17.1-R0.1-SNAPSHOT</version>
+-        <relativePath>../pom.xml</relativePath>
+-    </parent>
+-
+-    <artifactId>amethyst-module-cmd-server</artifactId>
+-    <version>1.17.1-R0.1-SNAPSHOT</version>
+-    <packaging>jar</packaging>
+-
+-    <name>cmd_server</name>
+-    <description>Provides the server command</description>
+-</project>
+diff --git a/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/PluginServer.java b/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/PluginServer.java
+deleted file mode 100644
+index 4aaae7ec..00000000
+--- a/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/PluginServer.java
++++ /dev/null
+@@ -1,13 +0,0 @@
+-package net.md_5.bungee.module.cmd.server;
+-
+-import net.md_5.bungee.api.plugin.Plugin;
+-
+-public class PluginServer extends Plugin
+-{
+-
+-    @Override
+-    public void onEnable()
+-    {
+-        getProxy().getPluginManager().registerCommand( this, new CommandServer() );
+-    }
+-}
+diff --git a/module/cmd-server/src/main/resources/plugin.yml b/module/cmd-server/src/main/resources/plugin.yml
+deleted file mode 100644
+index b0b87841..00000000
+--- a/module/cmd-server/src/main/resources/plugin.yml
++++ /dev/null
+@@ -1,5 +0,0 @@
+-name: ${project.name}
+-main: net.md_5.bungee.module.cmd.server.PluginServer
+-version: ${project.version}
+-description: ${project.description}
+-author: ${module.author}
+diff --git a/module/pom.xml b/module/pom.xml
+deleted file mode 100644
+index 3a1f9a27..00000000
+--- a/module/pom.xml
++++ /dev/null
+@@ -1,53 +0,0 @@
+-
+-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+-    <modelVersion>4.0.0</modelVersion>
+-
+-    <parent>
+-        <groupId>io.amethystmc</groupId>
+-        <artifactId>amethyst-parent</artifactId>
+-        <version>1.17.1-R0.1-SNAPSHOT</version>
+-        <relativePath>../pom.xml</relativePath>
+-    </parent>
+-
+-    <artifactId>amethyst-module</artifactId>
+-    <version>1.17.1-R0.1-SNAPSHOT</version>
+-    <packaging>pom</packaging>
+-
+-    <name>Amethyst-Modules</name>
+-    <description>Parent project for all Amethyst modules.</description>
+-
+-    <modules>
+-        <module>cmd-alert</module>
+-        <module>cmd-find</module>
+-        <module>cmd-list</module>
+-        <module>cmd-send</module>
+-        <module>cmd-server</module>
+-        <module>reconnect-yaml</module>
+-    </modules>
+-
+-    <properties>
+-        <module.author>AmethystMC</module.author>
+-        <maven.deploy.skip>true</maven.deploy.skip>
+-        <maven.javadoc.skip>true</maven.javadoc.skip>
+-    </properties>
+-
+-    <dependencies>
+-        <dependency>
+-            <groupId>io.amethystmc</groupId>
+-            <artifactId>amethyst-api</artifactId>
+-            <version>${project.version}</version>
+-            <scope>compile</scope>
+-        </dependency>
+-    </dependencies>
+-
+-    <build>
+-        <finalName>${project.name}</finalName>
+-        <resources>
+-            <resource>
+-                <filtering>true</filtering>
+-                <directory>${basedir}/src/main/resources</directory>
+-            </resource>
+-        </resources>
+-    </build>
+-</project>
+diff --git a/module/reconnect-yaml/pom.xml b/module/reconnect-yaml/pom.xml
+deleted file mode 100644
+index dca6355a..00000000
+--- a/module/reconnect-yaml/pom.xml
++++ /dev/null
+@@ -1,19 +0,0 @@
+-
+-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+-    <modelVersion>4.0.0</modelVersion>
+-
+-    <parent>
+-        <groupId>io.amethystmc</groupId>
+-        <artifactId>amethyst-module</artifactId>
+-        <version>1.17.1-R0.1-SNAPSHOT</version>
+-        <relativePath>../pom.xml</relativePath>
+-    </parent>
+-
+-    <artifactId>amethyst-module-reconnect-yaml</artifactId>
+-    <version>1.17.1-R0.1-SNAPSHOT</version>
+-    <packaging>jar</packaging>
+-
+-    <name>reconnect_yaml</name>
+-    <description>Provides reconnect location functionality in locations.yml</description>
+-</project>
+diff --git a/module/reconnect-yaml/src/main/java/net/md_5/bungee/module/reconnect/yaml/PluginYaml.java b/module/reconnect-yaml/src/main/java/net/md_5/bungee/module/reconnect/yaml/PluginYaml.java
+deleted file mode 100644
+index 0d77ce2a..00000000
+--- a/module/reconnect-yaml/src/main/java/net/md_5/bungee/module/reconnect/yaml/PluginYaml.java
++++ /dev/null
+@@ -1,22 +0,0 @@
+-package net.md_5.bungee.module.reconnect.yaml;
+-
+-import net.md_5.bungee.api.config.ListenerInfo;
+-import net.md_5.bungee.api.plugin.Plugin;
+-
+-public class PluginYaml extends Plugin
+-{
+-
+-    @Override
+-    public void onEnable()
+-    {
+-        // TODO: Abstract this for other reconnect modules
+-        for ( ListenerInfo info : getProxy().getConfig().getListeners() )
+-        {
+-            if ( !info.isForceDefault() && getProxy().getReconnectHandler() == null )
+-            {
+-                getProxy().setReconnectHandler( new YamlReconnectHandler() );
+-                break;
+-            }
+-        }
+-    }
+-}
+diff --git a/module/reconnect-yaml/src/main/resources/plugin.yml b/module/reconnect-yaml/src/main/resources/plugin.yml
+deleted file mode 100644
+index 9757ba83..00000000
+--- a/module/reconnect-yaml/src/main/resources/plugin.yml
++++ /dev/null
+@@ -1,5 +0,0 @@
+-name: ${project.name}
+-main: net.md_5.bungee.module.reconnect.yaml.PluginYaml
+-version: ${project.version}
+-description: ${project.description}
+-author: ${module.author}
+diff --git a/pom.xml b/pom.xml
+index 606dcf06..63dbe5e7 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -42,7 +42,9 @@
+         <module>log</module>
+         -->
+         <module>log4j</module>
++        <!-- Amethyst - use our module system
+         <module>module</module>
++        -->
+         <module>protocol</module>
+         <module>proxy</module>
+         <module>query</module>
+diff --git a/proxy/pom.xml b/proxy/pom.xml
+index 1bee9050..6ee2ca05 100644
+--- a/proxy/pom.xml
++++ b/proxy/pom.xml
+@@ -157,6 +157,7 @@
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
++        <!-- Amethyst - use our module system
+         <dependency>
+             <groupId>io.amethystmc</groupId>
+             <artifactId>amethyst-module-cmd-alert</artifactId>
+@@ -193,6 +194,7 @@
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
++        -->
+         <!-- FlameCord end -->
+     </dependencies>
+ 
+diff --git a/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java b/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
+deleted file mode 100644
+index 08502063..00000000
+--- a/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
++++ /dev/null
+@@ -1,66 +0,0 @@
+-package dev._2lstudios.flamecord.commands;
+-
+-import java.util.Collection;
+-import java.util.HashSet;
+-
+-import dev._2lstudios.flamecord.FlameCord;
+-import dev._2lstudios.flamecord.configuration.MessagesConfiguration;
+-import dev._2lstudios.flamecord.firewall.FirewallManager;
+-import net.md_5.bungee.BungeeCord;
+-import net.md_5.bungee.api.CommandSender;
+-import net.md_5.bungee.api.chat.TextComponent;
+-import net.md_5.bungee.api.config.ServerInfo;
+-import net.md_5.bungee.api.plugin.Command;
+-
+-public class FlameCordCommand extends Command {
+-private final BungeeCord bungeeCord;
+-
+-    public FlameCordCommand(final BungeeCord bungeeCord) {
+-        super("flamecord", "flamecord.usage", "flame");
+-
+-        this.bungeeCord = bungeeCord;
+-    }
+-
+-    @Override
+-    public void execute(final CommandSender sender, final String[] args) {
+-        final FlameCord flameCord = FlameCord.getInstance();
+-        final MessagesConfiguration messagesConfiguration = flameCord.getMessagesConfiguration();
+-
+-        if (args.length > 0) {
+-            final String arg0 = args[0];
+-
+-            switch (arg0) {
+-                case "firewall": {
+-                    final FirewallManager firewallManager = flameCord.getFirewallManager();
+-                    final int amount = firewallManager.getFirewalled().size(),
+-                            seconds = firewallManager.getSeconds();
+-
+-                    sender.sendMessage(TextComponent.fromLegacyText(
+-                            messagesConfiguration.getTranslation("command_firewall_info", amount, seconds)));
+-                    break;
+-                }
+-                case "reload": {
+-                    // FlameCord - Collect ips from servers
+-                    final Collection<String> whitelistedAddresses = new HashSet<>();
+-
+-                    for (final ServerInfo serverInfo : bungeeCord.getServers().values()) {
+-                        whitelistedAddresses.add(serverInfo.getSocketAddress().toString());
+-                    }
+-
+-                    FlameCord.renew(bungeeCord.getLogger(), whitelistedAddresses);
+-                    sender.sendMessage(TextComponent
+-                            .fromLegacyText(messagesConfiguration.getTranslation("command_reload")));
+-                    break;
+-                }
+-                default: {
+-                    sender.sendMessage(TextComponent.fromLegacyText(
+-                            messagesConfiguration.getTranslation("command_flamecord_help", bungeeCord.getVersion())));
+-                    break;
+-                }
+-            }
+-            } else {
+-            sender.sendMessage(TextComponent.fromLegacyText(
+-                    messagesConfiguration.getTranslation("command_flamecord_help", bungeeCord.getVersion())));
+-        }
+-    }
+-}
+diff --git a/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlert.java b/proxy/src/main/java/io/amethystmc/amethyst/module/CommandAlert.java
+similarity index 63%
+rename from module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlert.java
+rename to proxy/src/main/java/io/amethystmc/amethyst/module/CommandAlert.java
+index 3d95b789..f55030f1 100644
+--- a/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlert.java
++++ b/proxy/src/main/java/io/amethystmc/amethyst/module/CommandAlert.java
+@@ -1,8 +1,8 @@
+-package net.md_5.bungee.module.cmd.alert;
++package io.amethystmc.amethyst.module;
+ 
++import net.md_5.bungee.BungeeCord;
+ import net.md_5.bungee.api.ChatColor;
+ import net.md_5.bungee.api.CommandSender;
+-import net.md_5.bungee.api.ProxyServer;
+ import net.md_5.bungee.api.chat.TextComponent;
+ import net.md_5.bungee.api.plugin.Command;
+ 
+@@ -11,7 +11,7 @@ public class CommandAlert extends Command
+ 
+     public CommandAlert()
+     {
+-        super( "alert", "bungeecord.command.alert" );
++        super( "alert", "amethyst.command.alert" );
+     }
+ 
+     @Override
+@@ -19,17 +19,17 @@ public class CommandAlert extends Command
+     {
+         if ( args.length == 0 )
+         {
+-            sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "command_alert_message_needed" ) );
++            sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_alert_message_needed" ) );
+         } else
+         {
+             StringBuilder builder = new StringBuilder();
+             if ( args[0].startsWith( "&h" ) )
+             {
+                 // Remove &h
+-                args[0] = args[0].substring( 2, args[0].length() );
++                args[0] = args[0].substring( 2 );
+             } else
+             {
+-                builder.append( ProxyServer.getInstance().getTranslation( "command_alert" ) );
++                builder.append( BungeeCord.getInstance().getTranslation( "command_alert" ) );
+             }
+ 
+             for ( String s : args )
+@@ -40,7 +40,7 @@ public class CommandAlert extends Command
+ 
+             String message = builder.substring( 0, builder.length() - 1 );
+ 
+-            ProxyServer.getInstance().broadcast( TextComponent.fromLegacyText( message ) );
++            BungeeCord.getInstance().broadcast( TextComponent.fromLegacyText( message ) );
+         }
+     }
+ }
+diff --git a/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlertRaw.java b/proxy/src/main/java/io/amethystmc/amethyst/module/CommandAlertRaw.java
+similarity index 69%
+rename from module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlertRaw.java
+rename to proxy/src/main/java/io/amethystmc/amethyst/module/CommandAlertRaw.java
+index 7daa3f18..38c3b841 100644
+--- a/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlertRaw.java
++++ b/proxy/src/main/java/io/amethystmc/amethyst/module/CommandAlertRaw.java
+@@ -1,9 +1,9 @@
+-package net.md_5.bungee.module.cmd.alert;
++package io.amethystmc.amethyst.module;
+ 
+ import com.google.common.base.Joiner;
++import net.md_5.bungee.BungeeCord;
+ import net.md_5.bungee.api.ChatColor;
+ import net.md_5.bungee.api.CommandSender;
+-import net.md_5.bungee.api.ProxyServer;
+ import net.md_5.bungee.api.chat.ComponentBuilder;
+ import net.md_5.bungee.api.chat.HoverEvent;
+ import net.md_5.bungee.api.connection.ProxiedPlayer;
+@@ -15,7 +15,7 @@ public class CommandAlertRaw extends Command
+ 
+     public CommandAlertRaw()
+     {
+-        super( "alertraw", "bungeecord.command.alert" );
++        super( "alertraw", "amethyst.command.alertraw" );
+     }
+ 
+     @Override
+@@ -23,14 +23,14 @@ public class CommandAlertRaw extends Command
+     {
+         if ( args.length == 0 )
+         {
+-            sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "error_message_needed" ) );
++            sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "error_message_needed" ) );
+         } else
+         {
+             String message = Joiner.on( ' ' ).join( args );
+ 
+             try
+             {
+-                ProxyServer.getInstance().broadcast( ComponentSerializer.parse( message ) );
++                BungeeCord.getInstance().broadcast( ComponentSerializer.parse( message ) );
+             } catch ( Exception e )
+             {
+                 Throwable error = e;
+@@ -40,7 +40,7 @@ public class CommandAlertRaw extends Command
+                 }
+                 if ( sender instanceof ProxiedPlayer )
+                 {
+-                    sender.sendMessage( new ComponentBuilder( ProxyServer.getInstance().getTranslation( "error_message_player" ) )
++                    sender.sendMessage( new ComponentBuilder( BungeeCord.getInstance().getTranslation( "error_message_player" ) )
+                             .event( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder( error.getMessage() )
+                                     .color( ChatColor.RED )
+                                     .create() ) )
+@@ -48,7 +48,7 @@ public class CommandAlertRaw extends Command
+                     );
+                 } else
+                 {
+-                    sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "error_message_console", error.getMessage() ) );
++                    sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "error_message_console", error.getMessage() ) );
+                 }
+             }
+         }
+diff --git a/proxy/src/main/java/io/amethystmc/amethyst/module/CommandFind.java b/proxy/src/main/java/io/amethystmc/amethyst/module/CommandFind.java
+new file mode 100644
+index 00000000..1a7e319d
+--- /dev/null
++++ b/proxy/src/main/java/io/amethystmc/amethyst/module/CommandFind.java
+@@ -0,0 +1,34 @@
++package io.amethystmc.amethyst.module;
++
++import net.md_5.bungee.BungeeCord;
++import net.md_5.bungee.api.CommandSender;
++import net.md_5.bungee.api.connection.ProxiedPlayer;
++import net.md_5.bungee.command.PlayerCommand;
++
++public class CommandFind extends PlayerCommand
++{
++
++    public CommandFind()
++    {
++        super( "find", "amethyst.command.find" );
++    }
++
++    @Override
++    public void execute(CommandSender sender, String[] args)
++    {
++        if ( args.length != 1 )
++        {
++            sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "error_username_needed" ) );
++        } else
++        {
++            ProxiedPlayer player = BungeeCord.getInstance().getPlayer( args[0] );
++            if ( player == null || player.getServer() == null )
++            {
++                sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "error_user_not_online" ) );
++            } else
++            {
++                sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_find_user_online_at", player.getName(), player.getServer().getInfo().getName() ) );
++            }
++        }
++    }
++}
+diff --git a/proxy/src/main/java/io/amethystmc/amethyst/module/CommandList.java b/proxy/src/main/java/io/amethystmc/amethyst/module/CommandList.java
+new file mode 100644
+index 00000000..84512b74
+--- /dev/null
++++ b/proxy/src/main/java/io/amethystmc/amethyst/module/CommandList.java
+@@ -0,0 +1,46 @@
++package io.amethystmc.amethyst.module;
++
++import net.md_5.bungee.BungeeCord;
++import net.md_5.bungee.Util;
++import net.md_5.bungee.api.CommandSender;
++import net.md_5.bungee.api.config.ServerInfo;
++import net.md_5.bungee.api.connection.ProxiedPlayer;
++import net.md_5.bungee.api.plugin.Command;
++
++import java.util.ArrayList;
++import java.util.List;
++
++public class CommandList extends Command
++{
++
++    public CommandList()
++    {
++        super( "glist", "amethyst.command.list" );
++    }
++
++    @Override
++    public void execute(CommandSender sender, String[] args)
++    {
++        sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_list_header" ) );
++        for ( ServerInfo server : BungeeCord.getInstance().getServersCopy().values() )
++        {
++            if ( !server.canAccess( sender ) )
++            {
++                continue;
++            }
++
++            List<String> players = new ArrayList<>();
++            for ( ProxiedPlayer player : server.getPlayers() )
++            {
++                players.add( player.getDisplayName() );
++            }
++            players.sort( String.CASE_INSENSITIVE_ORDER );
++
++            sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_list_server", server.getName(), server.getPlayers().size(), Util.format( players, ", " ) ) );
++        }
++
++        sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_list_total", BungeeCord.getInstance().getOnlineCount() ) );
++
++        sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_list_footer" ) );
++    }
++}
+diff --git a/module/cmd-send/src/main/java/net/md_5/bungee/module/cmd/send/CommandSend.java b/proxy/src/main/java/io/amethystmc/amethyst/module/CommandSend.java
+similarity index 71%
+rename from module/cmd-send/src/main/java/net/md_5/bungee/module/cmd/send/CommandSend.java
+rename to proxy/src/main/java/io/amethystmc/amethyst/module/CommandSend.java
+index c2def0ee..87ed4c5a 100644
+--- a/module/cmd-send/src/main/java/net/md_5/bungee/module/cmd/send/CommandSend.java
++++ b/proxy/src/main/java/io/amethystmc/amethyst/module/CommandSend.java
+@@ -1,4 +1,4 @@
+-package net.md_5.bungee.module.cmd.send;
++package io.amethystmc.amethyst.module;
+ 
+ import com.google.common.base.Joiner;
+ import com.google.common.collect.ImmutableSet;
+@@ -10,10 +10,11 @@ import java.util.List;
+ import java.util.Locale;
+ import java.util.Map;
+ import java.util.Set;
++
++import net.md_5.bungee.BungeeCord;
+ import net.md_5.bungee.api.Callback;
+ import net.md_5.bungee.api.ChatColor;
+ import net.md_5.bungee.api.CommandSender;
+-import net.md_5.bungee.api.ProxyServer;
+ import net.md_5.bungee.api.ServerConnectRequest;
+ import net.md_5.bungee.api.chat.ComponentBuilder;
+ import net.md_5.bungee.api.chat.HoverEvent;
+@@ -44,7 +45,7 @@ public class CommandSend extends Command implements TabExecutor
+ 
+         public void lastEntryDone()
+         {
+-            sender.sendMessage( ProxyServer.getInstance().getTranslationComponent("command_send_result") );
++            sender.sendMessage( BungeeCord.getInstance().getTranslationComponent("command_send_result") );
+             for ( Map.Entry<ServerConnectRequest.Result, List<String>> entry : results.entrySet() )
+             {
+                 ComponentBuilder builder = new ComponentBuilder( "" );
+@@ -59,15 +60,11 @@ public class CommandSend extends Command implements TabExecutor
+             }
+         }
+ 
+-        public static class Entry implements Callback<ServerConnectRequest.Result>
+-        {
+-
+-            private final SendCallback callback;
+-            private final ProxiedPlayer player;
+-            private final ServerInfo target;
++        public record Entry(SendCallback callback,
++                            ProxiedPlayer player,
++                            ServerInfo target) implements Callback<ServerConnectRequest.Result> {
+ 
+-            public Entry(SendCallback callback, ProxiedPlayer player, ServerInfo target)
+-            {
++            public Entry(SendCallback callback, ProxiedPlayer player, ServerInfo target) {
+                 this.callback = callback;
+                 this.player = player;
+                 this.target = target;
+@@ -75,16 +72,13 @@ public class CommandSend extends Command implements TabExecutor
+             }
+ 
+             @Override
+-            public void done(ServerConnectRequest.Result result, Throwable error)
+-            {
+-                callback.results.get( result ).add( player.getName() );
+-                if ( result == ServerConnectRequest.Result.SUCCESS )
+-                {
+-                    player.sendMessage( ProxyServer.getInstance().getTranslationComponent( "command_send_target", target.getName(), callback.sender.getName() ) );
++            public void done(ServerConnectRequest.Result result, Throwable error) {
++                callback.results.get(result).add(player.getName());
++                if (result == ServerConnectRequest.Result.SUCCESS) {
++                    player.sendMessage(BungeeCord.getInstance().getTranslationComponent("command_send_target", target.getName(), callback.sender.getName()));
+                 }
+ 
+-                if ( --callback.count == 0 )
+-                {
++                if (--callback.count == 0) {
+                     callback.lastEntryDone();
+                 }
+             }
+@@ -101,42 +95,41 @@ public class CommandSend extends Command implements TabExecutor
+     {
+         if ( args.length != 2 )
+         {
+-            sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "command_send_usage" ) );
++            sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_send_usage" ) );
+             return;
+         }
+-        ServerInfo server = ProxyServer.getInstance().getServerInfo( args[1] );
++        ServerInfo server = BungeeCord.getInstance().getServerInfo( args[1] );
+         if ( server == null )
+         {
+-            sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "error_no_server" ) );
++            sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "error_no_server" ) );
+             return;
+         }
+ 
+         List<ProxiedPlayer> targets;
+         if ( args[0].equalsIgnoreCase( "all" ) )
+         {
+-            targets = new ArrayList<>( ProxyServer.getInstance().getPlayers() );
++            targets = new ArrayList<>( BungeeCord.getInstance().getPlayers() );
+         } else if ( args[0].equalsIgnoreCase( "current" ) )
+         {
+-            if ( !( sender instanceof ProxiedPlayer ) )
++            if ( !(sender instanceof ProxiedPlayer player) )
+             {
+-                sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "error_player_only" ) );
++                sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "error_player_only" ) );
+                 return;
+             }
+-            ProxiedPlayer player = (ProxiedPlayer) sender;
+             targets = new ArrayList<>( player.getServer().getInfo().getPlayers() );
+         } else
+         {
+             // If we use a server name, send the entire server. This takes priority over players.
+-            ServerInfo serverTarget = ProxyServer.getInstance().getServerInfo( args[0] );
++            ServerInfo serverTarget = BungeeCord.getInstance().getServerInfo( args[0] );
+             if ( serverTarget != null )
+             {
+                 targets = new ArrayList<>( serverTarget.getPlayers() );
+             } else
+             {
+-                ProxiedPlayer player = ProxyServer.getInstance().getPlayer( args[0] );
++                ProxiedPlayer player = BungeeCord.getInstance().getPlayer( args[0] );
+                 if ( player == null )
+                 {
+-                    sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "error_user_not_online" ) );
++                    sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "error_user_not_online" ) );
+                     return;
+                 }
+                 targets = Collections.singletonList( player );
+@@ -154,7 +147,7 @@ public class CommandSend extends Command implements TabExecutor
+             player.connect( request );
+         }
+ 
+-        sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "command_send_sender", targets.size(), server.getName() ) );
++        sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_send_sender", targets.size(), server.getName() ) );
+     }
+ 
+     @Override
+@@ -169,7 +162,7 @@ public class CommandSend extends Command implements TabExecutor
+         if ( args.length == 1 )
+         {
+             String search = args[0].toLowerCase( Locale.ROOT );
+-            for ( ProxiedPlayer player : ProxyServer.getInstance().getPlayers() )
++            for ( ProxiedPlayer player : BungeeCord.getInstance().getPlayers() )
+             {
+                 if ( player.getName().toLowerCase( Locale.ROOT ).startsWith( search ) )
+                 {
+@@ -187,7 +180,7 @@ public class CommandSend extends Command implements TabExecutor
+         } else
+         {
+             String search = args[1].toLowerCase( Locale.ROOT );
+-            for ( String server : ProxyServer.getInstance().getServers().keySet() )
++            for ( String server : BungeeCord.getInstance().getServers().keySet() )
+             {
+                 if ( server.toLowerCase( Locale.ROOT ).startsWith( search ) )
+                 {
+diff --git a/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java b/proxy/src/main/java/io/amethystmc/amethyst/module/CommandServer.java
+similarity index 67%
+rename from module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
+rename to proxy/src/main/java/io/amethystmc/amethyst/module/CommandServer.java
+index 43093d21..dc6a41e9 100644
+--- a/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
++++ b/proxy/src/main/java/io/amethystmc/amethyst/module/CommandServer.java
+@@ -1,13 +1,9 @@
+-package net.md_5.bungee.module.cmd.server;
++package io.amethystmc.amethyst.module;
+ 
+-import com.google.common.base.Function;
+ import com.google.common.base.Predicate;
+ import com.google.common.collect.Iterables;
+-import java.util.Collections;
+-import java.util.Locale;
+-import java.util.Map;
++import net.md_5.bungee.BungeeCord;
+ import net.md_5.bungee.api.CommandSender;
+-import net.md_5.bungee.api.ProxyServer;
+ import net.md_5.bungee.api.chat.ClickEvent;
+ import net.md_5.bungee.api.chat.ComponentBuilder;
+ import net.md_5.bungee.api.chat.HoverEvent;
+@@ -18,29 +14,30 @@ import net.md_5.bungee.api.event.ServerConnectEvent;
+ import net.md_5.bungee.api.plugin.Command;
+ import net.md_5.bungee.api.plugin.TabExecutor;
+ 
+-/**
+- * Command to list and switch a player between available servers.
+- */
++import java.util.Collections;
++import java.util.Locale;
++import java.util.Map;
++
+ public class CommandServer extends Command implements TabExecutor
+ {
+ 
+     public CommandServer()
+     {
+-        super( "server", "bungeecord.command.server" );
++        super( "server", "amethyst.command.server" );
+     }
+ 
+     @Override
+     public void execute(CommandSender sender, String[] args)
+     {
+-        Map<String, ServerInfo> servers = ProxyServer.getInstance().getServers();
++        Map<String, ServerInfo> servers = BungeeCord.getInstance().getServers();
+         if ( args.length == 0 )
+         {
+             if ( sender instanceof ProxiedPlayer )
+             {
+-                sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "command_server_current", ( (ProxiedPlayer) sender ).getServer().getInfo().getName() ) );
++                sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_server_current", ( (ProxiedPlayer) sender ).getServer().getInfo().getName() ) );
+             }
+ 
+-            ComponentBuilder serverList = new ComponentBuilder().appendLegacy( ProxyServer.getInstance().getTranslation( "command_server_list" ) );
++            ComponentBuilder serverList = new ComponentBuilder().appendLegacy( BungeeCord.getInstance().getTranslation( "command_server_list" ) );
+             boolean first = true;
+             for ( ServerInfo server : servers.values() )
+             {
+@@ -50,7 +47,7 @@ public class CommandServer extends Command implements TabExecutor
+                     int count = server.getPlayers().size();
+                     serverTextComponent.setHoverEvent( new HoverEvent(
+                             HoverEvent.Action.SHOW_TEXT,
+-                            new ComponentBuilder().append( ProxyServer.getInstance().getTranslationComponent( "command_server_text", count ) ).create() )
++                            new ComponentBuilder().append( BungeeCord.getInstance().getTranslationComponent( "command_server_text", count ) ).create() )
+                     );
+                     serverTextComponent.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/server " + server.getName() ) );
+                     serverList.append( serverTextComponent );
+@@ -68,10 +65,10 @@ public class CommandServer extends Command implements TabExecutor
+             ServerInfo server = servers.get( args[0] );
+             if ( server == null )
+             {
+-                player.sendMessage( ProxyServer.getInstance().getTranslationComponent( "error_no_server" ) );
++                player.sendMessage( BungeeCord.getInstance().getTranslationComponent( "error_no_server" ) );
+             } else if ( !server.canAccess( player ) )
+             {
+-                player.sendMessage( ProxyServer.getInstance().getTranslationComponent( "error_no_server_permission" ) );
++                player.sendMessage( BungeeCord.getInstance().getTranslationComponent( "error_no_server_permission" ) );
+             } else
+             {
+                 player.connect( server, ServerConnectEvent.Reason.COMMAND );
+@@ -82,7 +79,7 @@ public class CommandServer extends Command implements TabExecutor
+     @Override
+     public Iterable<String> onTabComplete(final CommandSender sender, final String[] args)
+     {
+-        return ( args.length > 1 ) ? Collections.EMPTY_LIST : Iterables.transform( Iterables.filter( ProxyServer.getInstance().getServersCopy().values(), new Predicate<ServerInfo>() // Waterfall: use #getServersCopy()
++        return ( args.length > 1 ) ? Collections.EMPTY_LIST : Iterables.transform( Iterables.filter( BungeeCord.getInstance().getServersCopy().values(), new Predicate<>() // Waterfall: use #getServersCopy()
+         {
+             private final String lower = ( args.length == 0 ) ? "" : args[0].toLowerCase( Locale.ROOT );
+ 
+@@ -91,13 +88,6 @@ public class CommandServer extends Command implements TabExecutor
+             {
+                 return input.getName().toLowerCase( Locale.ROOT ).startsWith( lower ) && input.canAccess( sender );
+             }
+-        } ), new Function<ServerInfo, String>()
+-        {
+-            @Override
+-            public String apply(ServerInfo input)
+-            {
+-                return input.getName();
+-            }
+-        } );
++        } ), ServerInfo::getName);
+     }
+ }
+diff --git a/module/reconnect-yaml/src/main/java/net/md_5/bungee/module/reconnect/yaml/YamlReconnectHandler.java b/proxy/src/main/java/io/amethystmc/amethyst/module/YamlReconnectHandler.java
+similarity index 97%
+rename from module/reconnect-yaml/src/main/java/net/md_5/bungee/module/reconnect/yaml/YamlReconnectHandler.java
+rename to proxy/src/main/java/io/amethystmc/amethyst/module/YamlReconnectHandler.java
+index 3a514a76..d814fcbb 100644
+--- a/module/reconnect-yaml/src/main/java/net/md_5/bungee/module/reconnect/yaml/YamlReconnectHandler.java
++++ b/proxy/src/main/java/io/amethystmc/amethyst/module/YamlReconnectHandler.java
+@@ -1,4 +1,4 @@
+-package net.md_5.bungee.module.reconnect.yaml;
++package io.amethystmc.amethyst.module;
+ 
+ import java.io.File;
+ import java.io.FileReader;
+@@ -55,7 +55,7 @@ public class YamlReconnectHandler extends AbstractReconnectHandler
+     @Override
+     protected ServerInfo getStoredServer(ProxiedPlayer player)
+     {
+-        ServerInfo server = null;
++        ServerInfo server;
+         lock.readLock().lock();
+         try
+         {
+diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
+index a4ef6d3b..d3affbe9 100644
+--- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
++++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
+@@ -1,6 +1,5 @@
+ package io.github.waterfallmc.waterfall.conf;
+ 
+-import com.google.common.base.Joiner;
+ import net.md_5.bungee.conf.Configuration;
+ import net.md_5.bungee.conf.YamlConfig;
+ import net.md_5.bungee.protocol.ProtocolConstants;
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index ae1562f4..8c1f8912 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -10,10 +10,10 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
+ import com.google.gson.Gson;
+ import com.google.gson.GsonBuilder;
+ import dev._2lstudios.flamecord.FlameCord;
+-import dev._2lstudios.flamecord.commands.FlameCordCommand;
+ import dev._2lstudios.flamecord.configuration.ModulesConfiguration;
+ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+ import io.amethystmc.amethyst.command.CommandLobby;
++import io.amethystmc.amethyst.module.*;
+ import io.github.waterfallmc.waterfall.conf.WaterfallConfiguration;
+ import io.github.waterfallmc.waterfall.event.ProxyExceptionEvent;
+ import io.github.waterfallmc.waterfall.exception.ProxyPluginEnableDisableException;
+@@ -34,16 +34,8 @@ import net.md_5.bungee.api.plugin.PluginManager;
+ import net.md_5.bungee.chat.*;
+ import net.md_5.bungee.command.*;
+ import net.md_5.bungee.compress.CompressFactory;
+-import net.md_5.bungee.conf.Configuration;
+-import net.md_5.bungee.conf.YamlConfig;
++import net.md_5.bungee.conf.*;
+ import net.md_5.bungee.forge.ForgeConstants;
+-import net.md_5.bungee.module.ModuleManager;
+-import net.md_5.bungee.module.cmd.alert.CommandAlert;
+-import net.md_5.bungee.module.cmd.find.CommandFind;
+-import net.md_5.bungee.module.cmd.list.CommandList;
+-import net.md_5.bungee.module.cmd.send.CommandSend;
+-import net.md_5.bungee.module.cmd.server.CommandServer;
+-import net.md_5.bungee.module.reconnect.yaml.YamlReconnectHandler;
+ import net.md_5.bungee.netty.PipelineUtils;
+ import net.md_5.bungee.protocol.DefinedPacket;
+ import net.md_5.bungee.protocol.ProtocolConstants;
+@@ -83,8 +75,9 @@ public class BungeeCord extends ProxyServer
+     /**
+      * Localization bundle.
+      */
+-    private ResourceBundle baseBundle;
+-    private ResourceBundle customBundle;
++    // Amethyst - use FlameCord message system
++   // private ResourceBundle baseBundle;
++   // private ResourceBundle customBundle;
+     public EventLoopGroup bossEventLoopGroup, workerEventLoopGroup;
+     /**
+      * locations.yml save thread.
+@@ -143,7 +136,8 @@ public class BungeeCord extends ProxyServer
+             .registerTypeAdapter( Favicon.class, Favicon.getFaviconTypeAdapter() ).create();
+     @Getter
+     private ConnectionThrottle connectionThrottle;
+-    private final ModuleManager moduleManager = new ModuleManager();
++    // Amethyst - use own module system
++    // private final ModuleManager moduleManager = new ModuleManager();
+ 
+     {
+         // TODO: Proper fallback when we interface the manager
+@@ -160,7 +154,8 @@ public class BungeeCord extends ProxyServer
+     {
+         // Java uses ! to indicate a resource inside of a jar/zip/other container. Running Bungee from within a directory that has a ! will cause this to muck up.
+         Preconditions.checkState( new File( "." ).getAbsolutePath().indexOf( '!' ) == -1, "Cannot use Amethyst in directory with ! in path." );
+-
++        // Amethyst start - use FlameCord message system
++        /*
+         try
+         {
+             baseBundle = ResourceBundle.getBundle( "messages" );
+@@ -168,7 +163,9 @@ public class BungeeCord extends ProxyServer
+         {
+             baseBundle = ResourceBundle.getBundle( "messages", Locale.ENGLISH );
+         }
+-        // reloadMessages(); // Amethyst - use FlameCord message system
++        reloadMessages();
++         */
++        // Amethyst end
+ 
+         // This is a workaround for quite possibly the weirdest bug I have ever encountered in my life!
+         // When jansi attempts to extract its natives, by default it tries to extract a specific version,
+@@ -200,7 +197,7 @@ public class BungeeCord extends ProxyServer
+         //getPluginManager().registerCommand( null, new CommandReload() );
+         //getPluginManager().registerCommand( null, new CommandEnd() );
+         //getPluginManager().registerCommand( null, new CommandIP() );
+-        //getPluginManager().registerCommand( null, new CommandBungee() );
++        //getPluginManager().registerCommand( null, new CommandFlame() );
+         //getPluginManager().registerCommand( null, new CommandPerms() );
+ 
+         if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
+@@ -798,7 +795,7 @@ public class BungeeCord extends ProxyServer
+ 
+         // Bungeecord Commands
+         pluginManager.registerCommand(null, new CommandEnd());
+-        pluginManager.registerCommand(null, new CommandBungee());
++        pluginManager.registerCommand(null, new CommandFlame());
+ 
+         if (modulesConfiguration.reloadEnabled) {
+             pluginManager.registerCommand(null, new CommandReload());
+@@ -814,6 +811,9 @@ public class BungeeCord extends ProxyServer
+         if (modulesConfiguration.alertEnabled) {
+             pluginManager.registerCommand(null, new CommandAlert());
+         }
++        if (modulesConfiguration.alertRawEnabled) {
++            pluginManager.registerCommand(null, new CommandAlertRaw());
++        }
+         if (modulesConfiguration.findEnabled) {
+             pluginManager.registerCommand(null, new CommandFind());
+         }
+@@ -844,9 +844,6 @@ public class BungeeCord extends ProxyServer
+         if (getFlameCord().getFlameCordConfiguration().isLobbyEnabled()) {
+             pluginManager.registerCommand(null, new CommandLobby());
+         }
+-
+-        // Flamecord - Commands (Had to make it like this because of maven limitations)
+-        pluginManager.registerCommand(null, new FlameCordCommand(this));
+     }
+ 
+     @Override
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
+deleted file mode 100644
+index dd6d71b7..00000000
+--- a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
++++ /dev/null
+@@ -1,22 +0,0 @@
+-package net.md_5.bungee.command;
+-
+-import net.md_5.bungee.api.ChatColor;
+-import net.md_5.bungee.api.CommandSender;
+-import net.md_5.bungee.api.ProxyServer;
+-import net.md_5.bungee.api.plugin.Command;
+-
+-public class CommandBungee extends Command
+-{
+-
+-    public CommandBungee()
+-    {
+-        super( "bungee" );
+-    }
+-
+-    @Override
+-    public void execute(CommandSender sender, String[] args)
+-    {
+-        // FlameCord - Use custom version message
+-        sender.sendMessage( ChatColor.translateAlternateColorCodes( '&', "&eThis server is running &c" + ProxyServer.getInstance().getName() + "&e version &a" + ProxyServer.getInstance().getVersion() + "&e by &bDenaryDev&e." ) );
+-    }
+-}
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandEnd.java b/proxy/src/main/java/net/md_5/bungee/command/CommandEnd.java
+index d87d0b95..e17b68c6 100644
+--- a/proxy/src/main/java/net/md_5/bungee/command/CommandEnd.java
++++ b/proxy/src/main/java/net/md_5/bungee/command/CommandEnd.java
+@@ -5,16 +5,12 @@ import net.md_5.bungee.BungeeCord;
+ import net.md_5.bungee.api.CommandSender;
+ import net.md_5.bungee.api.plugin.Command;
+ 
+-/**
+- * Command to terminate the proxy instance. May only be used by the console by
+- * default.
+- */
+ public class CommandEnd extends Command
+ {
+ 
+     public CommandEnd()
+     {
+-        super( "end", "bungeecord.command.end" );
++        super( "end", "amethyst.command.end" );
+     }
+ 
+     @Override
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandFlame.java b/proxy/src/main/java/net/md_5/bungee/command/CommandFlame.java
+new file mode 100644
+index 00000000..4e6dce0e
+--- /dev/null
++++ b/proxy/src/main/java/net/md_5/bungee/command/CommandFlame.java
+@@ -0,0 +1,39 @@
++package net.md_5.bungee.command;
++
++import net.md_5.bungee.BungeeCord;
++import net.md_5.bungee.api.CommandSender;
++import net.md_5.bungee.api.chat.TextComponent;
++import net.md_5.bungee.api.plugin.Command;
++
++public class CommandFlame extends Command
++{
++
++    public CommandFlame()
++    {
++        super( "amethyst", "amethyst.command.amethyst" );
++    }
++
++    @Override
++    public void execute(final CommandSender sender, final String[] args) {
++
++        if ( args.length > 0 ) {
++            final String arg0 = args[0];
++
++            switch ( arg0 ) {
++                case "firewall" ->
++                        sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_amethyst_firewall",
++                                BungeeCord.getInstance().getFlameCord().getFirewallManager().getFirewalled().size(),
++                                BungeeCord.getInstance().getFlameCord().getFirewallManager().getSeconds() ) );
++                case "about" -> sender.sendMessage(TextComponent.fromLegacyText( String.format( """
++                        §7§m------------§r§7§l(§5Amethyst§7§l)§r§7§m------------
++                        §6Amethyst v%s §eby DenaryDev
++                        §6More commands §7- §e/amethyst
++                        §r""", BungeeCord.getInstance().getVersion() ) ) );
++                case "help" -> sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_amethyst_help" ) );
++                default -> sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_amethyst_usage" ) );
++            }
++        } else {
++            sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_amethyst_usage" ) );
++        }
++    }
++}
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandIP.java b/proxy/src/main/java/net/md_5/bungee/command/CommandIP.java
+index 97c70f5c..f1d30529 100644
+--- a/proxy/src/main/java/net/md_5/bungee/command/CommandIP.java
++++ b/proxy/src/main/java/net/md_5/bungee/command/CommandIP.java
+@@ -1,7 +1,7 @@
+ package net.md_5.bungee.command;
+ 
++import net.md_5.bungee.BungeeCord;
+ import net.md_5.bungee.api.CommandSender;
+-import net.md_5.bungee.api.ProxyServer;
+ import net.md_5.bungee.api.connection.ProxiedPlayer;
+ 
+ public class CommandIP extends PlayerCommand
+@@ -9,7 +9,7 @@ public class CommandIP extends PlayerCommand
+ 
+     public CommandIP()
+     {
+-        super( "ip", "bungeecord.command.ip" );
++        super( "ip", "amethyst.command.ip" );
+     }
+ 
+     @Override
+@@ -17,16 +17,16 @@ public class CommandIP extends PlayerCommand
+     {
+         if ( args.length < 1 )
+         {
+-            sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "error_username_needed" ) );
++            sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "error_username_needed" ) );
+             return;
+         }
+-        ProxiedPlayer user = ProxyServer.getInstance().getPlayer( args[0] );
++        ProxiedPlayer user = BungeeCord.getInstance().getPlayer( args[0] );
+         if ( user == null )
+         {
+-            sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "error_user_not_online" ) );
++            sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "error_user_not_online" ) );
+         } else
+         {
+-            sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "command_ip", args[0], user.getSocketAddress() ) );
++            sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_ip", args[0], user.getSocketAddress() ) );
+         }
+     }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandPerms.java b/proxy/src/main/java/net/md_5/bungee/command/CommandPerms.java
+index 06147382..e2cd55a7 100644
+--- a/proxy/src/main/java/net/md_5/bungee/command/CommandPerms.java
++++ b/proxy/src/main/java/net/md_5/bungee/command/CommandPerms.java
+@@ -2,9 +2,10 @@ package net.md_5.bungee.command;
+ 
+ import java.util.HashSet;
+ import java.util.Set;
++
++import net.md_5.bungee.BungeeCord;
+ import net.md_5.bungee.Util;
+ import net.md_5.bungee.api.CommandSender;
+-import net.md_5.bungee.api.ProxyServer;
+ import net.md_5.bungee.api.plugin.Command;
+ 
+ public class CommandPerms extends Command
+@@ -12,7 +13,7 @@ public class CommandPerms extends Command
+ 
+     public CommandPerms()
+     {
+-        super( "perms" );
++        super( "perms", "amethyst.command.perms" );
+     }
+ 
+     @Override
+@@ -21,13 +22,13 @@ public class CommandPerms extends Command
+         Set<String> permissions = new HashSet<>();
+         for ( String group : sender.getGroups() )
+         {
+-            permissions.addAll( ProxyServer.getInstance().getConfigurationAdapter().getPermissions( group ) );
++            permissions.addAll( BungeeCord.getInstance().getConfigurationAdapter().getPermissions( group ) );
+         }
+-        sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "command_perms_groups", Util.csv( sender.getGroups() ) ) );
++        sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_perms_groups", Util.csv( sender.getGroups() ) ) );
+ 
+         for ( String permission : permissions )
+         {
+-            sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "command_perms_permission", permission ) );
++            sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_perms_permission", permission ) );
+         }
+     }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
+index 065bb51a..75e9cfba 100644
+--- a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
++++ b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
+@@ -1,17 +1,21 @@
+ package net.md_5.bungee.command;
+ 
++import dev._2lstudios.flamecord.FlameCord;
+ import net.md_5.bungee.BungeeCord;
+-import net.md_5.bungee.api.ChatColor;
+ import net.md_5.bungee.api.CommandSender;
++import net.md_5.bungee.api.config.ServerInfo;
+ import net.md_5.bungee.api.event.ProxyReloadEvent;
+ import net.md_5.bungee.api.plugin.Command;
+ 
++import java.util.Collection;
++import java.util.HashSet;
++
+ public class CommandReload extends Command
+ {
+ 
+     public CommandReload()
+     {
+-        super( "greload", "bungeecord.command.reload" );
++        super( "greload", "amethyst.command.reload" );
+     }
+ 
+     @Override
+@@ -22,8 +26,14 @@ public class CommandReload extends Command
+         BungeeCord.getInstance().stopListeners();
+         BungeeCord.getInstance().startListeners();
+         BungeeCord.getInstance().getPluginManager().callEvent( new ProxyReloadEvent( sender ) );
++        final Collection<String> whitelistedAddresses = new HashSet<>();
++
++        for ( final ServerInfo serverInfo : BungeeCord.getInstance().getServers().values() ) {
++            whitelistedAddresses.add( serverInfo.getSocketAddress().toString() );
++        }
++
++        FlameCord.renew( BungeeCord.getInstance().getLogger(), whitelistedAddresses );
+ 
+-        sender.sendMessage( ChatColor.BOLD.toString() + ChatColor.RED + "Amethyst has been reloaded."
+-                + " This is NOT advisable and you will not be supported with any issues that arise! Please restart Amethyst ASAP." );
++        sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_reload" ) );
+     }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
+index dd69c6a5..51877266 100644
+--- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
++++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
+@@ -78,7 +78,7 @@ public class YamlConfig implements ConfigurationAdapter
+             {
+                 try
+                 {
+-                    config = (Map) yaml.load( is );
++                    config = yaml.load( is );
+                 } catch ( YAMLException ex )
+                 {
+                     throw new RuntimeException( "Invalid configuration encountered - this is a configuration error and NOT a bug! Please attempt to fix the error or see https://www.spigotmc.org/ for help.", ex );
+@@ -101,20 +101,15 @@ public class YamlConfig implements ConfigurationAdapter
+         Map<String, Object> permissions = get( "permissions", null );
+         if ( permissions == null )
+         {
+-            set( "permissions.default", Arrays.asList( new String[]
+-            {
+-                "bungeecord.command.server", "bungeecord.command.list"
+-            } ) );
+-            set( "permissions.admin", Arrays.asList( new String[]
+-            {
+-                "bungeecord.command.alert", "bungeecord.command.end", "bungeecord.command.ip", "bungeecord.command.reload"
+-            } ) );
++            set( "permissions.default", Arrays.asList( "amethyst.command.lobby", "amethyst.command.flame" ) );
++            set( "permissions.admin", Arrays.asList( "amethyst.command.alert", "amethyst.command.alertraw", "amethyst.command.end", "amethyst.command.find",
++                    "amethyst.command.ip", "amethyst.command.list", "amethyst.command.perms", "amethyst.command.reload", "amethyst.command.send", "amethyst.command.server" ) );
+         }
+ 
+         Map<String, Object> groups = get( "groups", null );
+         if ( groups == null )
+         {
+-            set( "groups.md_5", Collections.singletonList( "admin" ) );
++            set( "groups.md_5", Collections.singletonList( "default" ) );
+         }
+     }
+ 
+@@ -140,7 +135,7 @@ public class YamlConfig implements ConfigurationAdapter
+         } else
+         {
+             String first = path.substring( 0, index );
+-            String second = path.substring( index + 1, path.length() );
++            String second = path.substring( index + 1 );
+             Map sub = (Map) submap.get( first );
+             if ( sub == null )
+             {
+@@ -173,7 +168,7 @@ public class YamlConfig implements ConfigurationAdapter
+         } else
+         {
+             String first = path.substring( 0, index );
+-            String second = path.substring( index + 1, path.length() );
++            String second = path.substring( index + 1 );
+             Map sub = (Map) submap.get( first );
+             if ( sub == null )
+             {
+@@ -310,14 +305,13 @@ public class YamlConfig implements ConfigurationAdapter
+     }
+ 
+     @Override
+-    @SuppressWarnings("unchecked")
+     public Collection<String> getGroups(String player)
+     {
+         // #1270: Do this to support player names with .
+         Map<String, Collection<String>> raw = get( "groups", Collections.emptyMap() );
+         Collection<String> groups = raw.get( player );
+ 
+-        Collection<String> ret = ( groups == null ) ? new HashSet<String>() : new HashSet<>( groups );
++        Collection<String> ret = ( groups == null ) ? new HashSet<>() : new HashSet<>( groups );
+         ret.add( "default" );
+         return ret;
+     }
+diff --git a/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java b/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java
+deleted file mode 100644
+index d562af47..00000000
+--- a/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java
++++ /dev/null
+@@ -1,42 +0,0 @@
+-package net.md_5.bungee.module;
+-
+-import java.io.IOException;
+-import java.net.URL;
+-import java.net.URLConnection;
+-import java.nio.file.Files;
+-import java.nio.file.StandardCopyOption;
+-import lombok.Data;
+-import net.md_5.bungee.Util;
+-
+-@Data
+-public class JenkinsModuleSource implements ModuleSource
+-{
+-
+-    @Override
+-    public void retrieve(ModuleSpec module, ModuleVersion version)
+-    {
+-        System.out.println( "Attempting to Jenkins download module " + module.getName() + " v" + version.getBuild() );
+-        try
+-        {
+-            final String url = String.format(
+-                "https://papermc.io/api/v2/projects/%1$s/versions/%2$s/builds/%3$s/downloads/%4$s-%2$s-%3$s.jar",
+-                "amethyst", // Amethyst
+-                net.md_5.bungee.api.ProxyServer.getInstance().getVersion().split(":")[2].split("-")[0],
+-                version.getBuild(),
+-                module.getName()
+-            );
+-            URL website = new URL( url );
+-            URLConnection con = website.openConnection();
+-            // 15 second timeout at various stages
+-            con.setConnectTimeout( 15000 );
+-            con.setReadTimeout( 15000 );
+-            con.setRequestProperty( "User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36" );
+-
+-            Files.copy( con.getInputStream(), module.getFile().toPath(), StandardCopyOption.REPLACE_EXISTING );
+-            System.out.println( "Download complete" );
+-        } catch ( IOException ex )
+-        {
+-            System.out.println( "Failed to download: " + Util.exception( ex ) );
+-        }
+-    }
+-}
+diff --git a/proxy/src/main/java/net/md_5/bungee/module/ModuleManager.java b/proxy/src/main/java/net/md_5/bungee/module/ModuleManager.java
+deleted file mode 100644
+index d3abee44..00000000
+--- a/proxy/src/main/java/net/md_5/bungee/module/ModuleManager.java
++++ /dev/null
+@@ -1,155 +0,0 @@
+-package net.md_5.bungee.module;
+-
+-import com.google.common.base.Preconditions;
+-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+-import java.io.File;
+-import java.io.FileInputStream;
+-import java.io.FileWriter;
+-import java.io.InputStream;
+-import java.net.URI;
+-import java.util.ArrayList;
+-import java.util.Collection;
+-import java.util.HashMap;
+-import java.util.List;
+-import java.util.Map;
+-import java.util.jar.JarEntry;
+-import java.util.jar.JarFile;
+-import java.util.logging.Level;
+-import net.md_5.bungee.api.ProxyServer;
+-import net.md_5.bungee.api.plugin.PluginDescription;
+-import net.md_5.bungee.util.CaseInsensitiveMap;
+-import org.yaml.snakeyaml.DumperOptions;
+-import org.yaml.snakeyaml.Yaml;
+-
+-public class ModuleManager
+-{
+-
+-    private final Map<String, ModuleSource> knownSources = new HashMap<>();
+-
+-    public ModuleManager()
+-    {
+-        knownSources.put( "jenkins", new JenkinsModuleSource() );
+-    }
+-
+-    // CHECKSTYLE:OFF
+-    @SuppressFBWarnings(
+-            {
+-                "SF_SWITCH_FALLTHROUGH", "SF_SWITCH_NO_DEFAULT"
+-            })
+-    // CHECKSTYLE:ON
+-    public void load(ProxyServer proxy, File moduleDirectory) throws Exception
+-    {
+-        moduleDirectory.mkdir();
+-
+-        ModuleVersion bungeeVersion = ModuleVersion.parse( proxy.getVersion() );
+-        if ( bungeeVersion == null )
+-        {
+-            proxy.getLogger().warning( "Couldn't detect bungee version. Custom build?" ); // Waterfall - Use logger
+-            return;
+-        }
+-
+-        List<ModuleSpec> modules = new ArrayList<>();
+-        File configFile = new File( "modules.yml" );
+-        // Start Yaml
+-        DumperOptions options = new DumperOptions();
+-        options.setDefaultFlowStyle( DumperOptions.FlowStyle.BLOCK );
+-        Yaml yaml = new Yaml( options );
+-
+-        Map<String, Object> config;
+-
+-        configFile.createNewFile();
+-        try ( InputStream is = new FileInputStream( configFile ) )
+-        {
+-            config = (Map) yaml.load( is );
+-        }
+-
+-        if ( config == null )
+-        {
+-            config = new CaseInsensitiveMap<>();
+-        } else
+-        {
+-            config = new CaseInsensitiveMap<>( config );
+-        }
+-        // End yaml
+-
+-        List<String> defaults = new ArrayList<>();
+-        Object readModules = config.get( "modules" );
+-        if ( readModules != null )
+-        {
+-            defaults.addAll( (Collection) readModules );
+-        }
+-        int version = ( config.containsKey( "version" ) ) ? (int) config.get( "version" ) : 0;
+-        switch ( version )
+-        {
+-            case 0:
+-                defaults.add( "jenkins://cmd_alert" );
+-                defaults.add( "jenkins://cmd_find" );
+-                defaults.add( "jenkins://cmd_list" );
+-                defaults.add( "jenkins://cmd_send" );
+-                defaults.add( "jenkins://cmd_server" );
+-            case 1:
+-                defaults.add( "jenkins://reconnect_yaml" );
+-        }
+-        config.put( "modules", defaults );
+-        config.put( "version", 2 );
+-
+-        try ( FileWriter wr = new FileWriter( configFile ) )
+-        {
+-            yaml.dump( config, wr );
+-        }
+-
+-        for ( String s : (List<String>) config.get( "modules" ) )
+-        {
+-            URI uri = new URI( s );
+-
+-            ModuleSource source = knownSources.get( uri.getScheme() );
+-            if ( source == null )
+-            {
+-                System.out.println( "Unknown module source: " + s );
+-                continue;
+-            }
+-            String name = uri.getAuthority();
+-            if ( name == null )
+-            {
+-                System.out.println( "Unknown module host: " + s );
+-                continue;
+-            }
+-
+-            ModuleSpec spec = new ModuleSpec( name, new File( moduleDirectory, name + ".jar" ), source );
+-            modules.add( spec );
+-            System.out.println( "Discovered module: " + spec );
+-        }
+-
+-        for ( ModuleSpec module : modules )
+-        {
+-            ModuleVersion moduleVersion = ( module.getFile().exists() ) ? getVersion( module.getFile() ) : null;
+-
+-            if ( !bungeeVersion.equals( moduleVersion ) )
+-            {
+-                System.out.println( "Attempting to update plugin from " + moduleVersion + " to " + bungeeVersion );
+-                module.getProvider().retrieve( module, bungeeVersion );
+-            }
+-        }
+-    }
+-
+-    @SuppressFBWarnings("REC_CATCH_EXCEPTION")
+-    private ModuleVersion getVersion(File file)
+-    {
+-        try ( JarFile jar = new JarFile( file ) )
+-        {
+-            JarEntry pdf = jar.getJarEntry( "plugin.yml" );
+-            Preconditions.checkNotNull( pdf, "Plugin must have a plugin.yml" );
+-
+-            try ( InputStream in = jar.getInputStream( pdf ) )
+-            {
+-                PluginDescription desc = new Yaml().loadAs( in, PluginDescription.class );
+-                return ModuleVersion.parse( desc.getVersion() );
+-            }
+-        } catch ( Exception ex )
+-        {
+-            ProxyServer.getInstance().getLogger().log( Level.WARNING, "Could not check module from file " + file, ex );
+-        }
+-
+-        return null;
+-    }
+-}
+diff --git a/proxy/src/main/java/net/md_5/bungee/module/ModuleSource.java b/proxy/src/main/java/net/md_5/bungee/module/ModuleSource.java
+deleted file mode 100644
+index 09f5624c..00000000
+--- a/proxy/src/main/java/net/md_5/bungee/module/ModuleSource.java
++++ /dev/null
+@@ -1,7 +0,0 @@
+-package net.md_5.bungee.module;
+-
+-interface ModuleSource
+-{
+-
+-    void retrieve(ModuleSpec module, ModuleVersion version);
+-}
+diff --git a/proxy/src/main/java/net/md_5/bungee/module/ModuleSpec.java b/proxy/src/main/java/net/md_5/bungee/module/ModuleSpec.java
+deleted file mode 100644
+index ebf6cf67..00000000
+--- a/proxy/src/main/java/net/md_5/bungee/module/ModuleSpec.java
++++ /dev/null
+@@ -1,13 +0,0 @@
+-package net.md_5.bungee.module;
+-
+-import java.io.File;
+-import lombok.Data;
+-
+-@Data
+-public class ModuleSpec
+-{
+-
+-    private final String name;
+-    private final File file;
+-    private final ModuleSource provider;
+-}
+diff --git a/proxy/src/main/java/net/md_5/bungee/module/ModuleVersion.java b/proxy/src/main/java/net/md_5/bungee/module/ModuleVersion.java
+deleted file mode 100644
+index d52b8106..00000000
+--- a/proxy/src/main/java/net/md_5/bungee/module/ModuleVersion.java
++++ /dev/null
+@@ -1,35 +0,0 @@
+-package net.md_5.bungee.module;
+-
+-import lombok.AccessLevel;
+-import lombok.Data;
+-import lombok.RequiredArgsConstructor;
+-
+-@Data
+-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+-public class ModuleVersion
+-{
+-
+-    private final String build;
+-    private final String git;
+-
+-    public static ModuleVersion parse(String version)
+-    {
+-        int lastColon = version.lastIndexOf( ':' );
+-        int secondLastColon = version.lastIndexOf( ':', lastColon - 1 );
+-
+-        if ( lastColon == -1 || secondLastColon == -1 )
+-        {
+-            return null;
+-        }
+-
+-        String buildNumber = version.substring( lastColon + 1, version.length() );
+-        String gitCommit = version.substring( secondLastColon + 1, lastColon ).replaceAll( "\"", "" );
+-
+-        if ( "unknown".equals( buildNumber ) || "unknown".equals( gitCommit ) )
+-        {
+-            return null;
+-        }
+-
+-        return new ModuleVersion( buildNumber, gitCommit );
+-    }
+-}
+diff --git a/proxy/src/main/resources/messages.properties b/proxy/src/main/resources/messages.properties
+deleted file mode 100644
+index 0b7e74c9..00000000
+--- a/proxy/src/main/resources/messages.properties
++++ /dev/null
+@@ -1,41 +0,0 @@
+-alert=\u00a78[\u00a74Alert\u00a78]\u00a7r 
+-already_connected=\u00a7cYou are already connected to this server!
+-already_connected_proxy=\u00a7cYou are already connected to this proxy!
+-already_connecting=\u00a7cAlready connecting to this server!
+-command_list=\u00a7a[{0}] \u00a7e({1}): \u00a7r{2}
+-connect_kick=\u00a7cKicked whilst connecting to {0}: {1}
+-current_server=\u00a76You are currently connected to {0}.
+-fallback_kick=\u00a7cCould not connect to a default or fallback server, please try again later: {0}
+-fallback_lobby=\u00a7cCould not connect to target server, you have been moved to a fallback server.
+-timeout=Server not reachable (timeout). Offline? Incorrectly configured address/port/firewall?
+-lost_connection=[Proxy] Lost connection to server.
+-mojang_fail=Error occurred while contacting login servers, are they down?
+-no_permission=\u00a7cYou do not have permission to execute this command!
+-no_server=\u00a7cThe specified server does not exist.
+-no_server_permission=\u00a7cYou don''t have permission to access this server.
+-outdated_client=Outdated client! Please use {0}
+-outdated_server=Outdated server! I''m still on {0}
+-proxy_full=Server is full!
+-restart=[Proxy] Proxy restarting.
+-server_kick=[Kicked] 
+-server_list=\u00a76You may connect to the following servers at this time: 
+-server_went_down=\u00a7cThe server you were previously on went down, you have been connected to a fallback server
+-total_players=Total players online: {0}
+-name_invalid=Username contains invalid characters.
+-ping_cannot_connect=\u00a7c[Bungee] Can''t connect to server.
+-offline_mode_player=Not authenticated with Minecraft.net
+-message_needed=\u00a7cYou must supply a message.
+-error_occurred_player=\u00a7cAn error occurred while parsing your message. (Hover for details)
+-error_occurred_console=\u00a7cAn error occurred while parsing your message: {0}
+-click_to_connect=Click to connect to the server
+-username_needed=\u00a7cPlease follow this command by a user name.
+-user_not_online=\u00a7cThat user is not online.
+-user_online_at=\u00a7a{0} \u00a7ris online at {1}
+-send_cmd_usage=\u00a7cNot enough arguments, usage: /send <server|player|all|current> <target>
+-player_only=\u00a7cOnly in game players can use this command
+-successfully_summoned=\u00a7aSuccessfully summoned player(s)
+-you_got_summoned=\u00a76Summoned to {0} by {1}
+-command_perms_groups=\u00a76You have the following groups: {0}
+-command_perms_permission=\u00a79- {0}
+-command_ip=\u00a79IP of {0} is {1}
+-illegal_chat_characters=\u00a7cillegal characters in chat ({0})
+-- 
+2.29.2.windows.3
+

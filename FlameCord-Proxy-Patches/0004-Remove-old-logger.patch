@@ -1,0 +1,393 @@
+From 1d3860a7db8e87d6271e0c4fa53a32d23e34cf2d Mon Sep 17 00:00:00 2001
+From: Denary Planet <denaryplanet@gmail.com>
+Date: Fri, 9 Jul 2021 22:51:06 +0500
+Subject: [PATCH] Remove old logger
+
+
+diff --git a/log/pom.xml b/log/pom.xml
+deleted file mode 100644
+index f254e775..00000000
+--- a/log/pom.xml
++++ /dev/null
+@@ -1,34 +0,0 @@
+-
+-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+-    <modelVersion>4.0.0</modelVersion>
+-
+-    <parent>
+-        <groupId>io.amethystmc</groupId>
+-        <artifactId>amethyst-parent</artifactId>
+-        <version>1.17.1-R0.1-SNAPSHOT</version>
+-        <relativePath>../pom.xml</relativePath>
+-    </parent>
+-
+-    <artifactId>amethyst-log</artifactId>
+-    <version>1.17.1-R0.1-SNAPSHOT</version>
+-    <packaging>jar</packaging>
+-
+-    <name>Amethyst-Log</name>
+-    <description>Simplistic and performant java.util.Logger based logger and console API designed for use with Amethyst and Minecraft related applications.</description>
+-
+-    <dependencies>
+-        <dependency>
+-            <groupId>jline</groupId>
+-            <artifactId>jline</artifactId>
+-            <version>2.12.1</version>
+-            <scope>compile</scope>
+-        </dependency>
+-        <dependency>
+-            <groupId>io.amethystmc</groupId>
+-            <artifactId>amethyst-chat</artifactId>
+-            <version>${project.version}</version>
+-            <scope>compile</scope>
+-        </dependency>
+-    </dependencies>
+-</project>
+diff --git a/log/src/main/java/net/md_5/bungee/log/BungeeLogger.java b/log/src/main/java/net/md_5/bungee/log/BungeeLogger.java
+deleted file mode 100644
+index 8e2f1bf3..00000000
+--- a/log/src/main/java/net/md_5/bungee/log/BungeeLogger.java
++++ /dev/null
+@@ -1,58 +0,0 @@
+-package net.md_5.bungee.log;
+-
+-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+-import java.io.IOException;
+-import java.util.logging.FileHandler;
+-import java.util.logging.Level;
+-import java.util.logging.LogRecord;
+-import java.util.logging.Logger;
+-import jline.console.ConsoleReader;
+-
+-public class BungeeLogger extends Logger
+-{
+-
+-    private final LogDispatcher dispatcher = new LogDispatcher( this );
+-
+-    // CHECKSTYLE:OFF
+-    @SuppressWarnings(
+-            {
+-                "CallToPrintStackTrace", "CallToThreadStartDuringObjectConstruction"
+-            })
+-    // CHECKSTYLE:ON
+-    @SuppressFBWarnings("SC_START_IN_CTOR")
+-    public BungeeLogger(String loggerName, String filePattern, ConsoleReader reader)
+-    {
+-        super( loggerName, null );
+-        setLevel( Level.ALL );
+-
+-        try
+-        {
+-            FileHandler fileHandler = new FileHandler( filePattern, 1 << 24, 8, true );
+-            fileHandler.setLevel( Level.parse( System.getProperty( "net.md_5.bungee.file-log-level", "INFO" ) ) );
+-            fileHandler.setFormatter( new ConciseFormatter( false ) );
+-            addHandler( fileHandler );
+-
+-            ColouredWriter consoleHandler = new ColouredWriter( reader );
+-            consoleHandler.setLevel( Level.parse( System.getProperty( "net.md_5.bungee.console-log-level", "INFO" ) ) );
+-            consoleHandler.setFormatter( new ConciseFormatter( true ) );
+-            addHandler( consoleHandler );
+-        } catch ( IOException ex )
+-        {
+-            System.err.println( "Could not register logger!" );
+-            ex.printStackTrace();
+-        }
+-
+-        dispatcher.start();
+-    }
+-
+-    @Override
+-    public void log(LogRecord record)
+-    {
+-        dispatcher.queue( record );
+-    }
+-
+-    void doLog(LogRecord record)
+-    {
+-        super.log( record );
+-    }
+-}
+diff --git a/log/src/main/java/net/md_5/bungee/log/ColouredWriter.java b/log/src/main/java/net/md_5/bungee/log/ColouredWriter.java
+deleted file mode 100644
+index 5b4f245d..00000000
+--- a/log/src/main/java/net/md_5/bungee/log/ColouredWriter.java
++++ /dev/null
+@@ -1,96 +0,0 @@
+-package net.md_5.bungee.log;
+-
+-import java.io.IOException;
+-import java.util.logging.Handler;
+-import java.util.logging.LogRecord;
+-import java.util.regex.Pattern;
+-import jline.console.ConsoleReader;
+-import lombok.Data;
+-import net.md_5.bungee.api.ChatColor;
+-import org.fusesource.jansi.Ansi;
+-import org.fusesource.jansi.Ansi.Erase;
+-
+-public class ColouredWriter extends Handler
+-{
+-
+-    @Data
+-    private static class ReplacementSpecification
+-    {
+-
+-        private final Pattern pattern;
+-        private final String replacement;
+-    }
+-
+-    private static ReplacementSpecification compile(ChatColor color, String ansi)
+-    {
+-        return new ReplacementSpecification( Pattern.compile( "(?i)" + color.toString() ), ansi );
+-    }
+-
+-    private static final ReplacementSpecification[] REPLACEMENTS = new ReplacementSpecification[]
+-    {
+-        compile( ChatColor.BLACK, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.BLACK ).boldOff().toString() ),
+-        compile( ChatColor.DARK_BLUE, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.BLUE ).boldOff().toString() ),
+-        compile( ChatColor.DARK_GREEN, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.GREEN ).boldOff().toString() ),
+-        compile( ChatColor.DARK_AQUA, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.CYAN ).boldOff().toString() ),
+-        compile( ChatColor.DARK_RED, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.RED ).boldOff().toString() ),
+-        compile( ChatColor.DARK_PURPLE, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.MAGENTA ).boldOff().toString() ),
+-        compile( ChatColor.GOLD, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.YELLOW ).boldOff().toString() ),
+-        compile( ChatColor.GRAY, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.WHITE ).boldOff().toString() ),
+-        compile( ChatColor.DARK_GRAY, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.BLACK ).bold().toString() ),
+-        compile( ChatColor.BLUE, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.BLUE ).bold().toString() ),
+-        compile( ChatColor.GREEN, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.GREEN ).bold().toString() ),
+-        compile( ChatColor.AQUA, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.CYAN ).bold().toString() ),
+-        compile( ChatColor.RED, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.RED ).bold().toString() ),
+-        compile( ChatColor.LIGHT_PURPLE, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.MAGENTA ).bold().toString() ),
+-        compile( ChatColor.YELLOW, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.YELLOW ).bold().toString() ),
+-        compile( ChatColor.WHITE, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.WHITE ).bold().toString() ),
+-        compile( ChatColor.MAGIC, Ansi.ansi().a( Ansi.Attribute.BLINK_SLOW ).toString() ),
+-        compile( ChatColor.BOLD, Ansi.ansi().a( Ansi.Attribute.UNDERLINE_DOUBLE ).toString() ),
+-        compile( ChatColor.STRIKETHROUGH, Ansi.ansi().a( Ansi.Attribute.STRIKETHROUGH_ON ).toString() ),
+-        compile( ChatColor.UNDERLINE, Ansi.ansi().a( Ansi.Attribute.UNDERLINE ).toString() ),
+-        compile( ChatColor.ITALIC, Ansi.ansi().a( Ansi.Attribute.ITALIC ).toString() ),
+-        compile( ChatColor.RESET, Ansi.ansi().a( Ansi.Attribute.RESET ).toString() ),
+-    };
+-    //
+-    private final ConsoleReader console;
+-
+-    public ColouredWriter(ConsoleReader console)
+-    {
+-        this.console = console;
+-    }
+-
+-    public void print(String s)
+-    {
+-        for ( ReplacementSpecification replacement : REPLACEMENTS )
+-        {
+-            s = replacement.pattern.matcher( s ).replaceAll( replacement.replacement );
+-        }
+-        try
+-        {
+-            console.print( Ansi.ansi().eraseLine( Erase.ALL ).toString() + ConsoleReader.RESET_LINE + s + Ansi.ansi().reset().toString() );
+-            console.drawLine();
+-            console.flush();
+-        } catch ( IOException ex )
+-        {
+-        }
+-    }
+-
+-    @Override
+-    public void publish(LogRecord record)
+-    {
+-        if ( isLoggable( record ) )
+-        {
+-            print( getFormatter().format( record ) );
+-        }
+-    }
+-
+-    @Override
+-    public void flush()
+-    {
+-    }
+-
+-    @Override
+-    public void close() throws SecurityException
+-    {
+-    }
+-}
+diff --git a/log/src/main/java/net/md_5/bungee/log/ConciseFormatter.java b/log/src/main/java/net/md_5/bungee/log/ConciseFormatter.java
+deleted file mode 100644
+index 6f3f1585..00000000
+--- a/log/src/main/java/net/md_5/bungee/log/ConciseFormatter.java
++++ /dev/null
+@@ -1,69 +0,0 @@
+-package net.md_5.bungee.log;
+-
+-import java.io.PrintWriter;
+-import java.io.StringWriter;
+-import java.text.DateFormat;
+-import java.text.SimpleDateFormat;
+-import java.util.logging.Formatter;
+-import java.util.logging.Level;
+-import java.util.logging.LogRecord;
+-import lombok.RequiredArgsConstructor;
+-import net.md_5.bungee.api.ChatColor;
+-
+-@RequiredArgsConstructor
+-public class ConciseFormatter extends Formatter
+-{
+-
+-    private final DateFormat date = new SimpleDateFormat( System.getProperty( "net.md_5.bungee.log-date-format", "HH:mm:ss" ) );
+-    private final boolean coloured;
+-
+-    @Override
+-    @SuppressWarnings("ThrowableResultIgnored")
+-    public String format(LogRecord record)
+-    {
+-        StringBuilder formatted = new StringBuilder();
+-
+-        formatted.append( date.format( record.getMillis() ) );
+-        formatted.append( " [" );
+-        appendLevel( formatted, record.getLevel() );
+-        formatted.append( "] " );
+-        formatted.append( formatMessage( record ) );
+-        formatted.append( '\n' );
+-
+-        if ( record.getThrown() != null )
+-        {
+-            StringWriter writer = new StringWriter();
+-            record.getThrown().printStackTrace( new PrintWriter( writer ) );
+-            formatted.append( writer );
+-        }
+-
+-        return formatted.toString();
+-    }
+-
+-    private void appendLevel(StringBuilder builder, Level level)
+-    {
+-        if ( !coloured )
+-        {
+-            builder.append( level.getLocalizedName() );
+-            return;
+-        }
+-
+-        ChatColor color;
+-
+-        if ( level == Level.INFO )
+-        {
+-            color = ChatColor.BLUE;
+-        } else if ( level == Level.WARNING )
+-        {
+-            color = ChatColor.YELLOW;
+-        } else if ( level == Level.SEVERE )
+-        {
+-            color = ChatColor.RED;
+-        } else
+-        {
+-            color = ChatColor.AQUA;
+-        }
+-
+-        builder.append( color ).append( level.getLocalizedName() ).append( ChatColor.RESET );
+-    }
+-}
+diff --git a/log/src/main/java/net/md_5/bungee/log/LogDispatcher.java b/log/src/main/java/net/md_5/bungee/log/LogDispatcher.java
+deleted file mode 100644
+index 3ca6ef74..00000000
+--- a/log/src/main/java/net/md_5/bungee/log/LogDispatcher.java
++++ /dev/null
+@@ -1,48 +0,0 @@
+-package net.md_5.bungee.log;
+-
+-import java.util.concurrent.BlockingQueue;
+-import java.util.concurrent.LinkedBlockingQueue;
+-import java.util.logging.LogRecord;
+-
+-public class LogDispatcher extends Thread
+-{
+-
+-    private final BungeeLogger logger;
+-    private final BlockingQueue<LogRecord> queue = new LinkedBlockingQueue<>();
+-
+-    public LogDispatcher(BungeeLogger logger)
+-    {
+-        super( "Amethyst Logger Thread" );
+-        this.logger = logger;
+-    }
+-
+-    @Override
+-    public void run()
+-    {
+-        while ( !isInterrupted() )
+-        {
+-            LogRecord record;
+-            try
+-            {
+-                record = queue.take();
+-            } catch ( InterruptedException ex )
+-            {
+-                continue;
+-            }
+-
+-            logger.doLog( record );
+-        }
+-        for ( LogRecord record : queue )
+-        {
+-            logger.doLog( record );
+-        }
+-    }
+-
+-    public void queue(LogRecord record)
+-    {
+-        if ( !isInterrupted() )
+-        {
+-            queue.add( record );
+-        }
+-    }
+-}
+diff --git a/log/src/main/java/net/md_5/bungee/log/LoggingOutputStream.java b/log/src/main/java/net/md_5/bungee/log/LoggingOutputStream.java
+deleted file mode 100644
+index 2b1ab9c0..00000000
+--- a/log/src/main/java/net/md_5/bungee/log/LoggingOutputStream.java
++++ /dev/null
+@@ -1,29 +0,0 @@
+-package net.md_5.bungee.log;
+-
+-import com.google.common.base.Charsets;
+-import java.io.ByteArrayOutputStream;
+-import java.io.IOException;
+-import java.util.logging.Level;
+-import java.util.logging.Logger;
+-import lombok.RequiredArgsConstructor;
+-
+-@RequiredArgsConstructor
+-public class LoggingOutputStream extends ByteArrayOutputStream
+-{
+-
+-    private static final String separator = System.getProperty( "line.separator" );
+-    /*========================================================================*/
+-    private final Logger logger;
+-    private final Level level;
+-
+-    @Override
+-    public void flush() throws IOException
+-    {
+-        String contents = toString( Charsets.UTF_8.name() );
+-        super.reset();
+-        if ( !contents.isEmpty() && !contents.equals( separator ) )
+-        {
+-            logger.logp( level, "", "", contents );
+-        }
+-    }
+-}
+diff --git a/pom.xml b/pom.xml
+index 3c2afac6..606dcf06 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -38,7 +38,9 @@
+         <module>chat</module>
+         <module>config</module>
+         <module>event</module>
++        <!-- Amethyst - remove old log module
+         <module>log</module>
++        -->
+         <module>log4j</module>
+         <module>module</module>
+         <module>protocol</module>
+-- 
+2.29.2.windows.3
+
