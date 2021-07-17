@@ -16,8 +16,8 @@ case "$1" in
     "e" | "edit")
         scripts/edit.sh
     ;;
-    "w" | "wiggle")
-        scripts/wigglePatch.py
+    "upc" | "upstreamcommit")
+        scripts/upstreamCommit.sh
     ;;
     *)
         echo "Amethyst build tool command. This provides a variety of commands to control the Amethyst"
@@ -30,6 +30,5 @@ case "$1" in
         echo "  * b, build         | Builds the project"
         echo "                     | The bootstrap artifact can be found in Amethyst-Proxy/bootstrap/target/"
         echo "  * e, edit          | Runs git rebase -i for FlameCord, allowing patches to be easily modified"
-        echo "  * w, wiggle        | Helps to apply patches that fail to using default Git."
     ;;
 esac
