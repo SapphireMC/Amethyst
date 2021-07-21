@@ -1,4 +1,4 @@
-From 62d9b306c6dcc2e40d3b13db130a2d2e673667e8 Mon Sep 17 00:00:00 2001
+From 982c06311cc51b909421d97e93e448d36110d16c Mon Sep 17 00:00:00 2001
 From: Denary Planet <denaryplanet@gmail.com>
 Date: Fri, 9 Jul 2021 20:00:55 +0500
 Subject: [PATCH] Amethyst rebrand
@@ -123,7 +123,7 @@ index a3242d46..fdeb8a37 100644
      @Override
      public String getVersion()
      {
--        return "0.6.0";
+-        return "0.6.1";
 +        return "1.17.1-1";
      }
  
