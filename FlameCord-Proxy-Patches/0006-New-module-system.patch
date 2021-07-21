@@ -1,4 +1,4 @@
-From 350b971959d344415fe647631bcae3b971773714 Mon Sep 17 00:00:00 2001
+From 10071545d25c2804f1bcf93aa9be7fff5d8d0b81 Mon Sep 17 00:00:00 2001
 From: Denary Planet <denaryplanet@gmail.com>
 Date: Sun, 11 Jul 2021 04:13:30 +0500
 Subject: [PATCH] New module system
@@ -1180,7 +1180,7 @@ index a4ef6d3b..d3affbe9 100644
  import net.md_5.bungee.conf.YamlConfig;
  import net.md_5.bungee.protocol.ProtocolConstants;
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index ae1562f4..8c1f8912 100644
+index e20a3785..7196b38e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -10,10 +10,10 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -1265,7 +1265,7 @@ index ae1562f4..8c1f8912 100644
          //getPluginManager().registerCommand( null, new CommandPerms() );
  
          if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
-@@ -798,7 +795,7 @@ public class BungeeCord extends ProxyServer
+@@ -803,7 +800,7 @@ public class BungeeCord extends ProxyServer
  
          // Bungeecord Commands
          pluginManager.registerCommand(null, new CommandEnd());
@@ -1274,7 +1274,7 @@ index ae1562f4..8c1f8912 100644
  
          if (modulesConfiguration.reloadEnabled) {
              pluginManager.registerCommand(null, new CommandReload());
-@@ -814,6 +811,9 @@ public class BungeeCord extends ProxyServer
+@@ -819,6 +816,9 @@ public class BungeeCord extends ProxyServer
          if (modulesConfiguration.alertEnabled) {
              pluginManager.registerCommand(null, new CommandAlert());
          }
@@ -1284,7 +1284,7 @@ index ae1562f4..8c1f8912 100644
          if (modulesConfiguration.findEnabled) {
              pluginManager.registerCommand(null, new CommandFind());
          }
-@@ -844,9 +844,6 @@ public class BungeeCord extends ProxyServer
+@@ -849,9 +849,6 @@ public class BungeeCord extends ProxyServer
          if (getFlameCord().getFlameCordConfiguration().isLobbyEnabled()) {
              pluginManager.registerCommand(null, new CommandLobby());
          }

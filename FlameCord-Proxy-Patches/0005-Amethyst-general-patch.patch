@@ -1,4 +1,4 @@
-From 45fdc71a2ee2859ae4fe8fc61751c51de863d384 Mon Sep 17 00:00:00 2001
+From fd72f4881623686620d729ffc0d82dacab80819b Mon Sep 17 00:00:00 2001
 From: Denary Planet <denaryplanet@gmail.com>
 Date: Sat, 10 Jul 2021 17:22:34 +0500
 Subject: [PATCH] Amethyst general patch
@@ -677,7 +677,7 @@ index 00000000..0178cc92
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 7dcf6669..ae1562f4 100644
+index fdeb8a37..e20a3785 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -9,82 +9,30 @@ import com.google.common.collect.Sets;
@@ -856,7 +856,7 @@ index 7dcf6669..ae1562f4 100644
      @Override
      @SuppressWarnings("unchecked")
      public Collection<ProxiedPlayer> getPlayers()
-@@ -871,7 +840,17 @@ public class BungeeCord extends ProxyServer
+@@ -876,7 +845,17 @@ public class BungeeCord extends ProxyServer
              logger.warning("Reconnect module is not able to work on Amethyst!");
          }
  

@@ -1,4 +1,4 @@
-From 3456928c0bee142f7bb00dfd28e88263264af88a Mon Sep 17 00:00:00 2001
+From 62d9b306c6dcc2e40d3b13db130a2d2e673667e8 Mon Sep 17 00:00:00 2001
 From: Denary Planet <denaryplanet@gmail.com>
 Date: Fri, 9 Jul 2021 20:00:55 +0500
 Subject: [PATCH] Amethyst rebrand
@@ -100,7 +100,7 @@ index 451e3c61..9757ba83 100644
  description: ${project.description}
  author: ${module.author}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 63ae00a8..7dcf6669 100644
+index a3242d46..fdeb8a37 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -198,7 +198,7 @@ public class BungeeCord extends ProxyServer
@@ -128,7 +128,7 @@ index 63ae00a8..7dcf6669 100644
      }
  
      public void reloadMessages()
-@@ -868,7 +868,7 @@ public class BungeeCord extends ProxyServer
+@@ -873,7 +873,7 @@ public class BungeeCord extends ProxyServer
                  }
              }
          } catch (final Exception exception) {
