@@ -1,4 +1,4 @@
-From fd72f4881623686620d729ffc0d82dacab80819b Mon Sep 17 00:00:00 2001
+From 2de63d9c2972a518424cdd69f4024898e997b5d7 Mon Sep 17 00:00:00 2001
 From: Denary Planet <denaryplanet@gmail.com>
 Date: Sat, 10 Jul 2021 17:22:34 +0500
 Subject: [PATCH] Amethyst general patch
@@ -79,7 +79,7 @@ index a190dfae..2ba0f271 100644
              return true;
          }
 diff --git a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flame/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index 056dcb81..70fcae09 100644
+index aafd99d8..1136ddf3 100644
 --- a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flame/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 @@ -2,10 +2,7 @@ package dev._2lstudios.flamecord.configuration;
@@ -94,7 +94,7 @@ index 056dcb81..70fcae09 100644
  
  import lombok.Getter;
  import net.md_5.bungee.config.Configuration;
-@@ -30,9 +27,16 @@ public class FlameCordConfiguration {
+@@ -31,9 +28,16 @@ public class FlameCordConfiguration {
      @Getter
      private Collection<String> firewallNames = new HashSet<>(Arrays.asList(new String[] { "mcspam" }));
  
@@ -112,7 +112,7 @@ index 056dcb81..70fcae09 100644
              final File configurationFile = new File(fileName);
              final Configuration configuration;
              final boolean configurationExists = configurationFile.exists();
-@@ -53,6 +57,10 @@ public class FlameCordConfiguration {
+@@ -54,6 +58,10 @@ public class FlameCordConfiguration {
              this.firewallSeconds = setIfUnexistant("firewall.seconds", this.firewallSeconds, configuration);
              this.firewallNames = setIfUnexistant("firewall.names", this.firewallNames, configuration);
  
@@ -123,7 +123,7 @@ index 056dcb81..70fcae09 100644
              if (!configurationExists) {
                  configurationProvider.save(configuration, configurationFile);
              }
-@@ -89,4 +97,18 @@ public class FlameCordConfiguration {
+@@ -90,4 +98,18 @@ public class FlameCordConfiguration {
              return new HashSet<>(configuration.getStringList(arg1));
          }
      }

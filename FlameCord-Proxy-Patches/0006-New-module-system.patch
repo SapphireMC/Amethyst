@@ -1,4 +1,4 @@
-From 10071545d25c2804f1bcf93aa9be7fff5d8d0b81 Mon Sep 17 00:00:00 2001
+From 70e66ad08c77e99a50e697688be6fb2db984e260 Mon Sep 17 00:00:00 2001
 From: Denary Planet <denaryplanet@gmail.com>
 Date: Sun, 11 Jul 2021 04:13:30 +0500
 Subject: [PATCH] New module system
@@ -1323,10 +1323,10 @@ index dd6d71b7..00000000
 -    }
 -}
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandEnd.java b/proxy/src/main/java/net/md_5/bungee/command/CommandEnd.java
-index d87d0b95..e17b68c6 100644
+index 03feeb39..adc577fe 100644
 --- a/proxy/src/main/java/net/md_5/bungee/command/CommandEnd.java
 +++ b/proxy/src/main/java/net/md_5/bungee/command/CommandEnd.java
-@@ -5,16 +5,12 @@ import net.md_5.bungee.BungeeCord;
+@@ -6,16 +6,12 @@ import net.md_5.bungee.api.ChatColor;
  import net.md_5.bungee.api.CommandSender;
  import net.md_5.bungee.api.plugin.Command;
  

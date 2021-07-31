@@ -1,0 +1,72 @@
+From da3f74cf1aaf2b287dec82bd67ff96affd9f6edd Mon Sep 17 00:00:00 2001
+From: Denary Planet <denaryplanet@gmail.com>
+Date: Sun, 1 Aug 2021 02:33:03 +0500
+Subject: [PATCH] Add support for RGB colors
+
+
+diff --git a/chat/src/main/java/net/md_5/bungee/api/ChatColor.java b/chat/src/main/java/net/md_5/bungee/api/ChatColor.java
+index d7747deb..3ab548e9 100644
+--- a/chat/src/main/java/net/md_5/bungee/api/ChatColor.java
++++ b/chat/src/main/java/net/md_5/bungee/api/ChatColor.java
+@@ -6,6 +6,7 @@ import java.util.HashMap;
+ import java.util.Locale;
+ import java.util.Map;
+ import java.util.Objects;
++import java.util.regex.Matcher;
+ import java.util.regex.Pattern;
+ import lombok.Getter;
+ 
+@@ -21,18 +22,22 @@ public final class ChatColor
+      */
+     public static final char COLOR_CHAR = '\u00A7';
+     public static final String ALL_CODES = "0123456789AaBbCcDdEeFfKkLlMmNnOoRrXx";
++    /**
++     * Pattern to hex colors
++     */
++    public static final Pattern HEX_PATTERN = Pattern.compile( "#[a-fA-F0-9]{6}" );
+     /**
+      * Pattern to remove all colour codes.
+      */
+-    public static final Pattern STRIP_COLOR_PATTERN = Pattern.compile( "(?i)" + String.valueOf( COLOR_CHAR ) + "[0-9A-FK-ORX]" );
++    public static final Pattern STRIP_COLOR_PATTERN = Pattern.compile( "(?i)" + COLOR_CHAR + "[0-9A-FK-ORX]" );
+     /**
+      * Colour instances keyed by their active character.
+      */
+-    private static final Map<Character, ChatColor> BY_CHAR = new HashMap<Character, ChatColor>();
++    private static final Map<Character, ChatColor> BY_CHAR = new HashMap<>();
+     /**
+      * Colour instances keyed by their name.
+      */
+-    private static final Map<String, ChatColor> BY_NAME = new HashMap<String, ChatColor>();
++    private static final Map<String, ChatColor> BY_NAME = new HashMap<>();
+     /**
+      * Represents black.
+      */
+@@ -213,6 +218,7 @@ public final class ChatColor
+ 
+     public static String translateAlternateColorCodes(char altColorChar, String textToTranslate)
+     {
++        textToTranslate = translateHexColors(textToTranslate);
+         char[] b = textToTranslate.toCharArray();
+         for ( int i = 0; i < b.length - 1; i++ )
+         {
+@@ -225,6 +231,16 @@ public final class ChatColor
+         return new String( b );
+     }
+ 
++    public static String translateHexColors(String textToTranslate) {
++        Matcher match = HEX_PATTERN.matcher(textToTranslate);
++        while (match.find()) {
++            String color = textToTranslate.substring(match.start(), match.end());
++            textToTranslate = textToTranslate.replace(color, of(color) + "");
++            match = HEX_PATTERN.matcher(textToTranslate);
++        }
++        return textToTranslate;
++    }
++
+     /**
+      * Get the colour represented by the specified code.
+      *
+-- 
+2.29.2.windows.3
+
