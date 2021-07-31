@@ -41,7 +41,17 @@ jobs:
         git config --global user.email "you@example.com"
         git config --global user.name "Your Name"
         scripts/build.sh --jar
-      
+
+    - name: Publish release
+      uses: marvinpinto/action-automatic-releases@latest
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        automatic_release_tag: 1.17.1-1
+        prerelease: false
+        title: Latest Development Build
+        files: |
+          Amethyst-Proxy/bootstrap/target/Amethyst.jar
+
     # An artifact is generated in a compressed file according to each JDK build version.
     - name: Upload Amethyst
       uses: actions/upload-artifact@v2.2.4
