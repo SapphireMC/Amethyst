@@ -1,4 +1,4 @@
-From b27a1ecfd65e425bd8e23dc3e2fce0f3e12d31fd Mon Sep 17 00:00:00 2001
+From a4d659bec0e786ca0d384fffd0bed92729d81f9b Mon Sep 17 00:00:00 2001
 From: Denary Planet <denaryplanet@gmail.com>
 Date: Fri, 9 Jul 2021 20:00:55 +0500
 Subject: [PATCH] Amethyst rebrand
@@ -100,10 +100,10 @@ index 451e3c61..9757ba83 100644
  description: ${project.description}
  author: ${module.author}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 58ce452f..857b1dfc 100644
+index e3604c0f..cbe7e7a1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -198,7 +198,7 @@ public class BungeeCord extends ProxyServer
+@@ -206,7 +206,7 @@ public class BungeeCord extends ProxyServer
      public BungeeCord() throws IOException
      {
          // Java uses ! to indicate a resource inside of a jar/zip/other container. Running Bungee from within a directory that has a ! will cause this to muck up.
@@ -112,7 +112,7 @@ index 58ce452f..857b1dfc 100644
  
          try
          {
-@@ -561,13 +561,13 @@ public class BungeeCord extends ProxyServer
+@@ -569,13 +569,13 @@ public class BungeeCord extends ProxyServer
      @Override
      public String getName()
      {
@@ -168,5 +168,5 @@ index 2ba0ab64..d562af47 100644
                  version.getBuild(),
                  module.getName()
 -- 
-2.29.2.windows.3
+2.33.0.windows.2
 

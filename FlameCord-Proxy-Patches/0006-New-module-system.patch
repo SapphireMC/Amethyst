@@ -1,4 +1,4 @@
-From befd9473371cce1203554496ee5f0c03e50c71f5 Mon Sep 17 00:00:00 2001
+From 0daa10c66dc71042f2a8cb73aad36c0acc02e265 Mon Sep 17 00:00:00 2001
 From: Denary Planet <denaryplanet@gmail.com>
 Date: Sun, 11 Jul 2021 04:13:30 +0500
 Subject: [PATCH] New module system
@@ -1180,7 +1180,7 @@ index a4ef6d3b..d3affbe9 100644
  import net.md_5.bungee.conf.YamlConfig;
  import net.md_5.bungee.protocol.ProtocolConstants;
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index b754ee41..2c74c2eb 100644
+index 33ad808d..e6303a98 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -10,10 +10,10 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -1225,8 +1225,8 @@ index b754ee41..2c74c2eb 100644
      public EventLoopGroup bossEventLoopGroup, workerEventLoopGroup;
      /**
       * locations.yml save thread.
-@@ -143,7 +136,8 @@ public class BungeeCord extends ProxyServer
-             .registerTypeAdapter( Favicon.class, Favicon.getFaviconTypeAdapter() ).create();
+@@ -151,7 +144,8 @@ public class BungeeCord extends ProxyServer
+     // FlameCord end - 1.7.x support
      @Getter
      private ConnectionThrottle connectionThrottle;
 -    private final ModuleManager moduleManager = new ModuleManager();
@@ -1235,7 +1235,7 @@ index b754ee41..2c74c2eb 100644
  
      {
          // TODO: Proper fallback when we interface the manager
-@@ -160,7 +154,8 @@ public class BungeeCord extends ProxyServer
+@@ -168,7 +162,8 @@ public class BungeeCord extends ProxyServer
      {
          // Java uses ! to indicate a resource inside of a jar/zip/other container. Running Bungee from within a directory that has a ! will cause this to muck up.
          Preconditions.checkState( new File( "." ).getAbsolutePath().indexOf( '!' ) == -1, "Cannot use Amethyst in directory with ! in path." );
@@ -1245,7 +1245,7 @@ index b754ee41..2c74c2eb 100644
          try
          {
              baseBundle = ResourceBundle.getBundle( "messages" );
-@@ -168,7 +163,9 @@ public class BungeeCord extends ProxyServer
+@@ -176,7 +171,9 @@ public class BungeeCord extends ProxyServer
          {
              baseBundle = ResourceBundle.getBundle( "messages", Locale.ENGLISH );
          }
@@ -1256,7 +1256,7 @@ index b754ee41..2c74c2eb 100644
  
          // This is a workaround for quite possibly the weirdest bug I have ever encountered in my life!
          // When jansi attempts to extract its natives, by default it tries to extract a specific version,
-@@ -200,7 +197,7 @@ public class BungeeCord extends ProxyServer
+@@ -208,7 +205,7 @@ public class BungeeCord extends ProxyServer
          //getPluginManager().registerCommand( null, new CommandReload() );
          //getPluginManager().registerCommand( null, new CommandEnd() );
          //getPluginManager().registerCommand( null, new CommandIP() );
@@ -1265,7 +1265,7 @@ index b754ee41..2c74c2eb 100644
          //getPluginManager().registerCommand( null, new CommandPerms() );
  
          if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
-@@ -803,7 +800,7 @@ public class BungeeCord extends ProxyServer
+@@ -811,7 +808,7 @@ public class BungeeCord extends ProxyServer
  
          // Bungeecord Commands
          pluginManager.registerCommand(null, new CommandEnd());
@@ -1274,7 +1274,7 @@ index b754ee41..2c74c2eb 100644
  
          if (modulesConfiguration.reloadEnabled) {
              pluginManager.registerCommand(null, new CommandReload());
-@@ -819,6 +816,9 @@ public class BungeeCord extends ProxyServer
+@@ -827,6 +824,9 @@ public class BungeeCord extends ProxyServer
          if (modulesConfiguration.alertEnabled) {
              pluginManager.registerCommand(null, new CommandAlert());
          }
@@ -1284,7 +1284,7 @@ index b754ee41..2c74c2eb 100644
          if (modulesConfiguration.findEnabled) {
              pluginManager.registerCommand(null, new CommandFind());
          }
-@@ -845,9 +845,6 @@ public class BungeeCord extends ProxyServer
+@@ -853,9 +853,6 @@ public class BungeeCord extends ProxyServer
          if (getFlameCord().getFlameCordConfiguration().isLobbyEnabled()) {
              pluginManager.registerCommand(null, new CommandLobby());
          }
@@ -1873,53 +1873,6 @@ index d52b8106..00000000
 -        return new ModuleVersion( buildNumber, gitCommit );
 -    }
 -}
-diff --git a/proxy/src/main/resources/messages.properties b/proxy/src/main/resources/messages.properties
-deleted file mode 100644
-index 0b7e74c9..00000000
---- a/proxy/src/main/resources/messages.properties
-+++ /dev/null
-@@ -1,41 +0,0 @@
--alert=\u00a78[\u00a74Alert\u00a78]\u00a7r 
--already_connected=\u00a7cYou are already connected to this server!
--already_connected_proxy=\u00a7cYou are already connected to this proxy!
--already_connecting=\u00a7cAlready connecting to this server!
--command_list=\u00a7a[{0}] \u00a7e({1}): \u00a7r{2}
--connect_kick=\u00a7cKicked whilst connecting to {0}: {1}
--current_server=\u00a76You are currently connected to {0}.
--fallback_kick=\u00a7cCould not connect to a default or fallback server, please try again later: {0}
--fallback_lobby=\u00a7cCould not connect to target server, you have been moved to a fallback server.
--timeout=Server not reachable (timeout). Offline? Incorrectly configured address/port/firewall?
--lost_connection=[Proxy] Lost connection to server.
--mojang_fail=Error occurred while contacting login servers, are they down?
--no_permission=\u00a7cYou do not have permission to execute this command!
--no_server=\u00a7cThe specified server does not exist.
--no_server_permission=\u00a7cYou don''t have permission to access this server.
--outdated_client=Outdated client! Please use {0}
--outdated_server=Outdated server! I''m still on {0}
--proxy_full=Server is full!
--restart=[Proxy] Proxy restarting.
--server_kick=[Kicked] 
--server_list=\u00a76You may connect to the following servers at this time: 
--server_went_down=\u00a7cThe server you were previously on went down, you have been connected to a fallback server
--total_players=Total players online: {0}
--name_invalid=Username contains invalid characters.
--ping_cannot_connect=\u00a7c[Bungee] Can''t connect to server.
--offline_mode_player=Not authenticated with Minecraft.net
--message_needed=\u00a7cYou must supply a message.
--error_occurred_player=\u00a7cAn error occurred while parsing your message. (Hover for details)
--error_occurred_console=\u00a7cAn error occurred while parsing your message: {0}
--click_to_connect=Click to connect to the server
--username_needed=\u00a7cPlease follow this command by a user name.
--user_not_online=\u00a7cThat user is not online.
--user_online_at=\u00a7a{0} \u00a7ris online at {1}
--send_cmd_usage=\u00a7cNot enough arguments, usage: /send <server|player|all|current> <target>
--player_only=\u00a7cOnly in game players can use this command
--successfully_summoned=\u00a7aSuccessfully summoned player(s)
--you_got_summoned=\u00a76Summoned to {0} by {1}
--command_perms_groups=\u00a76You have the following groups: {0}
--command_perms_permission=\u00a79- {0}
--command_ip=\u00a79IP of {0} is {1}
--illegal_chat_characters=\u00a7cillegal characters in chat ({0})
 -- 
-2.29.2.windows.3
+2.33.0.windows.2
 
