@@ -1,4 +1,4 @@
-From 2de63d9c2972a518424cdd69f4024898e997b5d7 Mon Sep 17 00:00:00 2001
+From 45943d6281b549cdf8d7eda32daf94bc485bff1e Mon Sep 17 00:00:00 2001
 From: Denary Planet <denaryplanet@gmail.com>
 Date: Sat, 10 Jul 2021 17:22:34 +0500
 Subject: [PATCH] Amethyst general patch
@@ -143,10 +143,10 @@ index aafd99d8..1136ddf3 100644
 +    }
  }
 diff --git a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java b/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
-index c88077ad..f98e878b 100644
+index 56044631..f98e878b 100644
 --- a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 +++ b/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
-@@ -30,71 +30,74 @@ public class MessagesConfiguration {
+@@ -30,73 +30,74 @@ public class MessagesConfiguration {
  				configuration = configurationProvider.load(configurationFile);
  			}
  
@@ -162,6 +162,8 @@ index c88077ad..f98e878b 100644
 -					"&cCould not connect to a default or fallback server, please try again later: {0}", configuration);
 -			setIfUnexistant("fallback_lobby",
 -					"&cCould not connect to target server, you have been moved to a fallback server.", configuration);
+-			setIfUnexistant("timeout",
+-					"Server not reachable (timeout). Offline? Incorrectly configured address/port/firewall?", configuration);
 -			setIfUnexistant("lost_connection", "[Proxy] Lost connection to server.", configuration);
 -			setIfUnexistant("mojang_fail", "Error occurred while contacting login servers, are they down?",
 -					configuration);
@@ -179,7 +181,6 @@ index c88077ad..f98e878b 100644
 -					"&cThe server you were previously on went down, you have been connected to a fallback server",
 -					configuration);
 -			setIfUnexistant("total_players", "Total players online: {0}", configuration);
--			setIfUnexistant("name_too_long", "Cannot have username longer than 16 characters", configuration);
 -			setIfUnexistant("name_invalid", "Username contains invalid characters.", configuration);
 -			setIfUnexistant("ping_cannot_connect", "&c[Bungee] Can't connect to server.", configuration);
 -			setIfUnexistant("offline_mode_player", "Not authenticated with Minecraft.net", configuration);
@@ -200,6 +201,7 @@ index c88077ad..f98e878b 100644
 -			setIfUnexistant("command_perms_groups", "&6You have the following groups: {0}", configuration);
 -			setIfUnexistant("command_perms_permission", "&9- {0}", configuration);
 -			setIfUnexistant("command_ip", "&9IP of {0} is {1}", configuration);
+-			setIfUnexistant("illegal_chat_characters", "&cIllegal characters in chat ({0})", configuration);
 -
 -			// FlameCord
 -			setIfUnexistant("firewall_added", "&e{0}&c had been firewalled from the proxy!", configuration);
@@ -286,7 +288,7 @@ index c88077ad..f98e878b 100644
  
  			if (!configurationExists) {
  				configurationProvider.save(configuration, configurationFile);
-@@ -114,7 +117,7 @@ public class MessagesConfiguration {
+@@ -116,7 +117,7 @@ public class MessagesConfiguration {
  
  	public String getTranslation(final String name, final Object... args) {
  		if (!messages.containsKey(name)) {
@@ -677,7 +679,7 @@ index 00000000..0178cc92
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index fdeb8a37..e20a3785 100644
+index 857b1dfc..b754ee41 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -9,82 +9,30 @@ import com.google.common.collect.Sets;
@@ -805,8 +807,8 @@ index fdeb8a37..e20a3785 100644
 -        
 +
          FlameCord.renew(logger, whitelistedAddresses);
-         registerModules();
  
+         if ( config.isForgeSupport() )
 @@ -335,7 +296,7 @@ public class BungeeCord extends ProxyServer
              @Override
              public void run()
@@ -856,8 +858,8 @@ index fdeb8a37..e20a3785 100644
      @Override
      @SuppressWarnings("unchecked")
      public Collection<ProxiedPlayer> getPlayers()
-@@ -876,7 +845,17 @@ public class BungeeCord extends ProxyServer
-             logger.warning("Reconnect module is not able to work on Amethyst!");
+@@ -872,7 +841,17 @@ public class BungeeCord extends ProxyServer
+             }
          }
  
 +        // Amethyst commands

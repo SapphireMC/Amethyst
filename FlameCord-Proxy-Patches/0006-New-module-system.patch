@@ -1,4 +1,4 @@
-From 70e66ad08c77e99a50e697688be6fb2db984e260 Mon Sep 17 00:00:00 2001
+From befd9473371cce1203554496ee5f0c03e50c71f5 Mon Sep 17 00:00:00 2001
 From: Denary Planet <denaryplanet@gmail.com>
 Date: Sun, 11 Jul 2021 04:13:30 +0500
 Subject: [PATCH] New module system
@@ -1180,7 +1180,7 @@ index a4ef6d3b..d3affbe9 100644
  import net.md_5.bungee.conf.YamlConfig;
  import net.md_5.bungee.protocol.ProtocolConstants;
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index e20a3785..7196b38e 100644
+index b754ee41..2c74c2eb 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -10,10 +10,10 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -1284,7 +1284,7 @@ index e20a3785..7196b38e 100644
          if (modulesConfiguration.findEnabled) {
              pluginManager.registerCommand(null, new CommandFind());
          }
-@@ -849,9 +849,6 @@ public class BungeeCord extends ProxyServer
+@@ -845,9 +845,6 @@ public class BungeeCord extends ProxyServer
          if (getFlameCord().getFlameCordConfiguration().isLobbyEnabled()) {
              pluginManager.registerCommand(null, new CommandLobby());
          }

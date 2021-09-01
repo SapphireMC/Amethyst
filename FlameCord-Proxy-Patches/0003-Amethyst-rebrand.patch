@@ -1,4 +1,4 @@
-From 982c06311cc51b909421d97e93e448d36110d16c Mon Sep 17 00:00:00 2001
+From b27a1ecfd65e425bd8e23dc3e2fce0f3e12d31fd Mon Sep 17 00:00:00 2001
 From: Denary Planet <denaryplanet@gmail.com>
 Date: Fri, 9 Jul 2021 20:00:55 +0500
 Subject: [PATCH] Amethyst rebrand
@@ -100,7 +100,7 @@ index 451e3c61..9757ba83 100644
  description: ${project.description}
  author: ${module.author}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index a3242d46..fdeb8a37 100644
+index 58ce452f..857b1dfc 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -198,7 +198,7 @@ public class BungeeCord extends ProxyServer
@@ -123,20 +123,11 @@ index a3242d46..fdeb8a37 100644
      @Override
      public String getVersion()
      {
--        return "0.6.1";
+-        return "0.6.3";
 +        return "1.17.1-1";
      }
  
      public void reloadMessages()
-@@ -873,7 +873,7 @@ public class BungeeCord extends ProxyServer
-                 }
-             }
-         } catch (final Exception exception) {
--            logger.warning("Reconnect module is not able to work on FlameCord!");
-+            logger.warning("Reconnect module is not able to work on Amethyst!");
-         }
- 
-         // Flamecord - Commands (Had to make it like this because of maven limitations)
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
 index aeda7963..dd6d71b7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
