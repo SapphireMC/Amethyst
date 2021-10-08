@@ -1,4 +1,4 @@
-From ebbdc1b480502e3d9171a727dbfe91af8e58f9df Mon Sep 17 00:00:00 2001
+From 0f71d4c75874a00a8b33ff1ead3f2dfb4ba2511d Mon Sep 17 00:00:00 2001
 From: Denary Planet <denaryplanet@gmail.com>
 Date: Fri, 9 Jul 2021 18:43:32 +0500
 Subject: [PATCH] POM Changes
@@ -644,7 +644,7 @@ index b56fdc51..fc4afe4b 100644
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index 50e2778e..3c2afac6 100644
+index 50e2778e..b349e74b 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -4,25 +4,20 @@
@@ -677,7 +677,7 @@ index 50e2778e..3c2afac6 100644
 -    </organization>
 +    <name>Amethyst-Parent</name>
 +    <description>Parent project for all Amethyst modules.</description>
-+    <url>https://github.com/DenaryDev/Amethyst</url>
++    <url>https://github.com/SapphireMC/Amethyst</url>
 +    <inceptionYear>2021</inceptionYear>
      <licenses>
          <license>
@@ -716,14 +716,14 @@ index 50e2778e..3c2afac6 100644
 -        <connection>scm:git:git@github.com:com:2lstudios-mc/FlameCord.git</connection>
 -        <developerConnection>scm:git:git@github.com:2lstudios-mc/FlameCord.git</developerConnection>
 -        <url>git@github.com:2lstudios-mc/FlameCord.git</url>
-+        <connection>scm:git:git@github.com:com:DenaryDev/Amethyst.git</connection>
-+        <developerConnection>scm:git:git@github.com:DenaryDev/Amethyst.git</developerConnection>
-+        <url>git@github.com:DenaryDev/Amethyst.git</url>
++        <connection>scm:git:git@github.com:com:SapphireMC/Amethyst.git</connection>
++        <developerConnection>scm:git:git@github.com:SapphireMC/Amethyst.git</developerConnection>
++        <url>git@github.com:SapphireMC/Amethyst.git</url>
      </scm>
      <issueManagement>
          <system>GitHub</system>
 -        <url>https://github.com/2lstudios-mc/FlameCord/issues</url>
-+        <url>https://github.com/DenaryDev/Amethyst/issues</url>
++        <url>https://github.com/SapphireMC/Amethyst/issues</url>
      </issueManagement>
  
      <distributionManagement>
@@ -783,7 +783,7 @@ index 50e2778e..3c2afac6 100644
              <plugin>
                  <artifactId>maven-javadoc-plugin</artifactId>
 -                <version>3.2.0</version>
-+                <version>3.3.1-SNAPSHOT</version>
++                <version>3.3.0</version>
                  <configuration>
                      <doclint>none</doclint>
                  </configuration>
@@ -1077,5 +1077,5 @@ index b4570001..a0f17e47 100644
              <scope>compile</scope>
          </dependency>
 -- 
-2.29.2.windows.3
+2.33.0.windows.2
 

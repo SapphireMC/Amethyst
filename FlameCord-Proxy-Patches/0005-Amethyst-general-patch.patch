@@ -1,4 +1,4 @@
-From 39db55c57f931344d04a75461172cd66557bf391 Mon Sep 17 00:00:00 2001
+From 26f60c86396b80dbf9c88921c4e084d62bcd50a5 Mon Sep 17 00:00:00 2001
 From: Denary Planet <denaryplanet@gmail.com>
 Date: Sat, 10 Jul 2021 17:22:34 +0500
 Subject: [PATCH] Amethyst general patch
@@ -78,20 +78,84 @@ index a190dfae..2ba0f271 100644
              }
              return true;
          }
+diff --git a/chat/src/main/java/net/md_5/bungee/api/ChatColor.java b/chat/src/main/java/net/md_5/bungee/api/ChatColor.java
+index d7747deb..e47589d4 100644
+--- a/chat/src/main/java/net/md_5/bungee/api/ChatColor.java
++++ b/chat/src/main/java/net/md_5/bungee/api/ChatColor.java
+@@ -2,11 +2,10 @@ package net.md_5.bungee.api;
+ 
+ import com.google.common.base.Preconditions;
+ import java.awt.Color;
+-import java.util.HashMap;
+-import java.util.Locale;
+-import java.util.Map;
+-import java.util.Objects;
++import java.util.*;
+ import java.util.regex.Pattern;
++import java.util.stream.Collectors;
++
+ import lombok.Getter;
+ 
+ /**
+@@ -211,6 +210,11 @@ public final class ChatColor
+         return STRIP_COLOR_PATTERN.matcher( input ).replaceAll( "" );
+     }
+ 
++    public static String translateAlternateColorCodes(String textToTranslate)
++    {
++        return translateAlternateColorCodes('&', textToTranslate);
++    }
++
+     public static String translateAlternateColorCodes(char altColorChar, String textToTranslate)
+     {
+         char[] b = textToTranslate.toCharArray();
+@@ -225,6 +229,13 @@ public final class ChatColor
+         return new String( b );
+     }
+ 
++    public static List<String> translateAlternateColorCodes(List<String> listToTranslate)
++    {
++        if (listToTranslate == null || listToTranslate.isEmpty()) return listToTranslate;
++
++        return listToTranslate.stream().map(ChatColor::translateAlternateColorCodes).collect(Collectors.toList());
++    }
++
+     /**
+      * Get the colour represented by the specified code.
+      *
 diff --git a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flame/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index 16e5909a..b38b40f0 100644
+index f3f602e0..65490c52 100644
 --- a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flame/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-@@ -52,9 +52,16 @@ public class FlameCordConfiguration {
+@@ -15,17 +15,10 @@ import net.md_5.bungee.config.Configuration;
+ import net.md_5.bungee.config.ConfigurationProvider;
+ 
+ public class FlameCordConfiguration {
+-    private List<String> colors(final List<String> strings) {
+-        for (int i = 0; i < strings.size(); i++) {
+-            strings.set(i, ChatColor.translateAlternateColorCodes('&', strings.get(i)));
+-        }
+-
+-        return strings;
+-    }
+ 
      @Getter
-     private Collection<String> firewallNames = new HashSet<>(Arrays.asList(new String[] { "mcspam" }));
+     private boolean customMotdEnabled = false;
+-    private List<String> customMotdMotds = List.of("&eDefault &5Amethyst&e custom motd!\n&eChange me in &cflamecord.yml&e file!");
++    private List<String> customMotdMotds = List.of("&eDefault &5Amethyst&e custom motd!\n&eChange me in &cflame.yml&e file!");
+ 
+     public String getRandomMotd() {
+         final Random random = new Random();
+@@ -52,9 +45,16 @@ public class FlameCordConfiguration {
+     @Getter
+     private Collection<String> firewallNames = new HashSet<>(List.of("mcspam"));
  
 +    @Getter
 +    private boolean lobbyEnabled = true;
 +    //@Getter
 +    //private boolean reconnectEnabled = false;
 +    @Getter
-+    private Collection<String> lobbies = new HashSet<>(Arrays.asList(new String[] { "lobby" }));
++    private Collection<String> lobbies = new HashSet<>(List.of("lobby"));
 +
      public FlameCordConfiguration(final ConfigurationProvider configurationProvider) {
          try {
@@ -100,7 +164,16 @@ index 16e5909a..b38b40f0 100644
              final File configurationFile = new File(fileName);
              final Configuration configuration;
              final boolean configurationExists = configurationFile.exists();
-@@ -78,6 +85,10 @@ public class FlameCordConfiguration {
+@@ -66,7 +66,7 @@ public class FlameCordConfiguration {
+             }
+ 
+             this.customMotdEnabled = setIfUnexistant("custom-motd.enabled", this.customMotdEnabled, configuration);
+-            this.customMotdMotds = colors(new ArrayList<>(setIfUnexistant("custom-motd.motds", this.customMotdMotds, configuration)));
++            this.customMotdMotds = ChatColor.translateAlternateColorCodes(new ArrayList<>(setIfUnexistant("custom-motd.motds", this.customMotdMotds, configuration)));
+ 
+             this.loggerInitialhandler = setIfUnexistant("logger.initialhandler", this.loggerInitialhandler, configuration);
+             this.loggerExceptions = setIfUnexistant("logger.exceptions", this.loggerExceptions, configuration);
+@@ -78,6 +78,10 @@ public class FlameCordConfiguration {
              this.firewallSeconds = setIfUnexistant("firewall.seconds", this.firewallSeconds, configuration);
              this.firewallNames = setIfUnexistant("firewall.names", this.firewallNames, configuration);
  
@@ -111,7 +184,7 @@ index 16e5909a..b38b40f0 100644
              if (!configurationExists) {
                  configurationProvider.save(configuration, configurationFile);
              }
-@@ -114,4 +125,18 @@ public class FlameCordConfiguration {
+@@ -114,4 +118,18 @@ public class FlameCordConfiguration {
              return new HashSet<>(configuration.getStringList(arg1));
          }
      }
