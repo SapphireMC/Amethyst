@@ -1,4 +1,4 @@
-From a4d659bec0e786ca0d384fffd0bed92729d81f9b Mon Sep 17 00:00:00 2001
+From 3ea480f79b6e439b06a8469cb6a4fc767086880b Mon Sep 17 00:00:00 2001
 From: Denary Planet <denaryplanet@gmail.com>
 Date: Fri, 9 Jul 2021 20:00:55 +0500
 Subject: [PATCH] Amethyst rebrand
@@ -20,6 +20,28 @@ index 9838f5c5..67237c2c 100644
              System.out.println( "You can check your Java version with the command: java -version" );
              return;
          }
+diff --git a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flame/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
+index 16e5909a..f3f602e0 100644
+--- a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
++++ b/flame/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
+@@ -25,7 +25,7 @@ public class FlameCordConfiguration {
+ 
+     @Getter
+     private boolean customMotdEnabled = false;
+-    private List<String> customMotdMotds = Arrays.asList(new String[] { "&eDefault &cFlameCord&e custom motd!\n&eChange me in &cflamecord.yml&e file!" });
++    private List<String> customMotdMotds = List.of("&eDefault &5Amethyst&e custom motd!\n&eChange me in &cflamecord.yml&e file!");
+ 
+     public String getRandomMotd() {
+         final Random random = new Random();
+@@ -50,7 +50,7 @@ public class FlameCordConfiguration {
+     @Getter
+     private int firewallSeconds = 60;
+     @Getter
+-    private Collection<String> firewallNames = new HashSet<>(Arrays.asList(new String[] { "mcspam" }));
++    private Collection<String> firewallNames = new HashSet<>(List.of("mcspam"));
+ 
+     public FlameCordConfiguration(final ConfigurationProvider configurationProvider) {
+         try {
 diff --git a/log/src/main/java/net/md_5/bungee/log/LogDispatcher.java b/log/src/main/java/net/md_5/bungee/log/LogDispatcher.java
 index 49dce84b..3ca6ef74 100644
 --- a/log/src/main/java/net/md_5/bungee/log/LogDispatcher.java
