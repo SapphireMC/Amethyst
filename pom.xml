@@ -9,7 +9,7 @@
 
     <name>Amethyst-Super</name>
     <description>Super project for Amethyst.</description>
-    <url>https://github.com/DenaryDev/Amethyst</url>
+    <url>https://github.com/SapphireMC/Amethyst</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

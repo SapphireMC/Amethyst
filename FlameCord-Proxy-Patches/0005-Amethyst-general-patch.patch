@@ -1,4 +1,4 @@
-From 26f60c86396b80dbf9c88921c4e084d62bcd50a5 Mon Sep 17 00:00:00 2001
+From e30ce90c531b7ff4abea9f4b08fdfd8500e6a3b1 Mon Sep 17 00:00:00 2001
 From: Denary Planet <denaryplanet@gmail.com>
 Date: Sat, 10 Jul 2021 17:22:34 +0500
 Subject: [PATCH] Amethyst general patch
@@ -740,7 +740,7 @@ index 00000000..0178cc92
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index cbe7e7a1..33ad808d 100644
+index 81420209..50064d3d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -9,82 +9,30 @@ import com.google.common.collect.Sets;
@@ -889,7 +889,7 @@ index cbe7e7a1..33ad808d 100644
  
      @Override
 @@ -578,6 +539,8 @@ public class BungeeCord extends ProxyServer
-         return "1.17.1-1";
+         return "1.17.1-2";
      }
  
 +    // Amethyst - use FlameCord message system
@@ -1226,21 +1226,63 @@ index c51aeb44..b3abfa71 100644
              }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index c3462913..2e1c25bd 100644
+index c3462913..f8966519 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -158,7 +158,11 @@ public class UpstreamBridge extends PacketHandler
+@@ -158,7 +158,7 @@ public class UpstreamBridge extends PacketHandler
              char c = chat.getMessage().charAt( index );
              if ( !AllowedCharacters.isChatAllowedCharacter( c ) )
              {
-+<<<<<<< HEAD
-                 con.disconnect( bungee.getTranslation( "illegal_chat_characters", Util.unicode( c ) ) );
-+=======
-+                con.disconnect( bungee.getTranslation( "error_illegal_chat_characters", String.format( "\\u%04x", (int) c ) ) );
-+>>>>>>> Amethyst general patch
+-                con.disconnect( bungee.getTranslation( "illegal_chat_characters", Util.unicode( c ) ) );
++                con.disconnect( bungee.getTranslation( "error_illegal_chat_characters", Util.unicode( c ) ) );
                  throw CancelSendSignal.INSTANCE;
              } else if (empty && !Character.isWhitespace(c)) {
                  empty = false;
+diff --git a/proxy/src/main/resources/messages.properties b/proxy/src/main/resources/messages.properties
+deleted file mode 100644
+index 5890e8c9..00000000
+--- a/proxy/src/main/resources/messages.properties
++++ /dev/null
+@@ -1,39 +0,0 @@
+-alert=\u00a78[\u00a74Alert\u00a78]\u00a7r 
+-already_connected=\u00a7cYou are already connected to this server!
+-already_connected_proxy=\u00a7cYou are already connected to this proxy!
+-already_connecting=\u00a7cAlready connecting to this server!
+-command_list=\u00a7a[{0}] \u00a7e({1}): \u00a7r{2}
+-connect_kick=\u00a7cKicked whilst connecting to {0}: {1}
+-current_server=\u00a76You are currently connected to {0}.
+-fallback_kick=\u00a7cCould not connect to a default or fallback server, please try again later: {0}
+-fallback_lobby=\u00a7cCould not connect to target server, you have been moved to a fallback server.
+-timeout=Server not reachable (timeout). Offline? Incorrectly configured address/port/firewall?
+-lost_connection=[Proxy] Lost connection to server.
+-mojang_fail=Error occurred while contacting login servers, are they down?
+-no_permission=\u00a7cYou do not have permission to execute this command!
+-no_server=\u00a7cThe specified server does not exist.
+-no_server_permission=\u00a7cYou don''t have permission to access this server.
+-outdated_client=Outdated client! Please use {0}
+-outdated_server=Outdated server! I''m still on {0}
+-proxy_full=Server is full!
+-restart=[Proxy] Proxy restarting.
+-server_list=\u00a76You may connect to the following servers at this time: 
+-server_went_down=\u00a7cThe server you were previously on went down, you have been connected to a fallback server
+-total_players=Total players online: {0}
+-name_invalid=Username contains invalid characters.
+-ping_cannot_connect=\u00a7c[Bungee] Can''t connect to server.
+-offline_mode_player=Not authenticated with Minecraft.net
+-message_needed=\u00a7cYou must supply a message.
+-error_occurred_player=\u00a7cAn error occurred while parsing your message. (Hover for details)
+-error_occurred_console=\u00a7cAn error occurred while parsing your message: {0}
+-click_to_connect=Click to connect to the server
+-username_needed=\u00a7cPlease follow this command by a user name.
+-user_not_online=\u00a7cThat user is not online.
+-user_online_at=\u00a7a{0} \u00a7ris online at {1}
+-send_cmd_usage=\u00a7cNot enough arguments, usage: /send <server|player|all|current> <target>
+-player_only=\u00a7cOnly in game players can use this command
+-you_got_summoned=\u00a76Summoned to {0} by {1}
+-command_perms_groups=\u00a76You have the following groups: {0}
+-command_perms_permission=\u00a79- {0}
+-command_ip=\u00a79IP of {0} is {1}
+-illegal_chat_characters=\u00a7cillegal characters in chat ({0})
 -- 
 2.33.0.windows.2
 

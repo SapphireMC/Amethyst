@@ -1,9 +1,37 @@
-From 7b60e5326f974506d06c35a83e27ac953ef89293 Mon Sep 17 00:00:00 2001
+From 88a492f3fe2e1ad7c31939ae0996a05399f25261 Mon Sep 17 00:00:00 2001
 From: Denary Planet <denaryplanet@gmail.com>
 Date: Fri, 9 Jul 2021 18:56:58 +0500
-Subject: [PATCH] Delete all nb-configuration.xml
+Subject: [PATCH] Remove unused files
 
 
+diff --git a/.github/workflows/maven.yml b/.github/workflows/maven.yml
+deleted file mode 100644
+index c835bbcd..00000000
+--- a/.github/workflows/maven.yml
++++ /dev/null
+@@ -1,22 +0,0 @@
+-name: Maven Build
+-
+-on: [push, pull_request]
+-
+-jobs:
+-  build:
+-    runs-on: ubuntu-20.04
+-
+-    strategy:
+-      fail-fast: false
+-      matrix:
+-        java: [8, 11, 17]
+-
+-    name: Java ${{ matrix.java }}
+-
+-    steps:
+-    - uses: actions/checkout@v2
+-    - uses: actions/setup-java@v1
+-      with:
+-        java-version: ${{ matrix.java }}
+-    - run: java -version && mvn --version
+-    - run: mvn --activate-profiles dist --no-transfer-progress package
 diff --git a/api/nb-configuration.xml b/api/nb-configuration.xml
 deleted file mode 100644
 index 7e465924..00000000
@@ -634,5 +662,5 @@ index 7e465924..00000000
 -    </properties>
 -</project-shared-configuration>
 -- 
-2.29.2.windows.3
+2.33.0.windows.2
 
