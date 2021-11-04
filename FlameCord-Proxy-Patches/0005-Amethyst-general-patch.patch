@@ -1,4 +1,4 @@
-From e30ce90c531b7ff4abea9f4b08fdfd8500e6a3b1 Mon Sep 17 00:00:00 2001
+From 5ecbf4f630040c2de62b7d85a051c82a7b5e6dfc Mon Sep 17 00:00:00 2001
 From: Denary Planet <denaryplanet@gmail.com>
 Date: Sat, 10 Jul 2021 17:22:34 +0500
 Subject: [PATCH] Amethyst general patch
@@ -204,10 +204,10 @@ index f3f602e0..65490c52 100644
 +    }
  }
 diff --git a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java b/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
-index 56044631..f98e878b 100644
+index 72d48d66..f98e878b 100644
 --- a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 +++ b/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
-@@ -30,73 +30,74 @@ public class MessagesConfiguration {
+@@ -30,71 +30,74 @@ public class MessagesConfiguration {
  				configuration = configurationProvider.load(configurationFile);
  			}
  
@@ -236,7 +236,6 @@ index 56044631..f98e878b 100644
 -			setIfUnexistant("outdated_server", "Outdated server! I'm still on {0}", configuration);
 -			setIfUnexistant("proxy_full", "Server is full!", configuration);
 -			setIfUnexistant("restart", "[Proxy] Proxy restarting.", configuration);
--			setIfUnexistant("server_kick", "[Kicked] ", configuration);
 -			setIfUnexistant("server_list", "&6You may connect to the following servers at this time: ", configuration);
 -			setIfUnexistant("server_went_down",
 -					"&cThe server you were previously on went down, you have been connected to a fallback server",
@@ -257,7 +256,6 @@ index 56044631..f98e878b 100644
 -			setIfUnexistant("send_cmd_usage",
 -					"&cNot enough arguments, usage: /send <server|player|all|current> <target>", configuration);
 -			setIfUnexistant("player_only", "&cOnly in game players can use this command", configuration);
--			setIfUnexistant("successfully_summoned", "&aSuccessfully summoned player(s)", configuration);
 -			setIfUnexistant("you_got_summoned", "&6Summoned to {0} by {1}", configuration);
 -			setIfUnexistant("command_perms_groups", "&6You have the following groups: {0}", configuration);
 -			setIfUnexistant("command_perms_permission", "&9- {0}", configuration);
@@ -349,7 +347,7 @@ index 56044631..f98e878b 100644
  
  			if (!configurationExists) {
  				configurationProvider.save(configuration, configurationFile);
-@@ -116,7 +117,7 @@ public class MessagesConfiguration {
+@@ -114,7 +117,7 @@ public class MessagesConfiguration {
  
  	public String getTranslation(final String name, final Object... args) {
  		if (!messages.containsKey(name)) {
@@ -740,7 +738,7 @@ index 00000000..0178cc92
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 81420209..50064d3d 100644
+index 5b14b46b..9571d947 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -9,82 +9,30 @@ import com.google.common.collect.Sets;
@@ -832,7 +830,7 @@ index 81420209..50064d3d 100644
  import net.md_5.bungee.compress.CompressFactory;
  import net.md_5.bungee.conf.Configuration;
  import net.md_5.bungee.conf.YamlConfig;
-@@ -104,6 +52,19 @@ import net.md_5.bungee.query.RemoteQuery;
+@@ -105,6 +53,19 @@ import net.md_5.bungee.query.RemoteQuery;
  import net.md_5.bungee.scheduler.BungeeScheduler;
  import net.md_5.bungee.util.CaseInsensitiveMap;
  
@@ -852,7 +850,7 @@ index 81420209..50064d3d 100644
  /**
   * Main BungeeCord proxy class.
   */
-@@ -215,7 +176,7 @@ public class BungeeCord extends ProxyServer
+@@ -216,7 +177,7 @@ public class BungeeCord extends ProxyServer
          {
              baseBundle = ResourceBundle.getBundle( "messages", Locale.ENGLISH );
          }
@@ -861,7 +859,7 @@ index 81420209..50064d3d 100644
  
          // This is a workaround for quite possibly the weirdest bug I have ever encountered in my life!
          // When jansi attempts to extract its natives, by default it tries to extract a specific version,
-@@ -304,7 +265,7 @@ public class BungeeCord extends ProxyServer
+@@ -305,7 +266,7 @@ public class BungeeCord extends ProxyServer
          for (final ServerInfo serverInfo : getServers().values()) {
              whitelistedAddresses.add(serverInfo.getSocketAddress().toString());
          }
@@ -870,7 +868,7 @@ index 81420209..50064d3d 100644
          FlameCord.renew(logger, whitelistedAddresses);
  
          if ( config.isForgeSupport() )
-@@ -343,7 +304,7 @@ public class BungeeCord extends ProxyServer
+@@ -344,7 +305,7 @@ public class BungeeCord extends ProxyServer
              @Override
              public void run()
              {
@@ -879,7 +877,7 @@ index 81420209..50064d3d 100644
              }
          } );
      }
-@@ -430,7 +391,7 @@ public class BungeeCord extends ProxyServer
+@@ -431,7 +392,7 @@ public class BungeeCord extends ProxyServer
      @Override
      public void stop()
      {
@@ -888,7 +886,7 @@ index 81420209..50064d3d 100644
      }
  
      @Override
-@@ -578,6 +539,8 @@ public class BungeeCord extends ProxyServer
+@@ -579,6 +540,8 @@ public class BungeeCord extends ProxyServer
          return "1.17.1-2";
      }
  
@@ -897,7 +895,7 @@ index 81420209..50064d3d 100644
      public void reloadMessages()
      {
          File file = new File( "messages.properties" );
-@@ -592,7 +555,7 @@ public class BungeeCord extends ProxyServer
+@@ -593,7 +556,7 @@ public class BungeeCord extends ProxyServer
              }
          }
      }
@@ -906,7 +904,7 @@ index 81420209..50064d3d 100644
      @Override
      public String getTranslation(String name, Object... args)
      {
-@@ -600,6 +563,12 @@ public class BungeeCord extends ProxyServer
+@@ -601,6 +564,12 @@ public class BungeeCord extends ProxyServer
          return FlameCord.getInstance().getMessagesConfiguration().getTranslation(name, args);
      }
  
@@ -919,7 +917,7 @@ index 81420209..50064d3d 100644
      @Override
      @SuppressWarnings("unchecked")
      public Collection<ProxiedPlayer> getPlayers()
-@@ -880,7 +849,17 @@ public class BungeeCord extends ProxyServer
+@@ -882,7 +851,17 @@ public class BungeeCord extends ProxyServer
              }
          }
  
@@ -938,7 +936,7 @@ index 81420209..50064d3d 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index b4f9e3a7..16074207 100644
+index ab9d3ca8..a3b6cc02 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -403,7 +403,7 @@ public class ServerConnector extends PacketHandler
@@ -1070,7 +1068,7 @@ index 4eba24fa..065bb51a 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
-index c41930ae..055cafe4 100644
+index 3b5ce41e..8460b3dd 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 @@ -133,13 +133,13 @@ public abstract class Configuration implements ProxyConfig
@@ -1103,7 +1101,7 @@ index ae4c7ac2..dd69c6a5 100644
  
      public YamlConfig(File file)
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index df618972..42fac956 100644
+index b10d5b0a..3876ba19 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -89,7 +89,7 @@ public class DownstreamBridge extends PacketHandler
@@ -1284,5 +1282,5 @@ index 5890e8c9..00000000
 -command_ip=\u00a79IP of {0} is {1}
 -illegal_chat_characters=\u00a7cillegal characters in chat ({0})
 -- 
-2.33.0.windows.2
+2.29.2.windows.3
 

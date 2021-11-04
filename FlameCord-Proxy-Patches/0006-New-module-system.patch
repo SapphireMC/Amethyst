@@ -1,4 +1,4 @@
-From da7301d2edf68a1c0db2e8b9ebe213d356f5f19c Mon Sep 17 00:00:00 2001
+From 00b569a528ea3861c48378348cbecc5d0ae550e0 Mon Sep 17 00:00:00 2001
 From: Denary Planet <denaryplanet@gmail.com>
 Date: Sun, 11 Jul 2021 04:13:30 +0500
 Subject: [PATCH] New module system
@@ -1180,7 +1180,7 @@ index a4ef6d3b..d3affbe9 100644
  import net.md_5.bungee.conf.YamlConfig;
  import net.md_5.bungee.protocol.ProtocolConstants;
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 50064d3d..13b1b112 100644
+index 9571d947..052c6166 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -10,10 +10,10 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -1195,7 +1195,7 @@ index 50064d3d..13b1b112 100644
  import io.github.waterfallmc.waterfall.conf.WaterfallConfiguration;
  import io.github.waterfallmc.waterfall.event.ProxyExceptionEvent;
  import io.github.waterfallmc.waterfall.exception.ProxyPluginEnableDisableException;
-@@ -34,16 +34,8 @@ import net.md_5.bungee.api.plugin.PluginManager;
+@@ -34,17 +34,8 @@ import net.md_5.bungee.api.plugin.PluginManager;
  import net.md_5.bungee.chat.*;
  import net.md_5.bungee.command.*;
  import net.md_5.bungee.compress.CompressFactory;
@@ -1205,6 +1205,7 @@ index 50064d3d..13b1b112 100644
  import net.md_5.bungee.forge.ForgeConstants;
 -import net.md_5.bungee.module.ModuleManager;
 -import net.md_5.bungee.module.cmd.alert.CommandAlert;
+-import net.md_5.bungee.module.cmd.alert.CommandAlertRaw;
 -import net.md_5.bungee.module.cmd.find.CommandFind;
 -import net.md_5.bungee.module.cmd.list.CommandList;
 -import net.md_5.bungee.module.cmd.send.CommandSend;
@@ -1213,7 +1214,7 @@ index 50064d3d..13b1b112 100644
  import net.md_5.bungee.netty.PipelineUtils;
  import net.md_5.bungee.protocol.DefinedPacket;
  import net.md_5.bungee.protocol.ProtocolConstants;
-@@ -83,8 +75,9 @@ public class BungeeCord extends ProxyServer
+@@ -84,8 +75,9 @@ public class BungeeCord extends ProxyServer
      /**
       * Localization bundle.
       */
@@ -1225,7 +1226,7 @@ index 50064d3d..13b1b112 100644
      public EventLoopGroup bossEventLoopGroup, workerEventLoopGroup;
      /**
       * locations.yml save thread.
-@@ -151,7 +144,8 @@ public class BungeeCord extends ProxyServer
+@@ -152,7 +144,8 @@ public class BungeeCord extends ProxyServer
      // FlameCord end - 1.7.x support
      @Getter
      private ConnectionThrottle connectionThrottle;
@@ -1235,7 +1236,7 @@ index 50064d3d..13b1b112 100644
  
      {
          // TODO: Proper fallback when we interface the manager
-@@ -168,7 +162,8 @@ public class BungeeCord extends ProxyServer
+@@ -169,7 +162,8 @@ public class BungeeCord extends ProxyServer
      {
          // Java uses ! to indicate a resource inside of a jar/zip/other container. Running Bungee from within a directory that has a ! will cause this to muck up.
          Preconditions.checkState( new File( "." ).getAbsolutePath().indexOf( '!' ) == -1, "Cannot use Amethyst in directory with ! in path." );
@@ -1245,7 +1246,7 @@ index 50064d3d..13b1b112 100644
          try
          {
              baseBundle = ResourceBundle.getBundle( "messages" );
-@@ -176,7 +171,9 @@ public class BungeeCord extends ProxyServer
+@@ -177,7 +171,9 @@ public class BungeeCord extends ProxyServer
          {
              baseBundle = ResourceBundle.getBundle( "messages", Locale.ENGLISH );
          }
@@ -1256,7 +1257,7 @@ index 50064d3d..13b1b112 100644
  
          // This is a workaround for quite possibly the weirdest bug I have ever encountered in my life!
          // When jansi attempts to extract its natives, by default it tries to extract a specific version,
-@@ -208,7 +205,7 @@ public class BungeeCord extends ProxyServer
+@@ -209,7 +205,7 @@ public class BungeeCord extends ProxyServer
          //getPluginManager().registerCommand( null, new CommandReload() );
          //getPluginManager().registerCommand( null, new CommandEnd() );
          //getPluginManager().registerCommand( null, new CommandIP() );
@@ -1265,7 +1266,7 @@ index 50064d3d..13b1b112 100644
          //getPluginManager().registerCommand( null, new CommandPerms() );
  
          if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
-@@ -811,7 +808,7 @@ public class BungeeCord extends ProxyServer
+@@ -812,7 +808,7 @@ public class BungeeCord extends ProxyServer
  
          // Bungeecord Commands
          pluginManager.registerCommand(null, new CommandEnd());
@@ -1274,9 +1275,9 @@ index 50064d3d..13b1b112 100644
  
          if (modulesConfiguration.reloadEnabled) {
              pluginManager.registerCommand(null, new CommandReload());
-@@ -827,6 +824,9 @@ public class BungeeCord extends ProxyServer
-         if (modulesConfiguration.alertEnabled) {
+@@ -829,6 +825,9 @@ public class BungeeCord extends ProxyServer
              pluginManager.registerCommand(null, new CommandAlert());
+             pluginManager.registerCommand(null, new CommandAlertRaw());
          }
 +        if (modulesConfiguration.alertRawEnabled) {
 +            pluginManager.registerCommand(null, new CommandAlertRaw());
@@ -1284,7 +1285,7 @@ index 50064d3d..13b1b112 100644
          if (modulesConfiguration.findEnabled) {
              pluginManager.registerCommand(null, new CommandFind());
          }
-@@ -853,9 +853,6 @@ public class BungeeCord extends ProxyServer
+@@ -855,9 +854,6 @@ public class BungeeCord extends ProxyServer
          if (getFlameCord().getFlameCordConfiguration().isLobbyEnabled()) {
              pluginManager.registerCommand(null, new CommandLobby());
          }
@@ -1874,5 +1875,5 @@ index d52b8106..00000000
 -    }
 -}
 -- 
-2.33.0.windows.2
+2.29.2.windows.3
 
