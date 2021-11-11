@@ -1,4 +1,4 @@
-From 5ecbf4f630040c2de62b7d85a051c82a7b5e6dfc Mon Sep 17 00:00:00 2001
+From f590e46272483058fd3d5c2b48eb6526d4a3b04e Mon Sep 17 00:00:00 2001
 From: Denary Planet <denaryplanet@gmail.com>
 Date: Sat, 10 Jul 2021 17:22:34 +0500
 Subject: [PATCH] Amethyst general patch
@@ -204,10 +204,10 @@ index f3f602e0..65490c52 100644
 +    }
  }
 diff --git a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java b/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
-index 72d48d66..f98e878b 100644
+index 72d48d66..4fedd9ff 100644
 --- a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 +++ b/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
-@@ -30,71 +30,74 @@ public class MessagesConfiguration {
+@@ -30,71 +30,73 @@ public class MessagesConfiguration {
  				configuration = configurationProvider.load(configurationFile);
  			}
  
@@ -331,7 +331,6 @@ index 72d48d66..f98e878b 100644
 +			setIfUnexistant( "error_ping_cannot_connect", "&cНе удалось подключиться к серверу. Сообщите администрации.", configuration );
 +			setIfUnexistant( "error_player_only", "&cТолько игроки могут использовать эту команду", configuration );
 +			setIfUnexistant( "error_proxy_full", "&cСервер заполнен!", configuration );
-+			setIfUnexistant( "error_server_kick", "&c[Кикнут]&r ", configuration );
 +			setIfUnexistant( "error_timeout", "Сервер недоступен (превышено время ожидания). Не в сети? Неправильно настроенный адрес/порт/брандмауэр?", configuration );
 +			setIfUnexistant( "error_user_not_online", "&cДанный игрок не онлайн.", configuration );
 +			setIfUnexistant( "error_username_needed", "&cПожалуйста укажите имя игрока.", configuration );
@@ -347,7 +346,7 @@ index 72d48d66..f98e878b 100644
  
  			if (!configurationExists) {
  				configurationProvider.save(configuration, configurationFile);
-@@ -114,7 +117,7 @@ public class MessagesConfiguration {
+@@ -114,7 +116,7 @@ public class MessagesConfiguration {
  
  	public String getTranslation(final String name, final Object... args) {
  		if (!messages.containsKey(name)) {
@@ -356,6 +355,37 @@ index 72d48d66..f98e878b 100644
  					+ "' from messages.yml file but wasn't found. Please try resetting this file or report to a developer.");
  		}
  
+diff --git a/flame/src/main/java/dev/_2lstudios/flamecord/firewall/FirewallManager.java b/flame/src/main/java/dev/_2lstudios/flamecord/firewall/FirewallManager.java
+index dfb5c6d3..77f433e8 100644
+--- a/flame/src/main/java/dev/_2lstudios/flamecord/firewall/FirewallManager.java
++++ b/flame/src/main/java/dev/_2lstudios/flamecord/firewall/FirewallManager.java
+@@ -63,7 +63,7 @@ public class FirewallManager {
+             final InetSocketAddress iNetSocketAddress = (InetSocketAddress) address;
+             final String hostString = iNetSocketAddress.getHostString();
+ 
+-            this.logger.info(flameCord.getMessagesConfiguration().getTranslation("firewall_added", hostString));
++            this.logger.info(flameCord.getMessagesConfiguration().getTranslation("info_firewall_added", hostString));
+         }
+     }
+ 
+@@ -75,7 +75,7 @@ public class FirewallManager {
+             final InetSocketAddress iNetSocketAddress = (InetSocketAddress) address;
+             final String hostString = iNetSocketAddress.getHostString();
+ 
+-            this.logger.info(flameCord.getMessagesConfiguration().getTranslation("firewall_blocked", hostString));
++            this.logger.info(flameCord.getMessagesConfiguration().getTranslation("info_firewall_blocked", hostString));
+         }
+     }
+ 
+@@ -108,7 +108,7 @@ public class FirewallManager {
+ 
+             if (size > 0) {
+                 if (flameCord.getFlameCordConfiguration().isFirewallNotify()) {
+-                    this.logger.info(flameCord.getMessagesConfiguration().getTranslation("firewall_cleared", size));
++                    this.logger.info(flameCord.getMessagesConfiguration().getTranslation("info_firewall_cleared", size));
+                 }
+ 
+                 this.firewalled.clear();
 diff --git a/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlert.java b/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlert.java
 index 55d2f7b8..3d95b789 100644
 --- a/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlert.java
@@ -379,7 +409,7 @@ index 55d2f7b8..3d95b789 100644
  
              for ( String s : args )
 diff --git a/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlertRaw.java b/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlertRaw.java
-index 7292899d..7daa3f18 100644
+index 7292899d..4bbe525b 100644
 --- a/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlertRaw.java
 +++ b/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlertRaw.java
 @@ -23,7 +23,7 @@ public class CommandAlertRaw extends Command
@@ -387,7 +417,7 @@ index 7292899d..7daa3f18 100644
          if ( args.length == 0 )
          {
 -            sender.sendMessage( ProxyServer.getInstance().getTranslation( "message_needed" ) );
-+            sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "error_message_needed" ) );
++            sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "command_alert_message_needed" ) );
          } else
          {
              String message = Joiner.on( ' ' ).join( args );
@@ -410,7 +440,7 @@ index 7292899d..7daa3f18 100644
              }
          }
 diff --git a/module/cmd-find/src/main/java/net/md_5/bungee/module/cmd/find/CommandFind.java b/module/cmd-find/src/main/java/net/md_5/bungee/module/cmd/find/CommandFind.java
-index 7ea239ac..6790af6c 100644
+index 7ea239ac..42debad6 100644
 --- a/module/cmd-find/src/main/java/net/md_5/bungee/module/cmd/find/CommandFind.java
 +++ b/module/cmd-find/src/main/java/net/md_5/bungee/module/cmd/find/CommandFind.java
 @@ -18,16 +18,16 @@ public class CommandFind extends PlayerCommand
@@ -429,7 +459,7 @@ index 7ea239ac..6790af6c 100644
              } else
              {
 -                sender.sendMessage( ProxyServer.getInstance().getTranslation( "user_online_at", player.getName(), player.getServer().getInfo().getName() ) );
-+                sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "command_find_user_online_at", player.getName(), player.getServer().getInfo().getName() ) );
++                sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "command_find_online_at", player.getName(), player.getServer().getInfo().getName() ) );
              }
          }
      }

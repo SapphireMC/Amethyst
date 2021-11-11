@@ -1,11 +1,11 @@
-From 00b569a528ea3861c48378348cbecc5d0ae550e0 Mon Sep 17 00:00:00 2001
+From 5503cc29a2aafc06863b1f426e5c58e9f3fff741 Mon Sep 17 00:00:00 2001
 From: Denary Planet <denaryplanet@gmail.com>
 Date: Sun, 11 Jul 2021 04:13:30 +0500
 Subject: [PATCH] New module system
 
 
 diff --git a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java b/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
-index f98e878b..a793fe7b 100644
+index 4fedd9ff..775ff7d1 100644
 --- a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 +++ b/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 @@ -31,17 +31,19 @@ public class MessagesConfiguration {
@@ -153,7 +153,7 @@ index 34a45340..00000000
 -</project>
 diff --git a/module/cmd-find/src/main/java/net/md_5/bungee/module/cmd/find/CommandFind.java b/module/cmd-find/src/main/java/net/md_5/bungee/module/cmd/find/CommandFind.java
 deleted file mode 100644
-index 6790af6c..00000000
+index 42debad6..00000000
 --- a/module/cmd-find/src/main/java/net/md_5/bungee/module/cmd/find/CommandFind.java
 +++ /dev/null
 @@ -1,34 +0,0 @@
@@ -186,7 +186,7 @@ index 6790af6c..00000000
 -                sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "error_user_not_online" ) );
 -            } else
 -            {
--                sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "command_find_user_online_at", player.getName(), player.getServer().getInfo().getName() ) );
+-                sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "command_find_online_at", player.getName(), player.getServer().getInfo().getName() ) );
 -            }
 -        }
 -    }
@@ -729,10 +729,10 @@ index 3d95b789..f55030f1 100644
      }
  }
 diff --git a/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlertRaw.java b/proxy/src/main/java/io/amethystmc/amethyst/module/CommandAlertRaw.java
-similarity index 69%
+similarity index 68%
 rename from module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlertRaw.java
 rename to proxy/src/main/java/io/amethystmc/amethyst/module/CommandAlertRaw.java
-index 7daa3f18..38c3b841 100644
+index 4bbe525b..305f064b 100644
 --- a/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlertRaw.java
 +++ b/proxy/src/main/java/io/amethystmc/amethyst/module/CommandAlertRaw.java
 @@ -1,9 +1,9 @@
@@ -760,8 +760,8 @@ index 7daa3f18..38c3b841 100644
      {
          if ( args.length == 0 )
          {
--            sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "error_message_needed" ) );
-+            sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "error_message_needed" ) );
+-            sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "command_alert_message_needed" ) );
++            sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_alert_message_needed" ) );
          } else
          {
              String message = Joiner.on( ' ' ).join( args );
@@ -1521,7 +1521,7 @@ index 065bb51a..75e9cfba 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-index dd69c6a5..51877266 100644
+index dd69c6a5..f42d29a0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 @@ -78,7 +78,7 @@ public class YamlConfig implements ConfigurationAdapter
@@ -1545,7 +1545,7 @@ index dd69c6a5..51877266 100644
 -            {
 -                "bungeecord.command.alert", "bungeecord.command.end", "bungeecord.command.ip", "bungeecord.command.reload"
 -            } ) );
-+            set( "permissions.default", Arrays.asList( "amethyst.command.lobby", "amethyst.command.flame" ) );
++            set( "permissions.default", Arrays.asList( "amethyst.command.lobby", "amethyst.command.amethyst" ) );
 +            set( "permissions.admin", Arrays.asList( "amethyst.command.alert", "amethyst.command.alertraw", "amethyst.command.end", "amethyst.command.find",
 +                    "amethyst.command.ip", "amethyst.command.list", "amethyst.command.perms", "amethyst.command.reload", "amethyst.command.send", "amethyst.command.server" ) );
          }
