@@ -1,11 +1,11 @@
-From 4e1062bd4296abcb9a6ce99ce636bc6925f54670 Mon Sep 17 00:00:00 2001
+From edce05d7566cc93c90ddd37013fcf4e99d75eb62 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Thu, 4 Nov 2021 21:13:10 +0500
-Subject: [PATCH] Add more log output
+Subject: [PATCH] Add logging on startup
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 052c6166..38d99e46 100644
+index 71c982ba..d5480cb5 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -152,6 +152,8 @@ public class BungeeCord extends ProxyServer
@@ -21,7 +21,7 @@ index 052c6166..38d99e46 100644
          logger = io.github.waterfallmc.waterfall.log4j.WaterfallLogger.create();
          // Waterfall end
  
-+        logger.info("Starting " + getName() + " version " + getVersion() + " (MC:1.7.x - 1.17.x)");
++        logger.info("Starting " + getName() + " version " + getVersion() + " (MC:1.7.x - 1.18.x)");
 +        serverStartTime = System.nanoTime();
 +
          pluginManager = new PluginManager( this );
@@ -37,5 +37,5 @@ index 052c6166..38d99e46 100644
  
      public void startListeners()
 -- 
-2.29.2.windows.3
+2.33.0
 

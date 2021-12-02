@@ -15,7 +15,7 @@ jobs:
     # latest version up to the moment.
     strategy:
       matrix:
-        java: [16]
+        java: [16, 17]
 
     steps:
     - name: Checkout Repository
@@ -25,7 +25,7 @@ jobs:
       uses: actions/setup-java@v2.1.0
       with:
         java-version: ${{ matrix.java }}
-        distribution: 'adopt'
+        distribution: 'zulu'
         architecture: x64
     
     # The corresponding dependencies are stored in the cache to speed up the test.
@@ -46,9 +46,9 @@ jobs:
       uses: marvinpinto/action-automatic-releases@latest
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        automatic_release_tag: 1.17.1-2
+        automatic_release_tag: 1.18-1
         prerelease: false
-        title: Latest Development Build
+        title: Latest build
         files: |
           Amethyst-Proxy/bootstrap/target/Amethyst.jar
 

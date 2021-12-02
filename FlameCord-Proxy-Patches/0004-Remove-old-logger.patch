@@ -1,4 +1,4 @@
-From f602c0d46223179c64409b27797b17a7db785e27 Mon Sep 17 00:00:00 2001
+From bc9437cd82c51e6840b71784d27c3975bee35b57 Mon Sep 17 00:00:00 2001
 From: Denary Planet <denaryplanet@gmail.com>
 Date: Fri, 9 Jul 2021 22:51:06 +0500
 Subject: [PATCH] Remove old logger
@@ -6,7 +6,7 @@ Subject: [PATCH] Remove old logger
 
 diff --git a/log/pom.xml b/log/pom.xml
 deleted file mode 100644
-index 0cc7b346..00000000
+index d7b564f6..00000000
 --- a/log/pom.xml
 +++ /dev/null
 @@ -1,34 +0,0 @@
@@ -18,12 +18,12 @@ index 0cc7b346..00000000
 -    <parent>
 -        <groupId>io.amethystmc</groupId>
 -        <artifactId>amethyst-parent</artifactId>
--        <version>1.17.1-2</version>
+-        <version>1.18-1</version>
 -        <relativePath>../pom.xml</relativePath>
 -    </parent>
 -
 -    <artifactId>amethyst-log</artifactId>
--    <version>1.17.1-2</version>
+-    <version>1.18-1</version>
 -    <packaging>jar</packaging>
 -
 -    <name>Amethyst-Log</name>
@@ -375,7 +375,7 @@ index 2b1ab9c0..00000000
 -    }
 -}
 diff --git a/pom.xml b/pom.xml
-index 3c8e5a90..0e70c8a8 100644
+index faed8670..8560257c 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -38,7 +38,9 @@
@@ -389,5 +389,5 @@ index 3c8e5a90..0e70c8a8 100644
          <module>module</module>
          <module>protocol</module>
 -- 
-2.33.0.windows.2
+2.33.0
 

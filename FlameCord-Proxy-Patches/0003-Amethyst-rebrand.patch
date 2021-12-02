@@ -1,4 +1,4 @@
-From 46c3910c92b7265d0c007818219aa2cc2f0f690b Mon Sep 17 00:00:00 2001
+From b86502630990d7c0e1ee25727fa7549121c62b3e Mon Sep 17 00:00:00 2001
 From: Denary Planet <denaryplanet@gmail.com>
 Date: Fri, 9 Jul 2021 20:00:55 +0500
 Subject: [PATCH] Amethyst rebrand
@@ -122,7 +122,7 @@ index 451e3c61..9757ba83 100644
  description: ${project.description}
  author: ${module.author}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 2327e5e3..5b14b46b 100644
+index 270e655a..8001d1b6 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -207,7 +207,7 @@ public class BungeeCord extends ProxyServer
@@ -145,8 +145,8 @@ index 2327e5e3..5b14b46b 100644
      @Override
      public String getVersion()
      {
--        return "0.6.4";
-+        return "1.17.1-2";
+-        return "0.6.5";
++        return "1.18-1";
      }
  
      public void reloadMessages()
@@ -176,19 +176,6 @@ index 5ab4db18..4eba24fa 100644
 +                + " This is NOT advisable and you will not be supported with any issues that arise! Please restart Amethyst ASAP." );
      }
  }
-diff --git a/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java b/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java
-index 2ba0ab64..d562af47 100644
---- a/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java
-+++ b/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java
-@@ -20,7 +20,7 @@ public class JenkinsModuleSource implements ModuleSource
-         {
-             final String url = String.format(
-                 "https://papermc.io/api/v2/projects/%1$s/versions/%2$s/builds/%3$s/downloads/%4$s-%2$s-%3$s.jar",
--                "flamecord", // FlameCord
-+                "amethyst", // Amethyst
-                 net.md_5.bungee.api.ProxyServer.getInstance().getVersion().split(":")[2].split("-")[0],
-                 version.getBuild(),
-                 module.getName()
 -- 
-2.29.2.windows.3
+2.33.0
 

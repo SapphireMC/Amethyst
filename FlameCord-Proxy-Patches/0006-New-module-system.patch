@@ -1,4 +1,4 @@
-From 5503cc29a2aafc06863b1f426e5c58e9f3fff741 Mon Sep 17 00:00:00 2001
+From 3336b89f6439f9515a2112b9153d97d6e5a93a29 Mon Sep 17 00:00:00 2001
 From: Denary Planet <denaryplanet@gmail.com>
 Date: Sun, 11 Jul 2021 04:13:30 +0500
 Subject: [PATCH] New module system
@@ -72,7 +72,7 @@ index e82c4844..7aed8dd8 100644
          }
 diff --git a/module/cmd-alert/pom.xml b/module/cmd-alert/pom.xml
 deleted file mode 100644
-index 6776605b..00000000
+index d256073e..00000000
 --- a/module/cmd-alert/pom.xml
 +++ /dev/null
 @@ -1,19 +0,0 @@
@@ -84,12 +84,12 @@ index 6776605b..00000000
 -    <parent>
 -        <groupId>io.amethystmc</groupId>
 -        <artifactId>amethyst-module</artifactId>
--        <version>1.17.1-2</version>
+-        <version>1.18-1</version>
 -        <relativePath>../pom.xml</relativePath>
 -    </parent>
 -
 -    <artifactId>amethyst-module-cmd-alert</artifactId>
--    <version>1.17.1-2</version>
+-    <version>1.18-1</version>
 -    <packaging>jar</packaging>
 -
 -    <name>cmd_alert</name>
@@ -128,7 +128,7 @@ index 9dcf1704..00000000
 -author: ${module.author}
 diff --git a/module/cmd-find/pom.xml b/module/cmd-find/pom.xml
 deleted file mode 100644
-index 34a45340..00000000
+index 6a8debdd..00000000
 --- a/module/cmd-find/pom.xml
 +++ /dev/null
 @@ -1,19 +0,0 @@
@@ -140,12 +140,12 @@ index 34a45340..00000000
 -    <parent>
 -        <groupId>io.amethystmc</groupId>
 -        <artifactId>amethyst-module</artifactId>
--        <version>1.17.1-2</version>
+-        <version>1.18-1</version>
 -        <relativePath>../pom.xml</relativePath>
 -    </parent>
 -
 -    <artifactId>amethyst-module-cmd-find</artifactId>
--    <version>1.17.1-2</version>
+-    <version>1.18-1</version>
 -    <packaging>jar</packaging>
 -
 -    <name>cmd_find</name>
@@ -223,7 +223,7 @@ index 34efb98d..00000000
 -author: ${module.author}
 diff --git a/module/cmd-list/pom.xml b/module/cmd-list/pom.xml
 deleted file mode 100644
-index 60135bd7..00000000
+index 5bcb87b6..00000000
 --- a/module/cmd-list/pom.xml
 +++ /dev/null
 @@ -1,19 +0,0 @@
@@ -235,7 +235,7 @@ index 60135bd7..00000000
 -    <parent>
 -        <groupId>io.amethystmc</groupId>
 -        <artifactId>amethyst-module</artifactId>
--        <version>1.17.1-2</version>
+-        <version>1.18-1</version>
 -        <relativePath>../pom.xml</relativePath>
 -    </parent>
 -
@@ -334,7 +334,7 @@ index c5999f77..00000000
 -author: ${module.author}
 diff --git a/module/cmd-send/pom.xml b/module/cmd-send/pom.xml
 deleted file mode 100644
-index 631dd44b..00000000
+index a8bb627f..00000000
 --- a/module/cmd-send/pom.xml
 +++ /dev/null
 @@ -1,19 +0,0 @@
@@ -346,12 +346,12 @@ index 631dd44b..00000000
 -    <parent>
 -        <groupId>io.amethystmc</groupId>
 -        <artifactId>amethyst-module</artifactId>
--        <version>1.17.1-2</version>
+-        <version>1.18-1</version>
 -        <relativePath>../pom.xml</relativePath>
 -    </parent>
 -
 -    <artifactId>amethyst-module-cmd-send</artifactId>
--    <version>1.17.1-2</version>
+-    <version>1.18-1</version>
 -    <packaging>jar</packaging>
 -
 -    <name>cmd_send</name>
@@ -389,7 +389,7 @@ index 8f0d0edd..00000000
 -author: ${module.author}
 diff --git a/module/cmd-server/pom.xml b/module/cmd-server/pom.xml
 deleted file mode 100644
-index 296e2cf9..00000000
+index f4e32230..00000000
 --- a/module/cmd-server/pom.xml
 +++ /dev/null
 @@ -1,19 +0,0 @@
@@ -401,12 +401,12 @@ index 296e2cf9..00000000
 -    <parent>
 -        <groupId>io.amethystmc</groupId>
 -        <artifactId>amethyst-module</artifactId>
--        <version>1.17.1-2</version>
+-        <version>1.18-1</version>
 -        <relativePath>../pom.xml</relativePath>
 -    </parent>
 -
 -    <artifactId>amethyst-module-cmd-server</artifactId>
--    <version>1.17.1-2</version>
+-    <version>1.18-1</version>
 -    <packaging>jar</packaging>
 -
 -    <name>cmd_server</name>
@@ -444,7 +444,7 @@ index b0b87841..00000000
 -author: ${module.author}
 diff --git a/module/pom.xml b/module/pom.xml
 deleted file mode 100644
-index 8d3098bb..00000000
+index ad2ef4e9..00000000
 --- a/module/pom.xml
 +++ /dev/null
 @@ -1,53 +0,0 @@
@@ -456,12 +456,12 @@ index 8d3098bb..00000000
 -    <parent>
 -        <groupId>io.amethystmc</groupId>
 -        <artifactId>amethyst-parent</artifactId>
--        <version>1.17.1-2</version>
+-        <version>1.18-1</version>
 -        <relativePath>../pom.xml</relativePath>
 -    </parent>
 -
 -    <artifactId>amethyst-module</artifactId>
--    <version>1.17.1-2</version>
+-    <version>1.18-1</version>
 -    <packaging>pom</packaging>
 -
 -    <name>Amethyst-Modules</name>
@@ -503,7 +503,7 @@ index 8d3098bb..00000000
 -</project>
 diff --git a/module/reconnect-yaml/pom.xml b/module/reconnect-yaml/pom.xml
 deleted file mode 100644
-index 3f367cd3..00000000
+index 9291e072..00000000
 --- a/module/reconnect-yaml/pom.xml
 +++ /dev/null
 @@ -1,19 +0,0 @@
@@ -515,12 +515,12 @@ index 3f367cd3..00000000
 -    <parent>
 -        <groupId>io.amethystmc</groupId>
 -        <artifactId>amethyst-module</artifactId>
--        <version>1.17.1-2</version>
+-        <version>1.18-1</version>
 -        <relativePath>../pom.xml</relativePath>
 -    </parent>
 -
 -    <artifactId>amethyst-module-reconnect-yaml</artifactId>
--    <version>1.17.1-2</version>
+-    <version>1.18-1</version>
 -    <packaging>jar</packaging>
 -
 -    <name>reconnect_yaml</name>
@@ -566,7 +566,7 @@ index 9757ba83..00000000
 -description: ${project.description}
 -author: ${module.author}
 diff --git a/pom.xml b/pom.xml
-index 0e70c8a8..ac944179 100644
+index 8560257c..160f29df 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -42,7 +42,9 @@
@@ -580,7 +580,7 @@ index 0e70c8a8..ac944179 100644
          <module>proxy</module>
          <module>query</module>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 3863fb7b..43cc23f1 100644
+index 605a2700..96a5af88 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -157,6 +157,7 @@
@@ -1169,7 +1169,7 @@ index 3a514a76..d814fcbb 100644
          try
          {
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index a4ef6d3b..d3affbe9 100644
+index ff4bbf34..1b34d6bd 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 @@ -1,6 +1,5 @@
@@ -1180,7 +1180,7 @@ index a4ef6d3b..d3affbe9 100644
  import net.md_5.bungee.conf.YamlConfig;
  import net.md_5.bungee.protocol.ProtocolConstants;
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 9571d947..052c6166 100644
+index e3bdd255..71c982ba 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -10,10 +10,10 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -1594,7 +1594,7 @@ index dd69c6a5..f42d29a0 100644
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java b/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java
 deleted file mode 100644
-index d562af47..00000000
+index 338c30d3..00000000
 --- a/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java
 +++ /dev/null
 @@ -1,42 +0,0 @@
@@ -1620,7 +1620,7 @@ index d562af47..00000000
 -        {
 -            final String url = String.format(
 -                "https://papermc.io/api/v2/projects/%1$s/versions/%2$s/builds/%3$s/downloads/%4$s-%2$s-%3$s.jar",
--                "amethyst", // Amethyst
+-                "waterfall",
 -                net.md_5.bungee.api.ProxyServer.getInstance().getVersion().split(":")[2].split("-")[0],
 -                version.getBuild(),
 -                module.getName()
@@ -1875,5 +1875,5 @@ index d52b8106..00000000
 -    }
 -}
 -- 
-2.29.2.windows.3
+2.33.0
 
