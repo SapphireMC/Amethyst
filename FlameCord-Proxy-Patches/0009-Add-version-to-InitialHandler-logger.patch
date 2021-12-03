@@ -1,0 +1,94 @@
+From 3855a7397f6d608c590ca3f4eb6d7fd4e9c17d11 Mon Sep 17 00:00:00 2001
+From: DenaryDev <denaryplanet@gmail.com>
+Date: Fri, 3 Dec 2021 11:47:51 +0500
+Subject: [PATCH] Add version to InitialHandler logger
+
+
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
+index 1fd80ffe..52b2a495 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
+@@ -97,26 +97,63 @@ public class ProtocolConstants
+                 ProtocolConstants.MINECRAFT_1_18
+         );
+ 
++        /*
+         if ( SNAPSHOT_SUPPORT )
+         {
+-            // supportedVersions.add( "1.18.x" );
+-            // supportedVersionIds.add( ProtocolConstants.MINECRAFT_1_18 );
++             supportedVersions.add( "1.19.x" );
++             supportedVersionIds.add( ProtocolConstants.MINECRAFT_1_19 );
+         }
++        */
+ 
+         SUPPORTED_VERSIONS = supportedVersions.build();
+         SUPPORTED_VERSION_IDS = supportedVersionIds.build();
+     }
+ 
+-    public static final boolean isBeforeOrEq(int before, int other)
++    public static boolean isBeforeOrEq(int before, int other)
+     {
+             return before <= other;
+     }
+ 
+-    public static final boolean isAfterOrEq(int after, int other)
++    public static boolean isAfterOrEq(int after, int other)
+     {
+             return after >= other;
+     }
+ 
++    public static String getVersion(int protocol)
++    {
++        return switch (protocol)
++                {
++                    case 4, 5 -> "1.7.x";
++                    case 47 -> "1.8.x";
++                    case 107, 108, 109, 110 -> "1.9.x";
++                    case 210 -> "1.10.x";
++                    case 315, 316 -> "1.11.x";
++                    case 335 -> "1.12";
++                    case 338 -> "1.12.1";
++                    case 340 -> "1.12.2";
++                    case 393 -> "1.13";
++                    case 401 -> "1.13.1";
++                    case 404 -> "1.13.2";
++                    case 477 -> "1.14";
++                    case 480 -> "1.14.1";
++                    case 485 -> "1.14.2";
++                    case 490 -> "1.14.3";
++                    case 498 -> "1.14.4";
++                    case 573 -> "1.15";
++                    case 575 -> "1.15.1";
++                    case 578 -> "1.15.2";
++                    case 735 -> "1.16";
++                    case 736 -> "1.16.1";
++                    case 751 -> "1.16.2";
++                    case 753 -> "1.16.3";
++                    case 454 -> "1.16.4-5";
++                    case 755 -> "1.17";
++                    case 756 -> "1.17.1";
++                    case 757 -> "1.18";
++                    default -> "Unknown";
++                };
++    }
++
+     public enum Direction
+     {
+ 
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index 5a1fda28..d0ff908e 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -739,7 +739,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     @Override
+     public String toString()
+     {
+-        return "[" + getSocketAddress() + ( getName() != null ? "|" + getName() : "" ) + "] <-> InitialHandler";
++        return "[" + getSocketAddress() + ( getName() != null ? "|" + getName() : "" ) + "|" + ProtocolConstants.getVersion(getVersion()) + "] <-> InitialHandler";
+     }
+ 
+     @Override
+-- 
+2.33.0
+
