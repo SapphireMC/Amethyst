@@ -42,6 +42,7 @@ jobs:
           scripts/build.sh --jar
 
       - name: Publish release
+        if: ${{ matrix.java == 16 }}
         uses: marvinpinto/action-automatic-releases@latest
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
