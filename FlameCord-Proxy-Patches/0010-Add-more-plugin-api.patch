@@ -1,0 +1,685 @@
+From cd4ff86e7a6b39bfe1d6d62a0f644e52c3ab283d Mon Sep 17 00:00:00 2001
+From: DenaryDev <denaryplanet@gmail.com>
+Date: Fri, 17 Dec 2021 18:59:33 +0500
+Subject: [PATCH] Add more plugin api
+
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java b/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
+index 3d1e9a3a..aa6c8591 100644
+--- a/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
++++ b/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
+@@ -3,30 +3,49 @@ package net.md_5.bungee.api.plugin;
+ import com.google.common.base.Preconditions;
+ import com.google.common.util.concurrent.ThreadFactoryBuilder;
+ import java.io.File;
++import java.io.FileOutputStream;
++import java.io.IOException;
+ import java.io.InputStream;
++import java.io.OutputStream;
++import java.net.URL;
++import java.net.URLConnection;
++import java.nio.file.Files;
+ import java.util.concurrent.ExecutorService;
+ import java.util.concurrent.Executors;
++import java.util.logging.Level;
+ import java.util.logging.Logger;
+ import lombok.Getter;
++import lombok.Setter;
+ import net.md_5.bungee.api.ProxyServer;
+ import net.md_5.bungee.api.config.ConfigurationAdapter;
+ import net.md_5.bungee.api.scheduler.GroupedThreadFactory;
++import net.md_5.bungee.config.Configuration;
++import net.md_5.bungee.config.ConfigurationProvider;
++import net.md_5.bungee.config.YamlConfiguration;
+ 
+ /**
+  * Represents any Plugin that may be loaded at runtime to enhance existing
+  * functionality.
++ *
++ * Modified by DenaryDev from SapphireMC
+  */
+-public class Plugin
++// Amethyst - make abstract
++public abstract class Plugin
+ {
+ 
+-    @Getter
+     private PluginDescription description;
+-    @Getter
+     private ProxyServer proxy;
+-    @Getter
+     private File file;
+-    @Getter
+     private Logger logger;
++    // Amethyst start
++    private File dataFolder;
++    private PluginClassloader pluginClassloader;
++    private PluginManager pluginManager;
++    private PluginState state;
++    private ConfigurationProvider provider;
++    private Configuration newConfig;
++    private File configFile;
++    // Amethyst end
+ 
+     public Plugin()
+     {
+@@ -45,12 +64,12 @@ public class Plugin
+     }
+ 
+     // Waterfall start - Allow plugins to use SLF4J for logging
+-    public org.slf4j.Logger getSLF4JLogger() {
++    public org.slf4j.Logger getSLF4JLogger()
++    {
+         return org.slf4j.LoggerFactory.getLogger(logger.getName());
+     }
+     // Waterfall end
+ 
+-
+     /**
+      * Called when the plugin has just been loaded. Most of the proxy will not
+      * be initialized, so only use it for registering
+@@ -67,6 +86,13 @@ public class Plugin
+     {
+     }
+ 
++    /**
++     * Called when proxy is reloaded.
++     */
++    public void onReload()
++    {
++    }
++
+     /**
+      * Called when this plugin is disabled.
+      */
+@@ -74,15 +100,179 @@ public class Plugin
+     {
+     }
+ 
++    /**
++     * Returns the Proxy instance currently running this plugin
++     *
++     * @return Proxy running this plugin
++     */
++    public ProxyServer getProxy()
++    {
++        return proxy;
++    }
++
++    /**
++     * Returns the bungee.yml file containing the details for this plugin
++     *
++     * @return Contents of the bungee.yml file
++     */
++    public PluginDescription getDescription()
++    {
++        return description;
++    }
++
++    /**
++     * Returns the file which contains this plugin
++     *
++     * @return File containing this plugin
++     */
++    public File getFile()
++    {
++        return file;
++    }
++
++    public Logger getLogger()
++    {
++        return logger;
++    }
++
++    public PluginState getState()
++    {
++        return state;
++    }
++
++    public void setState(PluginState state)
++    {
++        this.state = state;
++    }
++
++    public Configuration getConfig()
++    {
++        if (newConfig == null)
++        {
++            reloadConfig();
++        }
++
++        return newConfig;
++    }
++
++    public void reloadConfig()
++    {
++        File configFile = new File(getDataFolder(), "config.yml");
++        if (!configFile.exists())
++        {
++            try (InputStream in = getResourceAsStream("config.yml"))
++            {
++                Files.copy( in, configFile.toPath() );
++            }
++            catch (IOException ex)
++            {
++                throw new RuntimeException( "Unable to create configuration file", ex );
++            }
++        }
++        try
++        {
++            newConfig = provider.load( configFile );
++        }
++        catch (IOException ex)
++        {
++            ex.printStackTrace();
++        }
++    }
++
++    public void saveConfig()
++    {
++        try
++        {
++            provider.save( newConfig, configFile );
++        }
++        catch (IOException ex)
++        {
++            ex.printStackTrace();
++        }
++    }
++
++    public void saveResource(String resourcePath, boolean replace) {
++        if (resourcePath == null || resourcePath.equals("")) {
++            throw new IllegalArgumentException("ResourcePath cannot be null or empty");
++        }
++
++        resourcePath = resourcePath.replace('\\', '/');
++        InputStream in = getResource(resourcePath);
++        if (in == null) {
++            throw new IllegalArgumentException("The embedded resource '" + resourcePath + "' cannot be found in " + file);
++        }
++
++        File outFile = new File(dataFolder, resourcePath);
++        int lastIndex = resourcePath.lastIndexOf('/');
++        File outDir = new File(dataFolder, resourcePath.substring(0, Math.max(lastIndex, 0)));
++
++        if (!outDir.exists()) {
++            outDir.mkdirs();
++        }
++
++        try {
++            if (!outFile.exists() || replace) {
++                OutputStream out = new FileOutputStream(outFile);
++                byte[] buf = new byte[1024];
++                int len;
++                while ((len = in.read(buf)) > 0) {
++                    out.write(buf, 0, len);
++                }
++                out.close();
++                in.close();
++            } else {
++                logger.log(Level.WARNING, "Could not save " + outFile.getName() + " to " + outFile + " because " + outFile.getName() + " already exists.");
++            }
++        } catch (IOException ex) {
++            logger.log(Level.SEVERE, "Could not save " + outFile.getName() + " to " + outFile, ex);
++        }
++    }
++
++    public InputStream getResource(String filename) {
++        if (filename == null) {
++            throw new IllegalArgumentException("Filename cannot be null");
++        }
++
++        try {
++            URL url = getClassLoader().getResource(filename);
++
++            if (url == null) {
++                return null;
++            }
++
++            URLConnection connection = url.openConnection();
++            connection.setUseCaches(false);
++            return connection.getInputStream();
++        } catch (IOException ex) {
++            return null;
++        }
++    }
++
++    public PluginClassloader getClassLoader() {
++        return pluginClassloader;
++    }
++
++    /**
++     * Returns a value indicating whether or not this plugin is currently enabled
++     *
++     * @deprecated use {@link Plugin#getState()} == {@link PluginState}.ENABLED
++     * @return true if this plugin is enable, otherwise false
++     */
++    @Deprecated
++    public boolean isEnabled()
++    {
++        return state == PluginState.ENABLED;
++    }
++
+     /**
+      * Gets the data folder where this plugin may store arbitrary data. It will
+      * be a child of {@link ProxyServer#getPluginsFolder()}.
+      *
+      * @return the data folder of this plugin
+      */
+-    public final File getDataFolder()
++    public File getDataFolder()
+     {
+-        return new File( getProxy().getPluginsFolder(), getDescription().getName() );
++        return dataFolder;
+     }
+ 
+     /**
+@@ -104,11 +294,16 @@ public class Plugin
+      * @param proxy current proxy instance
+      * @param description the description that describes this plugin
+      */
+-    final void init(ProxyServer proxy, PluginDescription description)
++    final void init(ProxyServer proxy, PluginDescription description, PluginManager pluginManager, PluginClassloader pluginClassloader)
+     {
+         this.proxy = proxy;
+         this.description = description;
+         this.file = description.getFile();
++        this.pluginManager = pluginManager; // Amethyst
++        this.provider = ConfigurationProvider.getProvider(YamlConfiguration.class); // Amethyst
++        this.dataFolder = new File( getProxy().getPluginsFolder(), getDescription().getName() ); // Amethyst
++        this.configFile = new File( dataFolder, "config.yml" ); // Amethyst
++        this.pluginClassloader = pluginClassloader;
+         this.logger = Logger.getLogger(description.getName()); // Waterfall - Handle plugin prefixes in implementation
+     }
+ 
+diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginClassloader.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginClassloader.java
+index 68157dd4..ef594e6a 100644
+--- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginClassloader.java
++++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginClassloader.java
+@@ -24,6 +24,7 @@ final class PluginClassloader extends URLClassLoader
+     private static final Set<PluginClassloader> allLoaders = new CopyOnWriteArraySet<>();
+     //
+     private final ProxyServer proxy;
++    private final PluginManager pluginManager;
+     private final PluginDescription desc;
+     private final JarFile jar;
+     private final Manifest manifest;
+@@ -37,13 +38,14 @@ final class PluginClassloader extends URLClassLoader
+         ClassLoader.registerAsParallelCapable();
+     }
+ 
+-    public PluginClassloader(ProxyServer proxy, PluginDescription desc, File file, ClassLoader libraryLoader) throws IOException
++    public PluginClassloader(ProxyServer proxy, PluginManager pluginManager, PluginDescription desc, File file, ClassLoader libraryLoader) throws IOException
+     {
+         super( new URL[]
+-        {
+-            file.toURI().toURL()
+-        } );
++                {
++                        file.toURI().toURL()
++                } );
+         this.proxy = proxy;
++        this.pluginManager = pluginManager;
+         this.desc = desc;
+         this.jar = new JarFile( file );
+         this.manifest = jar.getManifest();
+@@ -177,6 +179,6 @@ final class PluginClassloader extends URLClassLoader
+         }
+ 
+         this.plugin = plugin;
+-        plugin.init( proxy, desc );
++        plugin.init( proxy, desc, pluginManager, this ); // Amethyst
+     }
+ }
+diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginDescription.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginDescription.java
+index ea5c0d37..006f1828 100644
+--- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginDescription.java
++++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginDescription.java
+@@ -34,6 +34,10 @@ public class PluginDescription
+      * Plugin author.
+      */
+     private String author;
++    /**
++     * Minimum api version of this plugin
++     */
++    private String apiVersion;
+     /**
+      * Plugin hard dependencies.
+      */
+diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
+index 2ba0f271..171d3cfc 100644
+--- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
++++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
+@@ -66,7 +66,6 @@ public final class PluginManager
+     private final Multimap<Plugin, Listener> listenersByPlugin = ArrayListMultimap.create();
+     private final HashMap<String,URLClassLoader> pluginloaders = new HashMap<>();
+ 
+-    @SuppressWarnings("unchecked")
+     public PluginManager(ProxyServer proxy)
+     {
+         this.proxy = proxy;
+@@ -109,7 +108,7 @@ public final class PluginManager
+     }
+ 
+     /**
+-     * Unregister a command so it will no longer be executed.
++     * Unregister a command, so it will no longer be executed.
+      *
+      * @param command the command to unregister
+      */
+@@ -201,39 +200,39 @@ public final class PluginManager
+         }
+ 
+         String[] args = Arrays.copyOfRange( split, 1, split.length );
+-            if ( tabResults == null )
+-            {
+-        try { // Waterfall - split command & tab complete exception handlers for exception event
++        if ( tabResults == null )
++        {
++            try { // Waterfall - split command & tab complete exception handlers for exception event
+                 if ( proxy.getConfig().isLogCommands() )
+                 {
+                     proxy.getLogger().log( Level.INFO, "{0} executed command: /{1}", new Object[]
+-                    {
+-                        sender.getName(), commandLine
+-                    } );
++                            {
++                                    sender.getName(), commandLine
++                            } );
+                 }
+                 command.execute( sender, args );
+-        // Waterfall start - split command & tab complete exception handlers for exception event
+-        } catch ( Exception ex ) {
+-            sender.sendMessage( ChatColor.RED + "An internal error occurred whilst executing this command, please check the console log for details." );
+-            ProxyServer.getInstance().getLogger().log( Level.WARNING, "Error in dispatching command", ex );
+-            this.callEvent( new ProxyExceptionEvent( new ProxyCommandException( ex, command, sender, args ) ) ); //Waterfall - throw error event
+-        }
+-        // Waterfall end
+-            } else if ( commandLine.contains( " " ) && command instanceof TabExecutor )
+-            {
+-        try { // Waterfall - split command & tab complete exception handlers for exception event
++                // Waterfall start - split command & tab complete exception handlers for exception event
++            } catch ( Exception ex ) {
++                sender.sendMessage( ChatColor.RED + "An internal error occurred whilst executing this command, please check the console log for details." );
++                ProxyServer.getInstance().getLogger().log( Level.WARNING, "Error in dispatching command", ex );
++                this.callEvent( new ProxyExceptionEvent( new ProxyCommandException( ex, command, sender, args ) ) ); //Waterfall - throw error event
++            }
++            // Waterfall end
++        } else if ( commandLine.contains( " " ) && command instanceof TabExecutor )
++        {
++            try { // Waterfall - split command & tab complete exception handlers for exception event
+                 for ( String s : ( (TabExecutor) command ).onTabComplete( sender, args ) )
+                 {
+                     tabResults.add( s );
+                 }
+-        // Waterfall start - split command & tab complete exception handlers for exception event
+-        } catch ( Exception ex ) {
+-            sender.sendMessage( ChatColor.RED + "An internal error occurred whilst executing this command, please check the console log for details." );
+-            ProxyServer.getInstance().getLogger().log( Level.WARNING, "Error in dispatching command", ex );
+-            this.callEvent( new ProxyExceptionEvent( new ProxyTabCompleteException( ex, command, sender, args ) ) ); //Waterfall - throw error event
+-        }
+-        // Waterfall end
++                // Waterfall start - split command & tab complete exception handlers for exception event
++            } catch ( Exception ex ) {
++                sender.sendMessage( ChatColor.RED + "An internal error occurred whilst executing this command, please check the console log for details." );
++                ProxyServer.getInstance().getLogger().log( Level.WARNING, "Error in dispatching command", ex );
++                this.callEvent( new ProxyExceptionEvent( new ProxyTabCompleteException( ex, command, sender, args ) ) ); //Waterfall - throw error event
+             }
++            // Waterfall end
++        }
+         return true;
+     }
+ 
+@@ -302,6 +301,7 @@ public final class PluginManager
+     // FlameCord start - Adds a method to unload plugin from proxy
+     public void unloadPlugin(Plugin plugin)
+     {
++        plugin.setState(PluginState.DISABLED);
+         plugin.onDisable();
+         this.unregisterListeners( plugin );
+         this.unregisterCommands( plugin );
+@@ -355,11 +355,27 @@ public final class PluginManager
+             {
+                 plugin.onEnable();
+                 ProxyServer.getInstance().getLogger().log( Level.INFO, "Enabled plugin {0} version {1} by {2}", new Object[]
++                        {
++                                plugin.getDescription().getName(), plugin.getDescription().getVersion(), plugin.getDescription().getAuthor()
++                        } );
++                // Amethyst start
++                if (plugin.getState().equals(PluginState.DISABLED))
+                 {
+-                    plugin.getDescription().getName(), plugin.getDescription().getVersion(), plugin.getDescription().getAuthor()
+-                } );
++                    plugin.getLogger().info( plugin.getDescription().getName() + " is disabled." );
++                } else
++                {
++                    if (plugin.getDescription().getApiVersion() != null && plugin.getDescription().getApiVersion().equals(proxy.getVersion()))
++                    {
++                        plugin.setState( PluginState.ENABLED );
++                    } else
++                    {
++                        plugin.setState( PluginState.INCOMPATIBLE );
++                    }
++                }
++                // Amethyst end
+             } catch ( Throwable t )
+             {
++                plugin.setState( PluginState.ERROR ); // Amethyst
+                 // Waterfall start - throw exception event
+                 String msg = "Exception encountered when loading plugin: " + plugin.getDescription().getName();
+                 ProxyServer.getInstance().getLogger().log( Level.WARNING, msg, t );
+@@ -413,9 +429,9 @@ public final class PluginManager
+             if ( dependStatus == Boolean.FALSE && plugin.getDepends().contains( dependName ) ) // only fail if this wasn't a soft dependency
+             {
+                 ProxyServer.getInstance().getLogger().log( Level.WARNING, "{0} (required by {1}) is unavailable", new Object[]
+-                {
+-                    String.valueOf( dependName ), plugin.getName()
+-                } );
++                        {
++                                String.valueOf( dependName ), plugin.getName()
++                        } );
+                 status = false;
+             }
+ 
+@@ -431,7 +447,7 @@ public final class PluginManager
+         {
+             try
+             {
+-                URLClassLoader loader = new PluginClassloader( proxy, plugin, plugin.getFile(), ( libraryLoader != null ) ? libraryLoader.createLoader( plugin ) : null );
++                URLClassLoader loader = new PluginClassloader( proxy, this, plugin, plugin.getFile(), ( libraryLoader != null ) ? libraryLoader.createLoader( plugin ) : null );
+                 Class<?> main = loader.loadClass( plugin.getMain() );
+                 Plugin clazz = (Plugin) main.getDeclaredConstructor().newInstance();
+ 
+@@ -439,11 +455,12 @@ public final class PluginManager
+                 // FlameCord start - cache url classloaders to unload plugins
+                 pluginloaders.put( plugin.getName(),loader );
+                 // FlameCord end
++                clazz.setState( PluginState.LOADED ); // Amethyst
+                 clazz.onLoad();
+                 ProxyServer.getInstance().getLogger().log( Level.INFO, "Loaded plugin {0} version {1} by {2}", new Object[]
+-                {
+-                    plugin.getName(), plugin.getVersion(), plugin.getAuthor()
+-                } );
++                        {
++                                plugin.getName(), plugin.getVersion(), plugin.getAuthor()
++                        } );
+             } catch ( Throwable t )
+             {
+                 proxy.getLogger().log( Level.WARNING, "Error loading plugin " + plugin.getName(), t );
+@@ -514,9 +531,9 @@ public final class PluginManager
+         if ( elapsed > 250000000 )
+         {
+             ProxyServer.getInstance().getLogger().log( Level.WARNING, "Event {0} took {1}ms to process!", new Object[]
+-            {
+-                event, elapsed / 1000000
+-            } );
++                    {
++                            event, elapsed / 1000000
++                    } );
+         }
+         return event;
+     }
+diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginState.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginState.java
+new file mode 100644
+index 00000000..91d019dc
+--- /dev/null
++++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginState.java
+@@ -0,0 +1,33 @@
++package net.md_5.bungee.api.plugin;
++
++/**
++ * Represents the current run-time state of a {@link Plugin}.
++ *
++ * @author DenaryDev
++ */
++public enum PluginState {
++    /**
++     * The plugin has been correctly loaded.
++     */
++    LOADED,
++
++    /**
++     * The plugin has been correctly enabled and is now fully working.
++     */
++    ENABLED,
++
++    /**
++     * The plugin is fully disabled.
++     */
++    DISABLED,
++
++    /**
++     * The plugin has not been loaded because it requires a different version of Amethyst.
++     */
++    INCOMPATIBLE,
++
++    /**
++     * The plugin loading or enabling process has been interrupted by an unhandled error.
++     */
++    ERROR
++}
+diff --git a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java b/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
+index 775ff7d1..b171d296 100644
+--- a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
++++ b/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
+@@ -40,8 +40,11 @@ public class MessagesConfiguration {
+ 						&e   ядро сервера.
+ 						&8&l* &6/amethyst firewall &7- &eПоказывает информацию о
+ 						&e   брандмауэре.
++						&8&l* &6/amethyst plugins &7- &eПоказывает установленные
++						&e   плагины
+ 						&8&l* &6/amethyst help &7- &eПоказывает это сообщение.
+ 						&r""", configuration );
++			setIfUnexistant( "command_amethyst_plugins", "&7&l(&5Amethyst&7&l) &fПлагины ({0}): {1}", configuration );
+ 			setIfUnexistant( "command_amethyst_usage", "&7&l(&5Amethyst&7&l) &fИспользуйте /amethyst help для просмотра доступных команд", configuration );
+ 			setIfUnexistant( "command_find_online_at", "&7&l(&5Amethyst&7&l) &fИгрок &e{0} &fиграет на сервере &e{1}", configuration );
+ 			setIfUnexistant( "command_ip", "&7&l(&5Amethyst&7&l) &fIP игрока &e{0}&f: &e{1}", configuration );
+@@ -56,7 +59,7 @@ public class MessagesConfiguration {
+ 			setIfUnexistant( "command_lobby_teleport", "&7&l(&5Amethyst&7&l) &fТелепортируем вас в лобби.", configuration );
+ 			setIfUnexistant( "command_perms_groups", "&7&l(&5Amethyst&7&l) &fВаши текущие группы:&e {0}", configuration );
+ 			setIfUnexistant( "command_perms_permission", "&7- {0}", configuration );
+-			setIfUnexistant( "command_reload", "&7&l(&5Amethyst&7&l) &aВсе файлы успешно перезагружены!", configuration );
++			setIfUnexistant( "command_reload", "&7&l(&5Amethyst&7&l) &aВсе файлы и плагины успешно перезагружены!", configuration );
+ 			setIfUnexistant( "command_server_current", "&7&l(&5Amethyst&7&l) &fВы находитесь на сервере &e{0}&f", configuration );
+ 			setIfUnexistant( "command_server_list", "&fВ настоящее время вы можете подключиться к следующим серверам: &e", configuration );
+ 			setIfUnexistant( "command_server_text", """
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index d5480cb5..dfd7d05d 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -31,6 +31,7 @@ import net.md_5.bungee.api.config.ServerInfo;
+ import net.md_5.bungee.api.connection.ProxiedPlayer;
+ import net.md_5.bungee.api.plugin.Plugin;
+ import net.md_5.bungee.api.plugin.PluginManager;
++import net.md_5.bungee.api.plugin.PluginState;
+ import net.md_5.bungee.chat.*;
+ import net.md_5.bungee.command.*;
+ import net.md_5.bungee.compress.CompressFactory;
+@@ -467,6 +468,7 @@ public class BungeeCord extends ProxyServer
+             try
+             {
+                 plugin.onDisable();
++                plugin.setState(PluginState.DISABLED);
+                 for ( Handler handler : plugin.getLogger().getHandlers() )
+                 {
+                     handler.close();
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandFlame.java b/proxy/src/main/java/net/md_5/bungee/command/CommandFlame.java
+index 4e6dce0e..14147afb 100644
+--- a/proxy/src/main/java/net/md_5/bungee/command/CommandFlame.java
++++ b/proxy/src/main/java/net/md_5/bungee/command/CommandFlame.java
+@@ -1,9 +1,14 @@
+ package net.md_5.bungee.command;
+ 
++import java.util.Collection;
+ import net.md_5.bungee.BungeeCord;
++import net.md_5.bungee.api.ChatColor;
+ import net.md_5.bungee.api.CommandSender;
++import net.md_5.bungee.api.chat.ComponentBuilder;
+ import net.md_5.bungee.api.chat.TextComponent;
+ import net.md_5.bungee.api.plugin.Command;
++import net.md_5.bungee.api.plugin.Plugin;
++import net.md_5.bungee.api.plugin.PluginState;
+ 
+ public class CommandFlame extends Command
+ {
+@@ -30,6 +35,31 @@ public class CommandFlame extends Command
+                         §6More commands §7- §e/amethyst
+                         §r""", BungeeCord.getInstance().getVersion() ) ) );
+                 case "help" -> sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_amethyst_help" ) );
++                case "plugins", "pl" -> {
++                    final Collection<Plugin> plugins = BungeeCord.getInstance().getPluginManager().getPlugins();
++                    final StringBuilder builder = new StringBuilder();
++
++                    for (Plugin plugin : plugins)
++                    {
++                        if (builder.length() > 0)
++                        {
++                            builder.append( "&f" );
++                            builder.append( ", " );
++                        }
++
++                        String color = switch (plugin.getState())
++                                {
++                                    case LOADED -> "&e";
++                                    case ENABLED -> "&a";
++                                    case DISABLED -> "&7";
++                                    case INCOMPATIBLE -> "&6";
++                                    case ERROR -> "&c";
++                                };
++
++                        builder.append( color ).append( plugin.getDescription().getName() );
++                    }
++                    sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_amethyst_plugins", plugins.size(), ChatColor.translateAlternateColorCodes( builder.toString() ) ) );
++                }
+                 default -> sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_amethyst_usage" ) );
+             }
+         } else {
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
+index 75e9cfba..d907acfe 100644
+--- a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
++++ b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
+@@ -9,6 +9,8 @@ import net.md_5.bungee.api.plugin.Command;
+ 
+ import java.util.Collection;
+ import java.util.HashSet;
++import net.md_5.bungee.api.plugin.Plugin;
++import net.md_5.bungee.api.plugin.PluginState;
+ 
+ public class CommandReload extends Command
+ {
+@@ -34,6 +36,12 @@ public class CommandReload extends Command
+ 
+         FlameCord.renew( BungeeCord.getInstance().getLogger(), whitelistedAddresses );
+ 
++        for ( final Plugin plugin : BungeeCord.getInstance().getPluginManager().getPlugins() ) {
++            if (plugin.getState().equals(PluginState.ENABLED)) {
++                plugin.onReload();
++            }
++        }
++
+         sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_reload" ) );
+     }
+ }
+-- 
+2.29.2.windows.3
+
