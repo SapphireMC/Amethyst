@@ -1,11 +1,11 @@
-From 3855a7397f6d608c590ca3f4eb6d7fd4e9c17d11 Mon Sep 17 00:00:00 2001
+From 1a920d1a2ea1e89024245eceebe152f74fcb89f8 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Fri, 3 Dec 2021 11:47:51 +0500
-Subject: [PATCH] Add version to InitialHandler logger
+Subject: [PATCH] Add player version to logger
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
-index 1fd80ffe..52b2a495 100644
+index c001e4ca..62120bd8 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 @@ -97,26 +97,63 @@ public class ProtocolConstants
@@ -68,7 +68,7 @@ index 1fd80ffe..52b2a495 100644
 +                    case 454 -> "1.16.4-5";
 +                    case 755 -> "1.17";
 +                    case 756 -> "1.17.1";
-+                    case 757 -> "1.18";
++                    case 757 -> "1.18.0-1";
 +                    default -> "Unknown";
 +                };
 +    }
@@ -76,6 +76,18 @@ index 1fd80ffe..52b2a495 100644
      public enum Direction
      {
  
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+index 3876ba19..4a168c05 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+@@ -759,6 +759,6 @@ public class DownstreamBridge extends PacketHandler
+     @Override
+     public String toString()
+     {
+-        return "[" + con.getAddress() + "|" + con.getName() + "] <-> DownstreamBridge <-> [" + server.getInfo().getName() + "]";
++        return "[" + con.getAddress() + "|" + con.getName() + "|" + ProtocolConstants.getVersion(con.getPendingConnection().getVersion()) + "] <-> DownstreamBridge <-> [" + server.getInfo().getName() + "]";
+     }
+ }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 index 5a1fda28..d0ff908e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
@@ -89,6 +101,18 @@ index 5a1fda28..d0ff908e 100644
      }
  
      @Override
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
+index 5746834a..f91a5942 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
+@@ -296,6 +296,6 @@ public class UpstreamBridge extends PacketHandler
+     @Override
+     public String toString()
+     {
+-        return "[" + con.getAddress() + "|" + con.getName() + "] -> UpstreamBridge";
++        return "[" + con.getAddress() + "|" + con.getName() + "|" + ProtocolConstants.getVersion(con.getPendingConnection().getVersion()) + "] -> UpstreamBridge";
+     }
+ }
 -- 
-2.33.0
+2.29.2.windows.3
 

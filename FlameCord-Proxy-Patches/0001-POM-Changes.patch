@@ -1,4 +1,4 @@
-From 64e9b3dde32f765974112d11ba48d00cfecaf29c Mon Sep 17 00:00:00 2001
+From 192fb964f3ef02127e722f3961d8bdf9fe5a691b Mon Sep 17 00:00:00 2001
 From: Denary Planet <denaryplanet@gmail.com>
 Date: Fri, 9 Jul 2021 18:43:32 +0500
 Subject: [PATCH] POM Changes
@@ -445,7 +445,7 @@ index acf53b43..d7b564f6 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/log4j/pom.xml b/log4j/pom.xml
-index 09fb31d5..e9d642bb 100644
+index 626d86b6..cdbefb04 100644
 --- a/log4j/pom.xml
 +++ b/log4j/pom.xml
 @@ -3,19 +3,18 @@
@@ -474,7 +474,7 @@ index 09fb31d5..e9d642bb 100644
 +    <description>Simplistic and performant Log4j2 based logger and console API designed for use with Amethyst and Minecraft related applications.</description>
  
      <properties>
-         <log4j2.version>2.14.1</log4j2.version>
+         <log4j2.version>2.15.0</log4j2.version>
 @@ -50,5 +49,24 @@
              <version>3.4.4</version>
              <scope>runtime</scope>
@@ -1226,5 +1226,5 @@ index 550a463e..d237b233 100644
              <scope>compile</scope>
          </dependency>
 -- 
-2.33.0
+2.29.2.windows.3
 
