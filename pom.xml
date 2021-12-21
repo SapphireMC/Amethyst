@@ -2,9 +2,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>io.amethystmc</groupId>
+    <groupId>io.sapphiremc.amethyst</groupId>
     <artifactId>amethyst-super</artifactId>
-    <version>1.18-1</version>
+    <version>1.18.1-R0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Amethyst-Super</name>

@@ -1,11 +1,11 @@
-From 192fb964f3ef02127e722f3961d8bdf9fe5a691b Mon Sep 17 00:00:00 2001
+From ee6ca424fd1071889b122f178df5dc557994db64 Mon Sep 17 00:00:00 2001
 From: Denary Planet <denaryplanet@gmail.com>
 Date: Fri, 9 Jul 2021 18:43:32 +0500
-Subject: [PATCH] POM Changes
+Subject: [PATCH] Build changes
 
 
 diff --git a/api/pom.xml b/api/pom.xml
-index bfb96040..0e3de5a0 100644
+index bfb96040..4bd7a256 100644
 --- a/api/pom.xml
 +++ b/api/pom.xml
 @@ -4,42 +4,41 @@
@@ -15,9 +15,9 @@ index bfb96040..0e3de5a0 100644
 -        <groupId>io.github.waterfallmc</groupId>
 -        <artifactId>flamecord-parent</artifactId>
 -        <version>1.18-R0.1-SNAPSHOT</version>
-+        <groupId>io.amethystmc</groupId>
++        <groupId>io.sapphiremc.amethyst</groupId>
 +        <artifactId>amethyst-parent</artifactId>
-+        <version>1.18-1</version>
++        <version>1.18.1-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
@@ -25,7 +25,7 @@ index bfb96040..0e3de5a0 100644
 -    <artifactId>flamecord-api</artifactId>
 -    <version>1.18-R0.1-SNAPSHOT</version>
 +    <artifactId>amethyst-api</artifactId>
-+    <version>1.18-1</version>
++    <version>1.18.1-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>FlameCord-API</name>
@@ -36,7 +36,7 @@ index bfb96040..0e3de5a0 100644
          <dependency>
 -            <groupId>io.github.waterfallmc</groupId>
 -            <artifactId>flamecord-chat</artifactId>
-+            <groupId>io.amethystmc</groupId>
++            <groupId>${project.groupId}</groupId>
 +            <artifactId>amethyst-chat</artifactId>
              <version>${project.version}</version>
              <scope>compile</scope>
@@ -44,7 +44,7 @@ index bfb96040..0e3de5a0 100644
          <dependency>
 -            <groupId>io.github.waterfallmc</groupId>
 -            <artifactId>flamecord-config</artifactId>
-+            <groupId>io.amethystmc</groupId>
++            <groupId>${project.groupId}</groupId>
 +            <artifactId>amethyst-config</artifactId>
              <version>${project.version}</version>
              <scope>compile</scope>
@@ -52,7 +52,7 @@ index bfb96040..0e3de5a0 100644
          <dependency>
 -            <groupId>io.github.waterfallmc</groupId>
 -            <artifactId>flamecord-event</artifactId>
-+            <groupId>io.amethystmc</groupId>
++            <groupId>${project.groupId}</groupId>
 +            <artifactId>amethyst-event</artifactId>
              <version>${project.version}</version>
              <scope>compile</scope>
@@ -60,7 +60,7 @@ index bfb96040..0e3de5a0 100644
          <dependency>
 -            <groupId>io.github.waterfallmc</groupId>
 -            <artifactId>flamecord-protocol</artifactId>
-+            <groupId>io.amethystmc</groupId>
++            <groupId>${project.groupId}</groupId>
 +            <artifactId>amethyst-protocol</artifactId>
              <version>${project.version}</version>
              <scope>compile</scope>
@@ -92,7 +92,7 @@ index bfb96040..0e3de5a0 100644
      </dependencies>
  </project>
 diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
-index e797d892..f73bbafd 100644
+index e797d892..9061aa7c 100644
 --- a/bootstrap/pom.xml
 +++ b/bootstrap/pom.xml
 @@ -4,40 +4,38 @@
@@ -102,9 +102,9 @@ index e797d892..f73bbafd 100644
 -        <groupId>io.github.waterfallmc</groupId>
 -        <artifactId>flamecord-parent</artifactId>
 -        <version>1.18-R0.1-SNAPSHOT</version>
-+        <groupId>io.amethystmc</groupId>
++        <groupId>io.sapphiremc.amethyst</groupId>
 +        <artifactId>amethyst-parent</artifactId>
-+        <version>1.18-1</version>
++        <version>1.18.1-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
@@ -112,7 +112,7 @@ index e797d892..f73bbafd 100644
 -    <artifactId>flamecord-bootstrap</artifactId>
 -    <version>1.18-R0.1-SNAPSHOT</version>
 +    <artifactId>amethyst-bootstrap</artifactId>
-+    <version>1.18-1</version>
++    <version>1.18.1-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>FlameCord-Bootstrap</name>
@@ -135,7 +135,7 @@ index e797d892..f73bbafd 100644
          <dependency>
 -            <groupId>io.github.waterfallmc</groupId>
 -            <artifactId>flamecord-proxy</artifactId>
-+            <groupId>io.amethystmc</groupId>
++            <groupId>${project.groupId}</groupId>
 +            <artifactId>amethyst-proxy</artifactId>
              <version>${project.version}</version>
              <scope>compile</scope>
@@ -188,7 +188,7 @@ index e797d892..f73bbafd 100644
 +    -->
  </project>
 diff --git a/chat/pom.xml b/chat/pom.xml
-index 48c0029f..3fd85c9d 100644
+index 48c0029f..01515387 100644
 --- a/chat/pom.xml
 +++ b/chat/pom.xml
 @@ -4,19 +4,18 @@
@@ -198,9 +198,9 @@ index 48c0029f..3fd85c9d 100644
 -        <groupId>io.github.waterfallmc</groupId>
 -        <artifactId>flamecord-parent</artifactId>
 -        <version>1.18-R0.1-SNAPSHOT</version>
-+        <groupId>io.amethystmc</groupId>
++        <groupId>io.sapphiremc.amethyst</groupId>
 +        <artifactId>amethyst-parent</artifactId>
-+        <version>1.18-1</version>
++        <version>1.18.1-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
@@ -208,7 +208,7 @@ index 48c0029f..3fd85c9d 100644
 -    <artifactId>flamecord-chat</artifactId>
 -    <version>1.18-R0.1-SNAPSHOT</version>
 +    <artifactId>amethyst-chat</artifactId>
-+    <version>1.18-1</version>
++    <version>1.18.1-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>FlameCord-Chat</name>
@@ -219,7 +219,7 @@ index 48c0029f..3fd85c9d 100644
      <dependencies>
          <dependency>
 diff --git a/config/pom.xml b/config/pom.xml
-index 5a7c9993..58029453 100644
+index 5a7c9993..ed045eee 100644
 --- a/config/pom.xml
 +++ b/config/pom.xml
 @@ -4,32 +4,31 @@
@@ -229,9 +229,9 @@ index 5a7c9993..58029453 100644
 -        <groupId>io.github.waterfallmc</groupId>
 -        <artifactId>flamecord-parent</artifactId>
 -        <version>1.18-R0.1-SNAPSHOT</version>
-+        <groupId>io.amethystmc</groupId>
++        <groupId>io.sapphiremc.amethyst</groupId>
 +        <artifactId>amethyst-parent</artifactId>
-+        <version>1.18-1</version>
++        <version>1.18.1-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
@@ -239,7 +239,7 @@ index 5a7c9993..58029453 100644
 -    <artifactId>flamecord-config</artifactId>
 -    <version>1.18-R0.1-SNAPSHOT</version>
 +    <artifactId>amethyst-config</artifactId>
-+    <version>1.18-1</version>
++    <version>1.18.1-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>FlameCord-Config</name>
@@ -265,7 +265,7 @@ index 5a7c9993..58029453 100644
              <optional>true</optional>
          </dependency>
 diff --git a/event/pom.xml b/event/pom.xml
-index ade69b60..b85e4842 100644
+index ade69b60..6a44a777 100644
 --- a/event/pom.xml
 +++ b/event/pom.xml
 @@ -4,17 +4,16 @@
@@ -275,9 +275,9 @@ index ade69b60..b85e4842 100644
 -        <groupId>io.github.waterfallmc</groupId>
 -        <artifactId>flamecord-parent</artifactId>
 -        <version>1.18-R0.1-SNAPSHOT</version>
-+        <groupId>io.amethystmc</groupId>
++        <groupId>io.sapphiremc.amethyst</groupId>
 +        <artifactId>amethyst-parent</artifactId>
-+        <version>1.18-1</version>
++        <version>1.18.1-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
@@ -285,7 +285,7 @@ index ade69b60..b85e4842 100644
 -    <artifactId>flamecord-event</artifactId>
 -    <version>1.18-R0.1-SNAPSHOT</version>
 +    <artifactId>amethyst-event</artifactId>
-+    <version>1.18-1</version>
++    <version>1.18.1-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>FlameCord-Event</name>
@@ -295,7 +295,7 @@ index ade69b60..b85e4842 100644
  </project>
 diff --git a/flame/pom.xml b/flame/pom.xml
 new file mode 100644
-index 00000000..d7cc5e1b
+index 00000000..471a329a
 --- /dev/null
 +++ b/flame/pom.xml
 @@ -0,0 +1,33 @@
@@ -304,14 +304,14 @@ index 00000000..d7cc5e1b
 +    <modelVersion>4.0.0</modelVersion>
 +
 +    <parent>
-+        <groupId>io.amethystmc</groupId>
++        <groupId>io.sapphiremc.amethyst</groupId>
 +        <artifactId>amethyst-parent</artifactId>
-+        <version>1.18-1</version>
++        <version>1.18.1-R0.1-SNAPSHOT</version>
 +        <relativePath>../pom.xml</relativePath>
 +    </parent>
 +
 +    <artifactId>amethyst-flame</artifactId>
-+    <version>1.18-1</version>
++    <version>1.18.1-R0.1-SNAPSHOT</version>
 +    <packaging>jar</packaging>
 +
 +    <name>Amethyst-Flame</name>
@@ -319,13 +319,13 @@ index 00000000..d7cc5e1b
 +
 +    <dependencies>
 +        <dependency>
-+            <groupId>io.amethystmc</groupId>
++            <groupId>${project.groupId}</groupId>
 +            <artifactId>amethyst-config</artifactId>
 +            <version>${project.version}</version>
 +            <scope>compile</scope>
 +        </dependency>
 +        <dependency>
-+            <groupId>io.amethystmc</groupId>
++            <groupId>${project.groupId}</groupId>
 +            <artifactId>amethyst-chat</artifactId>
 +            <version>${project.version}</version>
 +            <scope>compile</scope>
@@ -403,7 +403,7 @@ index fc24d714..00000000
 -    </build>
 -</project>
 diff --git a/log/pom.xml b/log/pom.xml
-index acf53b43..d7b564f6 100644
+index acf53b43..ac526d8d 100644
 --- a/log/pom.xml
 +++ b/log/pom.xml
 @@ -4,19 +4,18 @@
@@ -413,9 +413,9 @@ index acf53b43..d7b564f6 100644
 -        <groupId>io.github.waterfallmc</groupId>
 -        <artifactId>flamecord-parent</artifactId>
 -        <version>1.18-R0.1-SNAPSHOT</version>
-+        <groupId>io.amethystmc</groupId>
++        <groupId>io.sapphiremc.amethyst</groupId>
 +        <artifactId>amethyst-parent</artifactId>
-+        <version>1.18-1</version>
++        <version>1.18.1-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
@@ -423,7 +423,7 @@ index acf53b43..d7b564f6 100644
 -    <artifactId>flamecord-log</artifactId>
 -    <version>1.18-R0.1-SNAPSHOT</version>
 +    <artifactId>amethyst-log</artifactId>
-+    <version>1.18-1</version>
++    <version>1.18.1-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>FlameCord-Log</name>
@@ -439,13 +439,13 @@ index acf53b43..d7b564f6 100644
          <dependency>
 -            <groupId>io.github.waterfallmc</groupId>
 -            <artifactId>flamecord-chat</artifactId>
-+            <groupId>io.amethystmc</groupId>
++            <groupId>io.sapphiremc.amethyst</groupId>
 +            <artifactId>amethyst-chat</artifactId>
              <version>${project.version}</version>
              <scope>compile</scope>
          </dependency>
 diff --git a/log4j/pom.xml b/log4j/pom.xml
-index 626d86b6..cdbefb04 100644
+index 3645c6b2..7981b16a 100644
 --- a/log4j/pom.xml
 +++ b/log4j/pom.xml
 @@ -3,19 +3,18 @@
@@ -455,9 +455,9 @@ index 626d86b6..cdbefb04 100644
 -        <groupId>io.github.waterfallmc</groupId>
 -        <artifactId>flamecord-parent</artifactId>
 -        <version>1.18-R0.1-SNAPSHOT</version>
-+        <groupId>io.amethystmc</groupId>
++        <groupId>io.sapphiremc.amethyst</groupId>
 +        <artifactId>amethyst-parent</artifactId>
-+        <version>1.18-1</version>
++        <version>1.18.1-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
@@ -465,7 +465,7 @@ index 626d86b6..cdbefb04 100644
 -    <artifactId>flamecord-log4j</artifactId>
 -    <version>1.18-R0.1-SNAPSHOT</version>
 +    <artifactId>amethyst-log4j</artifactId>
-+    <version>1.18-1</version>
++    <version>1.18.1-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>FlameCord-Log</name>
@@ -474,7 +474,7 @@ index 626d86b6..cdbefb04 100644
 +    <description>Simplistic and performant Log4j2 based logger and console API designed for use with Amethyst and Minecraft related applications.</description>
  
      <properties>
-         <log4j2.version>2.15.0</log4j2.version>
+         <log4j2.version>2.17.0</log4j2.version>
 @@ -50,5 +49,24 @@
              <version>3.4.4</version>
              <scope>runtime</scope>
@@ -493,7 +493,7 @@ index 626d86b6..cdbefb04 100644
 +        </dependency>
 +
 +        <dependency>
-+            <groupId>io.amethystmc</groupId>
++            <groupId>${project.groupId}</groupId>
 +            <artifactId>amethyst-chat</artifactId>
 +            <version>${project.version}</version>
 +            <scope>compile</scope>
@@ -501,7 +501,7 @@ index 626d86b6..cdbefb04 100644
      </dependencies>
  </project>
 diff --git a/module/cmd-alert/pom.xml b/module/cmd-alert/pom.xml
-index 6b53066f..d256073e 100644
+index 6b53066f..22ddba1e 100644
 --- a/module/cmd-alert/pom.xml
 +++ b/module/cmd-alert/pom.xml
 @@ -4,15 +4,14 @@
@@ -511,9 +511,9 @@ index 6b53066f..d256073e 100644
 -        <groupId>io.github.waterfallmc</groupId>
 -        <artifactId>flamecord-module</artifactId>
 -        <version>1.18-R0.1-SNAPSHOT</version>
-+        <groupId>io.amethystmc</groupId>
++        <groupId>io.sapphiremc.amethyst</groupId>
 +        <artifactId>amethyst-module</artifactId>
-+        <version>1.18-1</version>
++        <version>1.18.1-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
@@ -521,12 +521,23 @@ index 6b53066f..d256073e 100644
 -    <artifactId>flamecord-module-cmd-alert</artifactId>
 -    <version>1.18-R0.1-SNAPSHOT</version>
 +    <artifactId>amethyst-module-cmd-alert</artifactId>
-+    <version>1.18-1</version>
++    <version>1.18.1-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
      <name>cmd_alert</name>
+diff --git a/module/cmd-alert/src/main/resources/plugin.yml b/module/cmd-alert/src/main/resources/plugin.yml
+index 8ed58084..9dcf1704 100644
+--- a/module/cmd-alert/src/main/resources/plugin.yml
++++ b/module/cmd-alert/src/main/resources/plugin.yml
+@@ -1,5 +1,5 @@
+ name: ${project.name}
+ main: net.md_5.bungee.module.cmd.alert.PluginAlert
+-version: ${describe}
++version: ${project.version}
+ description: ${project.description}
+ author: ${module.author}
 diff --git a/module/cmd-find/pom.xml b/module/cmd-find/pom.xml
-index b8d562cf..6a8debdd 100644
+index b8d562cf..0a32e75c 100644
 --- a/module/cmd-find/pom.xml
 +++ b/module/cmd-find/pom.xml
 @@ -4,15 +4,14 @@
@@ -536,9 +547,9 @@ index b8d562cf..6a8debdd 100644
 -        <groupId>io.github.waterfallmc</groupId>
 -        <artifactId>flamecord-module</artifactId>
 -        <version>1.18-R0.1-SNAPSHOT</version>
-+        <groupId>io.amethystmc</groupId>
++        <groupId>io.sapphiremc.amethyst</groupId>
 +        <artifactId>amethyst-module</artifactId>
-+        <version>1.18-1</version>
++        <version>1.18.1-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
@@ -546,12 +557,23 @@ index b8d562cf..6a8debdd 100644
 -    <artifactId>flamecord-module-cmd-find</artifactId>
 -    <version>1.18-R0.1-SNAPSHOT</version>
 +    <artifactId>amethyst-module-cmd-find</artifactId>
-+    <version>1.18-1</version>
++    <version>1.18.1-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
      <name>cmd_find</name>
+diff --git a/module/cmd-find/src/main/resources/plugin.yml b/module/cmd-find/src/main/resources/plugin.yml
+index e0f346f9..34efb98d 100644
+--- a/module/cmd-find/src/main/resources/plugin.yml
++++ b/module/cmd-find/src/main/resources/plugin.yml
+@@ -1,5 +1,5 @@
+ name: ${project.name}
+ main: net.md_5.bungee.module.cmd.find.PluginFind
+-version: ${describe}
++version: ${project.version}
+ description: ${project.description}
+ author: ${module.author}
 diff --git a/module/cmd-list/pom.xml b/module/cmd-list/pom.xml
-index f7cebd89..5bcb87b6 100644
+index f7cebd89..d6615975 100644
 --- a/module/cmd-list/pom.xml
 +++ b/module/cmd-list/pom.xml
 @@ -4,15 +4,14 @@
@@ -561,9 +583,9 @@ index f7cebd89..5bcb87b6 100644
 -        <groupId>io.github.waterfallmc</groupId>
 -        <artifactId>flamecord-module</artifactId>
 -        <version>1.18-R0.1-SNAPSHOT</version>
-+        <groupId>io.amethystmc</groupId>
++        <groupId>io.sapphiremc.amethyst</groupId>
 +        <artifactId>amethyst-module</artifactId>
-+        <version>1.18-1</version>
++        <version>1.18.1-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
@@ -571,12 +593,23 @@ index f7cebd89..5bcb87b6 100644
 -    <artifactId>flamecord-module-cmd-list</artifactId>
 -    <version>1.18-R0.1-SNAPSHOT</version>
 +    <artifactId>amethyst-module-cmd-list</artifactId>
-+    <version>1.17.1-2</version>
++    <version>1.18.1-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
      <name>cmd_list</name>
+diff --git a/module/cmd-list/src/main/resources/plugin.yml b/module/cmd-list/src/main/resources/plugin.yml
+index 272e64eb..c5999f77 100644
+--- a/module/cmd-list/src/main/resources/plugin.yml
++++ b/module/cmd-list/src/main/resources/plugin.yml
+@@ -1,5 +1,5 @@
+ name: ${project.name}
+ main: net.md_5.bungee.module.cmd.list.PluginList
+-version: ${describe}
++version: ${project.version}
+ description: ${project.description}
+ author: ${module.author}
 diff --git a/module/cmd-send/pom.xml b/module/cmd-send/pom.xml
-index 62e7d4f4..a8bb627f 100644
+index 62e7d4f4..93411a38 100644
 --- a/module/cmd-send/pom.xml
 +++ b/module/cmd-send/pom.xml
 @@ -4,15 +4,14 @@
@@ -586,9 +619,9 @@ index 62e7d4f4..a8bb627f 100644
 -        <groupId>io.github.waterfallmc</groupId>
 -        <artifactId>flamecord-module</artifactId>
 -        <version>1.18-R0.1-SNAPSHOT</version>
-+        <groupId>io.amethystmc</groupId>
++        <groupId>io.sapphiremc.amethyst</groupId>
 +        <artifactId>amethyst-module</artifactId>
-+        <version>1.18-1</version>
++        <version>1.18.1-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
@@ -596,12 +629,23 @@ index 62e7d4f4..a8bb627f 100644
 -    <artifactId>flamecord-module-cmd-send</artifactId>
 -    <version>1.18-R0.1-SNAPSHOT</version>
 +    <artifactId>amethyst-module-cmd-send</artifactId>
-+    <version>1.18-1</version>
++    <version>1.18.1-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
      <name>cmd_send</name>
+diff --git a/module/cmd-send/src/main/resources/plugin.yml b/module/cmd-send/src/main/resources/plugin.yml
+index a613e78b..8f0d0edd 100644
+--- a/module/cmd-send/src/main/resources/plugin.yml
++++ b/module/cmd-send/src/main/resources/plugin.yml
+@@ -1,5 +1,5 @@
+ name: ${project.name}
+ main: net.md_5.bungee.module.cmd.send.PluginSend
+-version: ${describe}
++version: ${project.version}
+ description: ${project.description}
+ author: ${module.author}
 diff --git a/module/cmd-server/pom.xml b/module/cmd-server/pom.xml
-index 5c6253ac..f4e32230 100644
+index 5c6253ac..56a2a18f 100644
 --- a/module/cmd-server/pom.xml
 +++ b/module/cmd-server/pom.xml
 @@ -4,15 +4,14 @@
@@ -611,9 +655,9 @@ index 5c6253ac..f4e32230 100644
 -        <groupId>io.github.waterfallmc</groupId>
 -        <artifactId>flamecord-module</artifactId>
 -        <version>1.18-R0.1-SNAPSHOT</version>
-+        <groupId>io.amethystmc</groupId>
++        <groupId>io.sapphiremc.amethyst</groupId>
 +        <artifactId>amethyst-module</artifactId>
-+        <version>1.18-1</version>
++        <version>1.18.1-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
@@ -621,12 +665,23 @@ index 5c6253ac..f4e32230 100644
 -    <artifactId>flamecord-module-cmd-server</artifactId>
 -    <version>1.18-R0.1-SNAPSHOT</version>
 +    <artifactId>amethyst-module-cmd-server</artifactId>
-+    <version>1.18-1</version>
++    <version>1.18.1-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
      <name>cmd_server</name>
+diff --git a/module/cmd-server/src/main/resources/plugin.yml b/module/cmd-server/src/main/resources/plugin.yml
+index 006f3e3f..b0b87841 100644
+--- a/module/cmd-server/src/main/resources/plugin.yml
++++ b/module/cmd-server/src/main/resources/plugin.yml
+@@ -1,5 +1,5 @@
+ name: ${project.name}
+ main: net.md_5.bungee.module.cmd.server.PluginServer
+-version: ${describe}
++version: ${project.version}
+ description: ${project.description}
+ author: ${module.author}
 diff --git a/module/pom.xml b/module/pom.xml
-index 415de113..ad2ef4e9 100644
+index 415de113..0a4cb1e9 100644
 --- a/module/pom.xml
 +++ b/module/pom.xml
 @@ -4,19 +4,18 @@
@@ -636,9 +691,9 @@ index 415de113..ad2ef4e9 100644
 -        <groupId>io.github.waterfallmc</groupId>
 -        <artifactId>flamecord-parent</artifactId>
 -        <version>1.18-R0.1-SNAPSHOT</version>
-+        <groupId>io.amethystmc</groupId>
++        <groupId>io.sapphiremc.amethyst</groupId>
 +        <artifactId>amethyst-parent</artifactId>
-+        <version>1.18-1</version>
++        <version>1.18.1-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
@@ -646,7 +701,7 @@ index 415de113..ad2ef4e9 100644
 -    <artifactId>flamecord-module</artifactId>
 -    <version>1.18-R0.1-SNAPSHOT</version>
 +    <artifactId>amethyst-module</artifactId>
-+    <version>1.18-1</version>
++    <version>1.18.1-R0.1-SNAPSHOT</version>
      <packaging>pom</packaging>
  
 -    <name>Waterfall Modules</name>
@@ -670,13 +725,13 @@ index 415de113..ad2ef4e9 100644
          <dependency>
 -            <groupId>io.github.waterfallmc</groupId>
 -            <artifactId>flamecord-api</artifactId>
-+            <groupId>io.amethystmc</groupId>
++            <groupId>${project.groupId}</groupId>
 +            <artifactId>amethyst-api</artifactId>
              <version>${project.version}</version>
              <scope>compile</scope>
          </dependency>
 diff --git a/module/reconnect-yaml/pom.xml b/module/reconnect-yaml/pom.xml
-index ee786715..9291e072 100644
+index ee786715..80dd0fc2 100644
 --- a/module/reconnect-yaml/pom.xml
 +++ b/module/reconnect-yaml/pom.xml
 @@ -4,15 +4,14 @@
@@ -686,9 +741,9 @@ index ee786715..9291e072 100644
 -        <groupId>io.github.waterfallmc</groupId>
 -        <artifactId>flamecord-module</artifactId>
 -        <version>1.18-R0.1-SNAPSHOT</version>
-+        <groupId>io.amethystmc</groupId>
++        <groupId>io.sapphiremc.amethyst</groupId>
 +        <artifactId>amethyst-module</artifactId>
-+        <version>1.18-1</version>
++        <version>1.18.1-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
@@ -696,12 +751,23 @@ index ee786715..9291e072 100644
 -    <artifactId>bungeecord-module-reconnect-yaml</artifactId>
 -    <version>1.18-R0.1-SNAPSHOT</version>
 +    <artifactId>amethyst-module-reconnect-yaml</artifactId>
-+    <version>1.18-1</version>
++    <version>1.18.1-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
      <name>reconnect_yaml</name>
+diff --git a/module/reconnect-yaml/src/main/resources/plugin.yml b/module/reconnect-yaml/src/main/resources/plugin.yml
+index 451e3c61..9757ba83 100644
+--- a/module/reconnect-yaml/src/main/resources/plugin.yml
++++ b/module/reconnect-yaml/src/main/resources/plugin.yml
+@@ -1,5 +1,5 @@
+ name: ${project.name}
+ main: net.md_5.bungee.module.reconnect.yaml.PluginYaml
+-version: ${describe}
++version: ${project.version}
+ description: ${project.description}
+ author: ${module.author}
 diff --git a/native/pom.xml b/native/pom.xml
-index 58fc77b4..f12e2f82 100644
+index 58fc77b4..27ae1911 100644
 --- a/native/pom.xml
 +++ b/native/pom.xml
 @@ -4,19 +4,18 @@
@@ -711,9 +777,9 @@ index 58fc77b4..f12e2f82 100644
 -        <groupId>io.github.waterfallmc</groupId>
 -        <artifactId>flamecord-parent</artifactId>
 -        <version>1.18-R0.1-SNAPSHOT</version>
-+        <groupId>io.amethystmc</groupId>
++        <groupId>io.sapphiremc.amethyst</groupId>
 +        <artifactId>amethyst-parent</artifactId>
-+        <version>1.18-1</version>
++        <version>1.18.1-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
@@ -721,7 +787,7 @@ index 58fc77b4..f12e2f82 100644
 -    <artifactId>flamecord-native</artifactId>
 -    <version>1.18-R0.1-SNAPSHOT</version>
 +    <artifactId>amethyst-native</artifactId>
-+    <version>1.18-1</version>
++    <version>1.18.1-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>FlameCord-Native</name>
@@ -732,7 +798,7 @@ index 58fc77b4..f12e2f82 100644
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index 0c856cc2..faed8670 100644
+index 0c856cc2..14d01ccf 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -4,25 +4,20 @@
@@ -742,9 +808,9 @@ index 0c856cc2..faed8670 100644
 -        <groupId>io.github.waterfallmc</groupId>
 -        <artifactId>flamecord-super</artifactId>
 -        <version>dev-SNAPSHOT</version>
-+        <groupId>io.amethystmc</groupId>
++        <groupId>io.sapphiremc.amethyst</groupId>
 +        <artifactId>amethyst-super</artifactId>
-+        <version>1.18-1</version>
++        <version>1.18.1-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
@@ -752,7 +818,7 @@ index 0c856cc2..faed8670 100644
 -    <artifactId>flamecord-parent</artifactId>
 -    <version>1.18-R0.1-SNAPSHOT</version>
 +    <artifactId>amethyst-parent</artifactId>
-+    <version>1.18-1</version>
++    <version>1.18.1-R0.1-SNAPSHOT</version>
      <packaging>pom</packaging>
  
 -    <name>FlameCord-Parent</name>
@@ -794,7 +860,7 @@ index 0c856cc2..faed8670 100644
          </developer>
      </developers>
  
-@@ -67,18 +47,18 @@
+@@ -67,28 +47,28 @@
          <!--<module>slf4j</module>-->
          <module>native</module>
          <!-- FlameCord start - Add modules -->
@@ -818,6 +884,20 @@ index 0c856cc2..faed8670 100644
      </issueManagement>
  
      <distributionManagement>
+         <repository>
+-            <id>papermc-releases</id>
+-            <url>https://papermc.io/repo/repository/maven-releases/</url>
++            <id>sapphiremc-releases</id>
++            <url>http://repo.denaryworld.ru/releases/</url>
+         </repository>
+         <snapshotRepository>
+-            <id>papermc-snapshots</id>
+-            <url>https://papermc.io/repo/repository/maven-snapshots/</url>
++            <id>sapphiremc-snapshots</id>
++            <url>http://repo.denaryworld.ru/snapshots/</url>
+         </snapshotRepository>
+     </distributionManagement>
+ 
 @@ -108,19 +88,34 @@
      </repositories>
  
@@ -949,7 +1029,7 @@ index 0c856cc2..faed8670 100644
 +    -->
  </project>
 diff --git a/protocol/pom.xml b/protocol/pom.xml
-index cfaa38c2..6d034827 100644
+index cfaa38c2..2c1c406d 100644
 --- a/protocol/pom.xml
 +++ b/protocol/pom.xml
 @@ -4,19 +4,33 @@
@@ -959,9 +1039,9 @@ index cfaa38c2..6d034827 100644
 -        <groupId>io.github.waterfallmc</groupId>
 -        <artifactId>flamecord-parent</artifactId>
 -        <version>1.18-R0.1-SNAPSHOT</version>
-+        <groupId>io.amethystmc</groupId>
++        <groupId>io.sapphiremc.amethyst</groupId>
 +        <artifactId>amethyst-parent</artifactId>
-+        <version>1.18-1</version>
++        <version>1.18.1-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
@@ -969,7 +1049,7 @@ index cfaa38c2..6d034827 100644
 -    <artifactId>flamecord-protocol</artifactId>
 -    <version>1.18-R0.1-SNAPSHOT</version>
 +    <artifactId>amethyst-protocol</artifactId>
-+    <version>1.18-1</version>
++    <version>1.18.1-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>FlameCord-Protocol</name>
@@ -1000,7 +1080,7 @@ index cfaa38c2..6d034827 100644
          <dependency>
 -            <groupId>io.github.waterfallmc</groupId>
 -            <artifactId>flamecord-chat</artifactId>
-+            <groupId>io.amethystmc</groupId>
++            <groupId>${project.groupId}</groupId>
 +            <artifactId>amethyst-chat</artifactId>
              <version>${project.version}</version>
              <scope>compile</scope>
@@ -1011,13 +1091,13 @@ index cfaa38c2..6d034827 100644
          <dependency>
 -            <groupId>dev._2lstudios</groupId>
 -            <artifactId>flamecord-flamecord</artifactId>
-+            <groupId>io.amethystmc</groupId>
++            <groupId>${project.groupId}</groupId>
 +            <artifactId>amethyst-flame</artifactId>
              <version>${project.version}</version>
              <scope>compile</scope>
          </dependency>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index a289ac08..605a2700 100644
+index a289ac08..54e029d8 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -4,18 +4,17 @@
@@ -1027,9 +1107,9 @@ index a289ac08..605a2700 100644
 -        <groupId>io.github.waterfallmc</groupId>
 -        <artifactId>flamecord-parent</artifactId>
 -        <version>1.18-R0.1-SNAPSHOT</version>
-+        <groupId>io.amethystmc</groupId>
++        <groupId>io.sapphiremc.amethyst</groupId>
 +        <artifactId>amethyst-parent</artifactId>
-+        <version>1.18-1</version>
++        <version>1.18.1-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
@@ -1037,7 +1117,7 @@ index a289ac08..605a2700 100644
 -    <artifactId>flamecord-proxy</artifactId>
 -    <version>1.18-R0.1-SNAPSHOT</version>
 +    <artifactId>amethyst-proxy</artifactId>
-+    <version>1.18-1</version>
++    <version>1.18.1-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>FlameCord-Proxy</name>
@@ -1051,7 +1131,7 @@ index a289ac08..605a2700 100644
          <dependency>
 -            <groupId>io.github.waterfallmc</groupId>
 -            <artifactId>flamecord-api</artifactId>
-+            <groupId>io.amethystmc</groupId>
++            <groupId>${project.groupId}</groupId>
 +            <artifactId>amethyst-api</artifactId>
              <version>${project.version}</version>
              <scope>compile</scope>
@@ -1059,7 +1139,7 @@ index a289ac08..605a2700 100644
          <dependency>
 -            <groupId>io.github.waterfallmc</groupId>
 -            <artifactId>flamecord-log4j</artifactId>
-+            <groupId>io.amethystmc</groupId>
++            <groupId>${project.groupId}</groupId>
 +            <artifactId>amethyst-log4j</artifactId>
              <version>${project.version}</version>
              <scope>compile</scope>
@@ -1067,7 +1147,7 @@ index a289ac08..605a2700 100644
          <dependency>
 -            <groupId>io.github.waterfallmc</groupId>
 -            <artifactId>flamecord-native</artifactId>
-+            <groupId>io.amethystmc</groupId>
++            <groupId>${project.groupId}</groupId>
 +            <artifactId>amethyst-native</artifactId>
              <version>${project.version}</version>
              <scope>compile</scope>
@@ -1075,7 +1155,7 @@ index a289ac08..605a2700 100644
          <dependency>
 -            <groupId>io.github.waterfallmc</groupId>
 -            <artifactId>flamecord-protocol</artifactId>
-+            <groupId>io.amethystmc</groupId>
++            <groupId>${project.groupId}</groupId>
 +            <artifactId>amethyst-protocol</artifactId>
              <version>${project.version}</version>
              <scope>compile</scope>
@@ -1083,7 +1163,7 @@ index a289ac08..605a2700 100644
          <dependency>
 -            <groupId>io.github.waterfallmc</groupId>
 -            <artifactId>flamecord-query</artifactId>
-+            <groupId>io.amethystmc</groupId>
++            <groupId>${project.groupId}</groupId>
 +            <artifactId>amethyst-query</artifactId>
              <version>${project.version}</version>
              <scope>compile</scope>
@@ -1130,7 +1210,7 @@ index a289ac08..605a2700 100644
          <dependency>
 -            <groupId>dev._2lstudios</groupId>
 -            <artifactId>flamecord-flamecord</artifactId>
-+            <groupId>io.amethystmc</groupId>
++            <groupId>${project.groupId}</groupId>
 +            <artifactId>amethyst-flame</artifactId>
              <version>${project.version}</version>
              <scope>compile</scope>
@@ -1138,7 +1218,7 @@ index a289ac08..605a2700 100644
          <dependency>
 -            <groupId>io.github.waterfallmc</groupId>
 -            <artifactId>flamecord-module-cmd-alert</artifactId>
-+            <groupId>io.amethystmc</groupId>
++            <groupId>${project.groupId}</groupId>
 +            <artifactId>amethyst-module-cmd-alert</artifactId>
              <version>${project.version}</version>
              <scope>compile</scope>
@@ -1146,7 +1226,7 @@ index a289ac08..605a2700 100644
          <dependency>
 -            <groupId>io.github.waterfallmc</groupId>
 -            <artifactId>flamecord-module-cmd-find</artifactId>
-+            <groupId>io.amethystmc</groupId>
++            <groupId>${project.groupId}</groupId>
 +            <artifactId>amethyst-module-cmd-find</artifactId>
              <version>${project.version}</version>
              <scope>compile</scope>
@@ -1154,7 +1234,7 @@ index a289ac08..605a2700 100644
          <dependency>
 -            <groupId>io.github.waterfallmc</groupId>
 -            <artifactId>flamecord-module-cmd-list</artifactId>
-+            <groupId>io.amethystmc</groupId>
++            <groupId>${project.groupId}</groupId>
 +            <artifactId>amethyst-module-cmd-list</artifactId>
              <version>${project.version}</version>
              <scope>compile</scope>
@@ -1162,7 +1242,7 @@ index a289ac08..605a2700 100644
          <dependency>
 -            <groupId>io.github.waterfallmc</groupId>
 -            <artifactId>flamecord-module-cmd-send</artifactId>
-+            <groupId>io.amethystmc</groupId>
++            <groupId>${project.groupId}</groupId>
 +            <artifactId>amethyst-module-cmd-send</artifactId>
              <version>${project.version}</version>
              <scope>compile</scope>
@@ -1170,7 +1250,7 @@ index a289ac08..605a2700 100644
          <dependency>
 -            <groupId>io.github.waterfallmc</groupId>
 -            <artifactId>flamecord-module-cmd-server</artifactId>
-+            <groupId>io.amethystmc</groupId>
++            <groupId>${project.groupId}</groupId>
 +            <artifactId>amethyst-module-cmd-server</artifactId>
              <version>${project.version}</version>
              <scope>compile</scope>
@@ -1178,13 +1258,13 @@ index a289ac08..605a2700 100644
          <dependency>
 -            <groupId>net.md-5</groupId>
 -            <artifactId>bungeecord-module-reconnect-yaml</artifactId>
-+            <groupId>io.amethystmc</groupId>
++            <groupId>${project.groupId}</groupId>
 +            <artifactId>amethyst-module-reconnect-yaml</artifactId>
              <version>${project.version}</version>
              <scope>compile</scope>
          </dependency>
 diff --git a/query/pom.xml b/query/pom.xml
-index 550a463e..d237b233 100644
+index 550a463e..d3a095aa 100644
 --- a/query/pom.xml
 +++ b/query/pom.xml
 @@ -4,19 +4,18 @@
@@ -1194,9 +1274,9 @@ index 550a463e..d237b233 100644
 -        <groupId>io.github.waterfallmc</groupId>
 -        <artifactId>flamecord-parent</artifactId>
 -        <version>1.18-R0.1-SNAPSHOT</version>
-+        <groupId>io.amethystmc</groupId>
++        <groupId>io.sapphiremc.amethyst</groupId>
 +        <artifactId>amethyst-parent</artifactId>
-+        <version>1.18-1</version>
++        <version>1.18.1-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
@@ -1204,7 +1284,7 @@ index 550a463e..d237b233 100644
 -    <artifactId>flamecord-query</artifactId>
 -    <version>1.18-R0.1-SNAPSHOT</version>
 +    <artifactId>amethyst-query</artifactId>
-+    <version>1.18-1</version>
++    <version>1.18.1-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>FlameCord-Query</name>
@@ -1220,7 +1300,7 @@ index 550a463e..d237b233 100644
          <dependency>
 -            <groupId>io.github.waterfallmc</groupId>
 -            <artifactId>flamecord-api</artifactId>
-+            <groupId>io.amethystmc</groupId>
++            <groupId>${project.groupId}</groupId>
 +            <artifactId>amethyst-api</artifactId>
              <version>${project.version}</version>
              <scope>compile</scope>

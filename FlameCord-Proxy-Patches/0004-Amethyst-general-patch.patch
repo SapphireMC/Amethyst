@@ -1,69 +1,51 @@
-From ab48e48ba22b3a063a205c277930c10f236d088c Mon Sep 17 00:00:00 2001
+From cad2048463cdc72e15e3bf494e5d3ecd184daeda Mon Sep 17 00:00:00 2001
 From: Denary Planet <denaryplanet@gmail.com>
 Date: Sat, 10 Jul 2021 17:22:34 +0500
 Subject: [PATCH] Amethyst general patch
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-index a4011335..7c0c36fd 100644
+index a4011335..002aeedb 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-@@ -1,13 +1,7 @@
- package net.md_5.bungee.api;
- 
- import com.google.common.base.Preconditions;
--import java.io.File;
--import java.net.InetSocketAddress;
--import java.net.SocketAddress;
--import java.util.Collection;
--import java.util.Map;
--import java.util.UUID;
--import java.util.logging.Logger;
+@@ -8,6 +8,7 @@ import java.util.Collection;
+ import java.util.Map;
+ import java.util.UUID;
+ import java.util.logging.Logger;
 +import dev._2lstudios.flamecord.FlameCord;
  import lombok.Getter;
  import net.md_5.bungee.api.chat.BaseComponent;
  import net.md_5.bungee.api.config.ConfigurationAdapter;
-@@ -17,6 +11,14 @@ import net.md_5.bungee.api.plugin.Plugin;
- import net.md_5.bungee.api.plugin.PluginManager;
- import net.md_5.bungee.api.scheduler.TaskScheduler;
- 
-+import java.io.File;
-+import java.net.InetSocketAddress;
-+import java.net.SocketAddress;
-+import java.util.Collection;
-+import java.util.Map;
-+import java.util.UUID;
-+import java.util.logging.Logger;
-+
- public abstract class ProxyServer
- {
- 
-@@ -59,6 +61,15 @@ public abstract class ProxyServer
+@@ -59,6 +60,17 @@ public abstract class ProxyServer
       */
      public abstract String getTranslation(String name, Object... args);
  
++    // Amethyst start - add method to get message component from messages file
 +    /**
-+     * Gets a localizet base component from messages file.
++     * Gets a localized base component from messages file.
 +     *
 +     * @param key translation key
 +     * @param args translation arguments
 +     * @return the localized base component
 +     */
 +    public abstract BaseComponent[] getTranslationComponent(String key, Object... args);
++    // Amethyst end
 +
      /**
       * Gets the main logger which can be used as a suitable replacement for
       * {@link System#out} and {@link System#err}.
-@@ -327,4 +338,10 @@ public abstract class ProxyServer
+@@ -327,4 +339,12 @@ public abstract class ProxyServer
       */
      public abstract Title createTitle();
  
++    // Amethyst start - add method to get FlameCord's instance
 +    /**
 +     * Get the FlameCord instance.
 +     *
 +     * @return flamecord instance
 +     */
 +    public abstract FlameCord getFlameCord();
++    // Amethyst end
  }
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 index a190dfae..2ba0f271 100644
@@ -79,55 +61,58 @@ index a190dfae..2ba0f271 100644
              return true;
          }
 diff --git a/chat/src/main/java/net/md_5/bungee/api/ChatColor.java b/chat/src/main/java/net/md_5/bungee/api/ChatColor.java
-index d7747deb..e47589d4 100644
+index d7747deb..d828bf68 100644
 --- a/chat/src/main/java/net/md_5/bungee/api/ChatColor.java
 +++ b/chat/src/main/java/net/md_5/bungee/api/ChatColor.java
-@@ -2,11 +2,10 @@ package net.md_5.bungee.api;
- 
+@@ -3,10 +3,13 @@ package net.md_5.bungee.api;
  import com.google.common.base.Preconditions;
  import java.awt.Color;
--import java.util.HashMap;
--import java.util.Locale;
--import java.util.Map;
--import java.util.Objects;
-+import java.util.*;
+ import java.util.HashMap;
++import java.util.List;
+ import java.util.Locale;
+ import java.util.Map;
+ import java.util.Objects;
  import java.util.regex.Pattern;
 +import java.util.stream.Collectors;
 +
  import lombok.Getter;
  
  /**
-@@ -211,6 +210,11 @@ public final class ChatColor
+@@ -211,6 +214,13 @@ public final class ChatColor
          return STRIP_COLOR_PATTERN.matcher( input ).replaceAll( "" );
      }
  
++    // Amethyst start - add method to translate color codes with default char
 +    public static String translateAlternateColorCodes(String textToTranslate)
 +    {
 +        return translateAlternateColorCodes('&', textToTranslate);
 +    }
++    // Amethyst end
 +
      public static String translateAlternateColorCodes(char altColorChar, String textToTranslate)
      {
          char[] b = textToTranslate.toCharArray();
-@@ -225,6 +229,13 @@ public final class ChatColor
+@@ -225,6 +235,15 @@ public final class ChatColor
          return new String( b );
      }
  
++    // Amethyst start - add method to translate color codes from list
 +    public static List<String> translateAlternateColorCodes(List<String> listToTranslate)
 +    {
 +        if (listToTranslate == null || listToTranslate.isEmpty()) return listToTranslate;
 +
 +        return listToTranslate.stream().map(ChatColor::translateAlternateColorCodes).collect(Collectors.toList());
 +    }
++    // Amethyst end
 +
      /**
       * Get the colour represented by the specified code.
       *
 diff --git a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flame/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index f3f602e0..65490c52 100644
+index f3f602e0..4e84ce45 100644
 --- a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flame/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-@@ -15,17 +15,10 @@ import net.md_5.bungee.config.Configuration;
+@@ -15,13 +15,6 @@ import net.md_5.bungee.config.Configuration;
  import net.md_5.bungee.config.ConfigurationProvider;
  
  public class FlameCordConfiguration {
@@ -141,30 +126,19 @@ index f3f602e0..65490c52 100644
  
      @Getter
      private boolean customMotdEnabled = false;
--    private List<String> customMotdMotds = List.of("&eDefault &5Amethyst&e custom motd!\n&eChange me in &cflamecord.yml&e file!");
-+    private List<String> customMotdMotds = List.of("&eDefault &5Amethyst&e custom motd!\n&eChange me in &cflame.yml&e file!");
- 
-     public String getRandomMotd() {
-         final Random random = new Random();
-@@ -52,9 +45,16 @@ public class FlameCordConfiguration {
+@@ -52,6 +45,11 @@ public class FlameCordConfiguration {
      @Getter
      private Collection<String> firewallNames = new HashSet<>(List.of("mcspam"));
  
 +    @Getter
 +    private boolean lobbyEnabled = true;
-+    //@Getter
-+    //private boolean reconnectEnabled = false;
 +    @Getter
 +    private Collection<String> lobbies = new HashSet<>(List.of("lobby"));
 +
      public FlameCordConfiguration(final ConfigurationProvider configurationProvider) {
          try {
--            final String fileName = "./flamecord.yml";
-+            final String fileName = "./flame.yml";
-             final File configurationFile = new File(fileName);
-             final Configuration configuration;
-             final boolean configurationExists = configurationFile.exists();
-@@ -66,7 +66,7 @@ public class FlameCordConfiguration {
+             final String fileName = "./flamecord.yml";
+@@ -66,7 +64,7 @@ public class FlameCordConfiguration {
              }
  
              this.customMotdEnabled = setIfUnexistant("custom-motd.enabled", this.customMotdEnabled, configuration);
@@ -173,18 +147,17 @@ index f3f602e0..65490c52 100644
  
              this.loggerInitialhandler = setIfUnexistant("logger.initialhandler", this.loggerInitialhandler, configuration);
              this.loggerExceptions = setIfUnexistant("logger.exceptions", this.loggerExceptions, configuration);
-@@ -78,6 +78,10 @@ public class FlameCordConfiguration {
+@@ -78,6 +76,9 @@ public class FlameCordConfiguration {
              this.firewallSeconds = setIfUnexistant("firewall.seconds", this.firewallSeconds, configuration);
              this.firewallNames = setIfUnexistant("firewall.names", this.firewallNames, configuration);
  
 +            this.lobbyEnabled = setIfUnexistant("lobby.enable", lobbyEnabled, configuration);
-+            //this.reconnectEnabled = setIfUnexistant("lobby.reconnect", reconnectEnabled, configuration);
 +            this.lobbies = setIfUnexistant("lobby.servers", lobbies, configuration);
 +
              if (!configurationExists) {
                  configurationProvider.save(configuration, configurationFile);
              }
-@@ -114,4 +118,18 @@ public class FlameCordConfiguration {
+@@ -114,4 +115,18 @@ public class FlameCordConfiguration {
              return new HashSet<>(configuration.getStringList(arg1));
          }
      }
@@ -204,10 +177,10 @@ index f3f602e0..65490c52 100644
 +    }
  }
 diff --git a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java b/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
-index 72d48d66..4fedd9ff 100644
+index 72d48d66..3f47ed2b 100644
 --- a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 +++ b/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
-@@ -30,71 +30,73 @@ public class MessagesConfiguration {
+@@ -30,71 +30,86 @@ public class MessagesConfiguration {
  				configuration = configurationProvider.load(configurationFile);
  			}
  
@@ -277,76 +250,89 @@ index 72d48d66..4fedd9ff 100644
 -					configuration);
 -			setIfUnexistant("flamecord_nopermission", "&cYou don't have permission to do this!", configuration);
 +			// Commands
-+			setIfUnexistant( "command_alert", "&c&l(&4&lОбьявление&c&l) &с&l", configuration );
 +			setIfUnexistant( "command_alert_message_needed", "&cВы должны указать сообщение.", configuration );
-+			setIfUnexistant( "command_find_online_at", "&7&l(&5Amethyst&7&l) &fИгрок &e{0} &fиграет на сервере &e{1}", configuration );
-+			setIfUnexistant( "command_firewall_info","&7&l(&5Amethyst&7&l) &fСуществует &e{0} &fадресов брандмауэра. &fБрандмауэр очистится через &e{1} &fсек.", configuration );
-+			setIfUnexistant( "command_flamecord_usage", "&7&l(&5Amethyst&7&l) &fИспользуйте /flame help для просмотра доступных команд", configuration );
++			setIfUnexistant( "command_alert", "&8&l[&4&lОбьявление&8&l] &c&l", configuration );
++			setIfUnexistant( "command_find_online_at", "&eИгрок &6{0} &eиграет на сервере &6{1}", configuration );
++			setIfUnexistant( "command_firewall_info","&eСуществует &6{0} &eадресов брандмауэра. Брандмауэр очистится через &6{1} &eсек.", configuration );
++			setIfUnexistant( "command_flamecord_usage", "&cИспользуйте /flame help для просмотра доступных команд", configuration );
 +			setIfUnexistant( "command_flamecord_help", """
-+						&7&m-----------------&r&7&l(&5Amethyst&7&l)&r&7&m-----------------
-+						&8&l* &6/flame firewall &7- &eПоказывает информацию о брандмауэре!
-+						&8&l* &6/flame help &7- &eПоказывает это сообщение!
-+						&8&l* &6/flame about &7- &eИнформация про Amethyst
-+						&r""", configuration );
-+			setIfUnexistant( "command_ip", "&7&l(&5Amethyst&7&l) &fIP игрока &e{0}&f: &e{1}", configuration );
++					&7&m-----------------&r&7&l{&5Amethyst&7&l}&r&7&m-----------------
++					&8&l* &6/flame firewall &7- &eПоказывает информацию о брандмауэре!
++					&8&l* &6/flame help &7- &eПоказывает это сообщение!
++					&8&l* &6/flame about &7- &eИнформация про Amethyst
++					""", configuration );
++			setIfUnexistant( "command_ip", "&eIP игрока &6{0}&e: &6{1}", configuration );
 +			setIfUnexistant( "command_list_header", """
-+						&7&m-----------------&r&7&l(&5Amethyst&7&l)&r&7&m-----------------
-+						&fСписок всех серверов:""", configuration );
++					&7&m-----------------&r&7&l{&5Amethyst&7&l}&r&7&m-----------------
++					&fСписок всех серверов:""", configuration );
 +			setIfUnexistant( "command_list_server", "&e{0}&8: &fОнлайн (&7{1}&f): &7{2}", configuration );
 +			setIfUnexistant( "command_list_footer", "&7&m-------------------------------------------", configuration );
 +			setIfUnexistant( "command_list_total", "&fВсего игроков на сервере: &e{0}", configuration );
 +			setIfUnexistant( "command_lobby_already_in", "&cВы уже подключены к этому серверу!", configuration );
-+			setIfUnexistant( "command_lobby_not_found", "&cНи одного лобби-сервера не найдено, сообщите администрации!", configuration );
-+			setIfUnexistant( "command_lobby_teleport", "&7&l(&5Amethyst&7&l) &fТелепортируем вас в лобби.", configuration );
-+			setIfUnexistant( "command_perms_groups", "&7&l(&5Amethyst&7&l) &fВаши текущие группы:&e {0}", configuration );
++			setIfUnexistant( "command_lobby_not_found", "&cОй, похоже, что мы не смогли найти ни одного лобби-сервера, сообщите о данной проблеме администрации сервера.", configuration );
++			setIfUnexistant( "command_lobby_attempt", "&7&oПытаемся перенести вас в лобби.", configuration );
++			setIfUnexistant( "command_perms_groups", "&eВаши текущие группы:&6 {0}", configuration );
 +			setIfUnexistant( "command_perms_permission", "&7- {0}", configuration );
-+			setIfUnexistant( "command_reload", "&7&l(&5Amethyst&7&l) &aВсе файлы успешно перезагружены!", configuration );
-+			setIfUnexistant( "command_server_current", "&7&l(&5Amethyst&7&l) &fВы находитесь на сервере &e{0}&f", configuration );
-+			setIfUnexistant( "command_server_list", "&fВ настоящее время вы можете подключиться к следующим серверам: &e", configuration );
++			setIfUnexistant( "command_reload", "&aAmethyst успешно перезагружен, но для лучшего эффекта перезапустите его.", configuration );
++			setIfUnexistant( "command_server_current", "&eВы находитесь на сервере &6{0}&e", configuration );
++			setIfUnexistant( "command_server_list", "&eВ настоящее время вы можете подключиться к следующим серверам: &6", configuration );
 +			setIfUnexistant( "command_server_text", """
-+						&fОнлайн: &e{0}
-+						&7Нажмите, чтобы подключиться на этот сервер""", configuration );
-+			setIfUnexistant(  "command_send_result", "&7&l(&5Amethyst&7&l) &fРезультаты перемещения:", configuration );
-+			setIfUnexistant( "command_send_sender", "&7&l(&5Amethyst&7&l) &fПереношу &e{0} &fигрока(ов) на сервер &e{1}&f.", configuration );
-+			setIfUnexistant( "command_send_target", "&7&l(&5Amethyst&7&l) &fВы были перемещены на сервер &e{0} &fигроком &e{1}", configuration );
-+			setIfUnexistant( "command_send_usage", "&cНедостаточно аргументов в команде, используйте: /send <server|player|all|current> <target>", configuration );
++					&7Онлайн: &f{0}
++					&7Нажмите, чтобы подключиться на этот сервер""", configuration );
++			setIfUnexistant( "command_send_usage", "&cНедостаточно аргументов в команде, используйте: /send <ник|all|current> <сервер>", configuration );
++			setIfUnexistant( "command_send_attempt", "&eПереношу &6{0} &eигрок(-a/-ов) на сервер &6{1}&e.", configuration );
++			setIfUnexistant( "command_send_target", "&eВы были перемещены на сервер &6{0} &eадминистратором &6{1}", configuration );
++			setIfUnexistant(  "command_send_result", "&eРезультаты перемещения:", configuration );
++
++			// Info
++			setIfUnexistant( "info_firewall_added", "&e{0} &cбыл защищен брандмауэром от прокси!", configuration );
++			setIfUnexistant( "info_firewall_blocked", "&e{0} &cзащищен брандмауэром от прокси, запрос заблокирован!",configuration );
++			setIfUnexistant( "info_firewall_cleared", "&e{0} &fадресов были автоматически удалены из брандмауэра!",configuration );
++			setIfUnexistant( "info_restart", """
++                    &cОй, похоже, что нашему прокси надо перезагрузиться
++                    &cВы сможете снова зайти на сервер через пару минут""", configuration );
++
++			// Warnings
++			setIfUnexistant( "warning_already_connecting", "&aПодключение...", configuration );
++			setIfUnexistant( "warning_fallback",  "&cОй, похоже, что сервер, к которому вы попытались подключиться, недоступен, мы попытались перенести вас на запасной сервер.", configuration );
++			setIfUnexistant( "warning_server_went_down", "&cОй, похоже, что сервер, на котором вы играли, внезапно выключился, мы попытались перенести вас на запасной сервер.", configuration );
++
 +			// Errors
 +			setIfUnexistant( "error_already_connected", "&cВы уже подключены к этому серверву!", configuration );
 +			setIfUnexistant( "error_already_connected_proxy", "&cИгрок с таким-же ником уже играет на сервере!", configuration );
 +			setIfUnexistant( "error_connect_kick", "&cВы были кикнуты при подключении к серверу {0}: {1}", configuration );
-+			setIfUnexistant( "error_fallback_kick", "&cНе удалось подключить Вас к основному или запасному серверу, повторите попытку чуть позже : {0}", configuration );
++			setIfUnexistant( "error_fallback_kick", """
++					&cК сожалению мы не смогли найти рабочий основной или запасной сервер
++					&r{0}""", configuration );
 +			setIfUnexistant( "error_illegal_chat_characters", "&cНедопустимые символы в чате ({0})", configuration );
-+			setIfUnexistant( "error_lost_connection", "&c[Proxy] Потеряно соединение с сервером.", configuration );
++			setIfUnexistant( "error_lost_connection", """
++					&cОй, кажется у вас внезапно пропало соединение с сервером
++                    
++					&cПожалуйста, сообщите об ошибке администрации сервера!""", configuration );
 +			setIfUnexistant( "error_message_console", "&cПроизошла ошибкa при обработке вашего сообщения: {0}", configuration );
 +			setIfUnexistant( "error_message_player", "&cПроизошла ошибкa при обработке вашего сообщения. (Наведите для информации)", configuration );
 +			setIfUnexistant( "error_mojang_fail", "&cНе удалось подключиться к серверу Mojang, повторите попытку чуть позже!", configuration );
 +			setIfUnexistant( "error_name_invalid", "&cВаш ник содержит запрещённые символы.", configuration );
 +			setIfUnexistant( "error_name_too_long", "&cМаксимальная длина ника 16 символов.", configuration );
 +			setIfUnexistant( "error_no_license", "&cИспользуйте лицензионный аккаунт, чтобы зайти на сервер", configuration );
-+			setIfUnexistant( "error_no_permission", "&7&l(&5Amethyst&7&l) &cНедостаточно прав!", configuration );
-+			setIfUnexistant( "error_no_server", "&7&l(&5Amethyst&7&l) &cГруппа серверов не найдена, сообщите админинстрации!", configuration );
-+			setIfUnexistant( "error_no_server_permission", "&7&l(&5Amethyst&7&l) &cНедостаточно прав для подключения к этому серверу!", configuration );
-+			setIfUnexistant( "error_outdated_client", "&cСервер работает на версиях &a{0}", configuration );
-+			setIfUnexistant( "error_outdated_server", "&cСервер работает на версиях &a{0}", configuration );
++			setIfUnexistant( "error_no_permission", "&cОй, похоже у вас нет доступа к этой команде.", configuration );
++			setIfUnexistant( "error_no_server", "&cГруппа серверов не найдена, сообщите админинстрации.", configuration );
++			setIfUnexistant( "error_no_server_permission", "&cУ вас нет пропуска на этот сервер.", configuration );
++			setIfUnexistant( "error_outdated_client", "Устаревший клиент, используйте {0}", configuration );
++			setIfUnexistant( "error_outdated_server", "Устаревший сервер, я работаю на {0}", configuration );
 +			setIfUnexistant( "error_ping_cannot_connect", "&cНе удалось подключиться к серверу. Сообщите администрации.", configuration );
 +			setIfUnexistant( "error_player_only", "&cТолько игроки могут использовать эту команду", configuration );
-+			setIfUnexistant( "error_proxy_full", "&cСервер заполнен!", configuration );
-+			setIfUnexistant( "error_timeout", "Сервер недоступен (превышено время ожидания). Не в сети? Неправильно настроенный адрес/порт/брандмауэр?", configuration );
++			setIfUnexistant( "error_proxy_full", "&cОй, кажется сервер заполнен, повторите попытку позже", configuration );
++			setIfUnexistant( "error_timeout", """
++                    &cСервер недоступен (превышено время ожидания). Не в сети? Неправильно настроенный адрес/порт/брандмауэр?
++                    
++                    &cПожалуйста, сообщите об ошибке администрации сервера!""", configuration );
 +			setIfUnexistant( "error_user_not_online", "&cДанный игрок не онлайн.", configuration );
 +			setIfUnexistant( "error_username_needed", "&cПожалуйста укажите имя игрока.", configuration );
-+			// Info
-+			setIfUnexistant( "info_firewall_added", "&e{0} &cбыл защищен брандмауэром от прокси!", configuration );
-+			setIfUnexistant( "info_firewall_blocked", "&e{0} &cзащищен брандмауэром от прокси, запрос заблокирован!",configuration );
-+			setIfUnexistant( "info_firewall_cleared", "&7&l(&5Amethyst&7&l) &e{0} &fадресов были автоматически удалены из брандмауэра!",configuration );
-+			setIfUnexistant( "info_restart", "&aПрокси перезагружается...", configuration );
-+			// Warnings
-+			setIfUnexistant( "warning_already_connecting", "&aПодключение...", configuration );
-+			setIfUnexistant( "warning_fallback",  "&cНевозможно подключиться на этот сервер, вы были перемещены на запасной сервер.", configuration );
-+			setIfUnexistant( "warning_server_went_down", "&cСервер, на котором Вы играли, выключился, Вы были перемещены на запасной сервер.", configuration );
  
  			if (!configurationExists) {
  				configurationProvider.save(configuration, configurationFile);
-@@ -114,7 +116,7 @@ public class MessagesConfiguration {
+@@ -114,7 +129,7 @@ public class MessagesConfiguration {
  
  	public String getTranslation(final String name, final Object... args) {
  		if (!messages.containsKey(name)) {
@@ -495,17 +481,10 @@ index c2227110..0334eb3c 100644
      }
  }
 diff --git a/module/cmd-send/src/main/java/net/md_5/bungee/module/cmd/send/CommandSend.java b/module/cmd-send/src/main/java/net/md_5/bungee/module/cmd/send/CommandSend.java
-index f59f9457..c2def0ee 100644
+index f59f9457..1989453c 100644
 --- a/module/cmd-send/src/main/java/net/md_5/bungee/module/cmd/send/CommandSend.java
 +++ b/module/cmd-send/src/main/java/net/md_5/bungee/module/cmd/send/CommandSend.java
-@@ -38,13 +38,13 @@ public class CommandSend extends Command implements TabExecutor
-             this.sender = sender;
-             for ( ServerConnectRequest.Result result : ServerConnectRequest.Result.values() )
-             {
--                results.put( result, new ArrayList<String>() );
-+                results.put( result, new ArrayList<>() );
-             }
-         }
+@@ -44,7 +44,7 @@ public class CommandSend extends Command implements TabExecutor
  
          public void lastEntryDone()
          {
@@ -573,12 +552,12 @@ index f59f9457..c2def0ee 100644
          }
  
 -        sender.sendMessage( ChatColor.DARK_GREEN + "Attempting to send " + targets.size() + " players to " + server.getName() );
-+        sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "command_send_sender", targets.size(), server.getName() ) );
++        sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "command_send_attempt", targets.size(), server.getName() ) );
      }
  
      @Override
 diff --git a/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java b/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
-index 698b420f..43093d21 100644
+index 698b420f..00c7ea75 100644
 --- a/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
 +++ b/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
 @@ -37,10 +37,10 @@ public class CommandServer extends Command implements TabExecutor
@@ -603,17 +582,7 @@ index 698b420f..43093d21 100644
                      );
                      serverTextComponent.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/server " + server.getName() ) );
                      serverList.append( serverTextComponent );
-@@ -60,19 +60,18 @@ public class CommandServer extends Command implements TabExecutor
-             sender.sendMessage( serverList.create() );
-         } else
-         {
--            if ( !( sender instanceof ProxiedPlayer ) )
-+            if ( !( sender instanceof ProxiedPlayer player ) )
-             {
-                 return;
-             }
--            ProxiedPlayer player = (ProxiedPlayer) sender;
- 
+@@ -69,10 +69,10 @@ public class CommandServer extends Command implements TabExecutor
              ServerInfo server = servers.get( args[0] );
              if ( server == null )
              {
@@ -627,7 +596,7 @@ index 698b420f..43093d21 100644
              {
                  player.connect( server, ServerConnectEvent.Reason.COMMAND );
 diff --git a/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java b/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
-index fa0b59c2..08502063 100644
+index fa0b59c2..a37ec1de 100644
 --- a/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
 +++ b/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
 @@ -16,7 +16,7 @@ public class FlameCordCommand extends Command {
@@ -635,7 +604,7 @@ index fa0b59c2..08502063 100644
  
      public FlameCordCommand(final BungeeCord bungeeCord) {
 -        super("flamecord");
-+        super("flamecord", "flamecord.usage", "flame");
++        super("flamecord", "bungeecord.command.flamecord", "flame");
  
          this.bungeeCord = bungeeCord;
      }
@@ -715,13 +684,13 @@ index fa0b59c2..08502063 100644
          }
      }
  }
-diff --git a/proxy/src/main/java/io/amethystmc/amethyst/command/CommandLobby.java b/proxy/src/main/java/io/amethystmc/amethyst/command/CommandLobby.java
+diff --git a/proxy/src/main/java/io/sapphiremc/amethyst/command/CommandLobby.java b/proxy/src/main/java/io/sapphiremc/amethyst/command/CommandLobby.java
 new file mode 100644
-index 00000000..0178cc92
+index 00000000..1a3d4d4f
 --- /dev/null
-+++ b/proxy/src/main/java/io/amethystmc/amethyst/command/CommandLobby.java
++++ b/proxy/src/main/java/io/sapphiremc/amethyst/command/CommandLobby.java
 @@ -0,0 +1,46 @@
-+package io.amethystmc.amethyst.command;
++package io.sapphiremc.amethyst.command;
 +
 +import dev._2lstudios.flamecord.FlameCord;
 +import net.md_5.bungee.BungeeCord;
@@ -736,7 +705,7 @@ index 00000000..0178cc92
 +public class CommandLobby extends Command {
 +
 +    public CommandLobby() {
-+        super( "lobby", "amethyst.command.lobby", "hub" );
++        super( "lobby", "bungeecord.command.lobby", "hub" );
 +    }
 +
 +    @Override
@@ -764,132 +733,51 @@ index 00000000..0178cc92
 +        }
 +
 +        player.connect( BungeeCord.getInstance().getServerInfo( lobby ) );
-+        player.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_lobby_teleport" ) );
++        player.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_lobby_attempt" ) );
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 8001d1b6..e3bdd255 100644
+index 3f5012f6..287794ec 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -9,82 +9,30 @@ import com.google.common.collect.Sets;
- import com.google.common.util.concurrent.ThreadFactoryBuilder;
- import com.google.gson.Gson;
- import com.google.gson.GsonBuilder;
--
- import dev._2lstudios.flamecord.FlameCord;
+@@ -14,6 +14,7 @@ import dev._2lstudios.flamecord.FlameCord;
  import dev._2lstudios.flamecord.commands.FlameCordCommand;
  import dev._2lstudios.flamecord.configuration.ModulesConfiguration;
  import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-+import io.amethystmc.amethyst.command.CommandLobby;
++import io.sapphiremc.amethyst.command.CommandLobby;
  import io.github.waterfallmc.waterfall.conf.WaterfallConfiguration;
  import io.github.waterfallmc.waterfall.event.ProxyExceptionEvent;
  import io.github.waterfallmc.waterfall.exception.ProxyPluginEnableDisableException;
- import io.netty.bootstrap.ServerBootstrap;
--import io.netty.channel.Channel;
--import io.netty.channel.ChannelException;
--import io.netty.channel.ChannelFuture;
--import io.netty.channel.ChannelFutureListener;
--import io.netty.channel.ChannelOption;
--import io.netty.channel.EventLoopGroup;
-+import io.netty.channel.*;
- import io.netty.util.ResourceLeakDetector;
--import java.io.File;
--import java.io.FileReader;
--import java.io.IOException;
--import java.io.PrintStream;
--import java.net.InetSocketAddress;
--import java.net.SocketAddress;
--import java.text.MessageFormat;
--import java.util.ArrayList;
--import java.util.Collection;
--import java.util.Collections;
--import java.util.HashMap;
--import java.util.HashSet;
--import java.util.Locale;
--import java.util.Map;
--import java.util.MissingResourceException;
--import java.util.PropertyResourceBundle;
--import java.util.ResourceBundle;
--import java.util.Timer;
--import java.util.TimerTask;
--import java.util.UUID;
--import java.util.concurrent.TimeUnit;
--import java.util.concurrent.locks.ReadWriteLock;
--import java.util.concurrent.locks.ReentrantLock;
--import java.util.concurrent.locks.ReentrantReadWriteLock;
--import java.util.logging.Handler;
--import java.util.logging.Level;
--import java.util.logging.Logger;
- import lombok.Getter;
- import lombok.Setter;
- import lombok.Synchronized;
--import net.md_5.bungee.api.CommandSender;
--import net.md_5.bungee.api.Favicon;
--import net.md_5.bungee.api.ProxyServer;
--import net.md_5.bungee.api.ReconnectHandler;
--import net.md_5.bungee.api.ServerPing;
--import net.md_5.bungee.api.Title;
--import net.md_5.bungee.api.chat.BaseComponent;
--import net.md_5.bungee.api.chat.KeybindComponent;
--import net.md_5.bungee.api.chat.ScoreComponent;
--import net.md_5.bungee.api.chat.SelectorComponent;
--import net.md_5.bungee.api.chat.TextComponent;
--import net.md_5.bungee.api.chat.TranslatableComponent;
-+import net.md_5.bungee.api.*;
-+import net.md_5.bungee.api.chat.*;
- import net.md_5.bungee.api.config.ConfigurationAdapter;
- import net.md_5.bungee.api.config.ListenerInfo;
- import net.md_5.bungee.api.config.ServerInfo;
- import net.md_5.bungee.api.connection.ProxiedPlayer;
- import net.md_5.bungee.api.plugin.Plugin;
- import net.md_5.bungee.api.plugin.PluginManager;
--import net.md_5.bungee.chat.ComponentSerializer;
--import net.md_5.bungee.chat.KeybindComponentSerializer;
--import net.md_5.bungee.chat.ScoreComponentSerializer;
--import net.md_5.bungee.chat.SelectorComponentSerializer;
--import net.md_5.bungee.chat.TextComponentSerializer;
--import net.md_5.bungee.chat.TranslatableComponentSerializer;
--import net.md_5.bungee.command.CommandBungee;
--import net.md_5.bungee.command.CommandEnd;
--import net.md_5.bungee.command.CommandIP;
--import net.md_5.bungee.command.CommandPerms;
--import net.md_5.bungee.command.CommandReload;
--import net.md_5.bungee.command.ConsoleCommandSender;
-+import net.md_5.bungee.chat.*;
-+import net.md_5.bungee.command.*;
- import net.md_5.bungee.compress.CompressFactory;
- import net.md_5.bungee.conf.Configuration;
- import net.md_5.bungee.conf.YamlConfig;
-@@ -105,6 +53,19 @@ import net.md_5.bungee.query.RemoteQuery;
- import net.md_5.bungee.scheduler.BungeeScheduler;
- import net.md_5.bungee.util.CaseInsensitiveMap;
+@@ -123,8 +124,8 @@ public class BungeeCord extends ProxyServer
+     /**
+      * Localization bundle.
+      */
+-    private ResourceBundle baseBundle;
+-    private ResourceBundle customBundle;
++   // private ResourceBundle baseBundle; // Amethyst
++   // private ResourceBundle customBundle; // Amethyst
+     public EventLoopGroup bossEventLoopGroup, workerEventLoopGroup;
+     /**
+      * locations.yml save thread.
+@@ -209,6 +210,8 @@ public class BungeeCord extends ProxyServer
+         // Java uses ! to indicate a resource inside of a jar/zip/other container. Running Bungee from within a directory that has a ! will cause this to muck up.
+         Preconditions.checkState( new File( "." ).getAbsolutePath().indexOf( '!' ) == -1, "Cannot use Amethyst in directory with ! in path." );
  
-+import java.io.File;
-+import java.io.IOException;
-+import java.net.InetSocketAddress;
-+import java.net.SocketAddress;
-+import java.util.*;
-+import java.util.concurrent.TimeUnit;
-+import java.util.concurrent.locks.ReadWriteLock;
-+import java.util.concurrent.locks.ReentrantLock;
-+import java.util.concurrent.locks.ReentrantReadWriteLock;
-+import java.util.logging.Handler;
-+import java.util.logging.Level;
-+import java.util.logging.Logger;
-+
- /**
-  * Main BungeeCord proxy class.
-  */
-@@ -216,7 +177,7 @@ public class BungeeCord extends ProxyServer
++        // Amethyst start - use FlameCord's messages system
++        /*
+         try
          {
+             baseBundle = ResourceBundle.getBundle( "messages" );
+@@ -217,6 +220,8 @@ public class BungeeCord extends ProxyServer
              baseBundle = ResourceBundle.getBundle( "messages", Locale.ENGLISH );
          }
--        reloadMessages();
-+        // reloadMessages(); // Amethyst - use FlameCord message system
+         reloadMessages();
++        */
++        // Amethyst end
  
          // This is a workaround for quite possibly the weirdest bug I have ever encountered in my life!
          // When jansi attempts to extract its natives, by default it tries to extract a specific version,
-@@ -305,7 +266,7 @@ public class BungeeCord extends ProxyServer
+@@ -305,7 +310,7 @@ public class BungeeCord extends ProxyServer
          for (final ServerInfo serverInfo : getServers().values()) {
              whitelistedAddresses.add(serverInfo.getSocketAddress().toString());
          }
@@ -898,7 +786,7 @@ index 8001d1b6..e3bdd255 100644
          FlameCord.renew(logger, whitelistedAddresses);
  
          if ( config.isForgeSupport() )
-@@ -344,7 +305,7 @@ public class BungeeCord extends ProxyServer
+@@ -344,7 +349,7 @@ public class BungeeCord extends ProxyServer
              @Override
              public void run()
              {
@@ -907,7 +795,7 @@ index 8001d1b6..e3bdd255 100644
              }
          } );
      }
-@@ -431,7 +392,7 @@ public class BungeeCord extends ProxyServer
+@@ -431,7 +436,7 @@ public class BungeeCord extends ProxyServer
      @Override
      public void stop()
      {
@@ -916,25 +804,24 @@ index 8001d1b6..e3bdd255 100644
      }
  
      @Override
-@@ -579,6 +540,8 @@ public class BungeeCord extends ProxyServer
-         return "1.18-1";
+@@ -579,6 +584,8 @@ public class BungeeCord extends ProxyServer
+         return "1.18.1-R0.1-SNAPSHOT";
      }
  
-+    // Amethyst - use FlameCord message system
++    // Amethyst - use FlameCord's messages system
 +    /*
      public void reloadMessages()
      {
          File file = new File( "messages.properties" );
-@@ -593,7 +556,7 @@ public class BungeeCord extends ProxyServer
+@@ -593,6 +600,7 @@ public class BungeeCord extends ProxyServer
              }
          }
      }
--
-+*/
++    */
+ 
      @Override
      public String getTranslation(String name, Object... args)
-     {
-@@ -601,6 +564,12 @@ public class BungeeCord extends ProxyServer
+@@ -601,6 +609,12 @@ public class BungeeCord extends ProxyServer
          return FlameCord.getInstance().getMessagesConfiguration().getTranslation(name, args);
      }
  
@@ -947,23 +834,27 @@ index 8001d1b6..e3bdd255 100644
      @Override
      @SuppressWarnings("unchecked")
      public Collection<ProxiedPlayer> getPlayers()
-@@ -882,7 +851,17 @@ public class BungeeCord extends ProxyServer
+@@ -882,7 +896,21 @@ public class BungeeCord extends ProxyServer
              }
          }
  
-+        // Amethyst commands
++        // Amethyst start - add lobby command
 +        if (getFlameCord().getFlameCordConfiguration().isLobbyEnabled()) {
 +            pluginManager.registerCommand(null, new CommandLobby());
 +        }
++        // Amethyst end
 +
          // Flamecord - Commands (Had to make it like this because of maven limitations)
          pluginManager.registerCommand(null, new FlameCordCommand(this));
      }
 +
++    // Amethyst start - add method to get FlameCord's instance
 +    @Override
-+    public FlameCord getFlameCord() {
++    public FlameCord getFlameCord()
++    {
 +        return FlameCord.getInstance();
 +    }
++    // Amethyst end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 index f2805229..3f30f25b 100644
@@ -1079,24 +970,18 @@ index 18422669..06147382 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
-index 4eba24fa..065bb51a 100644
+index 4eba24fa..2f7a254d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
 +++ b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
-@@ -18,12 +18,12 @@ public class CommandReload extends Command
+@@ -18,7 +18,7 @@ public class CommandReload extends Command
      public void execute(CommandSender sender, String[] args)
      {
          BungeeCord.getInstance().config.load();
 -        BungeeCord.getInstance().reloadMessages();
-+        // BungeeCord.getInstance().reloadMessages(); // Amethyst - use FlameCord message system
++        // BungeeCord.getInstance().reloadMessages(); // Amethyst - use FlameCord's messages system
          BungeeCord.getInstance().stopListeners();
          BungeeCord.getInstance().startListeners();
          BungeeCord.getInstance().getPluginManager().callEvent( new ProxyReloadEvent( sender ) );
- 
--        sender.sendMessage( ChatColor.BOLD.toString() + ChatColor.RED.toString() + "Amethyst has been reloaded."
-+        sender.sendMessage( ChatColor.BOLD.toString() + ChatColor.RED + "Amethyst has been reloaded."
-                 + " This is NOT advisable and you will not be supported with any issues that arise! Please restart Amethyst ASAP." );
-     }
- }
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 index 3b5ce41e..8460b3dd 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
@@ -1118,18 +1003,45 @@ index 3b5ce41e..8460b3dd 100644
                          });
                      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-index ae4c7ac2..dd69c6a5 100644
+index ae4c7ac2..52a9fc71 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-@@ -51,7 +51,7 @@ public class YamlConfig implements ConfigurationAdapter
+@@ -51,11 +51,16 @@ public class YamlConfig implements ConfigurationAdapter
      private final File file;
  
      public YamlConfig() {
 -        this(new File("config.yml"));
-+        this(new File("proxy.yml"));
++        this(new File("bungeecord.yml"));
      }
  
      public YamlConfig(File file)
+     {
++        File oldFile = new File( "config.yml" );
++        if (oldFile.exists()) {
++            System.out.println("Detected default BungeeCord's config.yml, renaming it to bungeecord.yml");
++            oldFile.renameTo(file);
++        }
+         this.file = file;
+         DumperOptions options = new DumperOptions();
+         options.setDefaultFlowStyle( DumperOptions.FlowStyle.BLOCK );
+@@ -103,7 +108,7 @@ public class YamlConfig implements ConfigurationAdapter
+         {
+             set( "permissions.default", Arrays.asList( new String[]
+             {
+-                "bungeecord.command.server", "bungeecord.command.list"
++                "bungeecord.command.server", "bungeecord.command.list", "bungeecord.command.lobby" // Amethyst - add lobby command
+             } ) );
+             set( "permissions.admin", Arrays.asList( new String[]
+             {
+@@ -114,7 +119,7 @@ public class YamlConfig implements ConfigurationAdapter
+         Map<String, Object> groups = get( "groups", null );
+         if ( groups == null )
+         {
+-            set( "groups.md_5", Collections.singletonList( "admin" ) );
++            set( "groups.md_5", Collections.singletonList( "default" ) ); // Amethyst - fix security issue
+         }
+     }
+ 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 index b10d5b0a..3876ba19 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
@@ -1312,5 +1224,5 @@ index 5890e8c9..00000000
 -command_ip=\u00a79IP of {0} is {1}
 -illegal_chat_characters=\u00a7cillegal characters in chat ({0})
 -- 
-2.33.0
+2.29.2.windows.3
 

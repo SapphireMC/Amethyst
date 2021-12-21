@@ -1,7 +1,7 @@
-From a30e3274d168d38a14826d1e16ebe715cd96b180 Mon Sep 17 00:00:00 2001
+From f3aa91988c955e77add9ce0426353ecb5d652dd1 Mon Sep 17 00:00:00 2001
 From: Denary Planet <denaryplanet@gmail.com>
 Date: Fri, 9 Jul 2021 20:00:55 +0500
-Subject: [PATCH] Amethyst rebrand
+Subject: [PATCH] Branding
 
 
 diff --git a/bootstrap/src/main/java/net/md_5/bungee/Bootstrap.java b/bootstrap/src/main/java/net/md_5/bungee/Bootstrap.java
@@ -55,74 +55,8 @@ index 49dce84b..3ca6ef74 100644
          this.logger = logger;
      }
  
-diff --git a/module/cmd-alert/src/main/resources/plugin.yml b/module/cmd-alert/src/main/resources/plugin.yml
-index 8ed58084..9dcf1704 100644
---- a/module/cmd-alert/src/main/resources/plugin.yml
-+++ b/module/cmd-alert/src/main/resources/plugin.yml
-@@ -1,5 +1,5 @@
- name: ${project.name}
- main: net.md_5.bungee.module.cmd.alert.PluginAlert
--version: ${describe}
-+version: ${project.version}
- description: ${project.description}
- author: ${module.author}
-diff --git a/module/cmd-find/src/main/resources/plugin.yml b/module/cmd-find/src/main/resources/plugin.yml
-index e0f346f9..34efb98d 100644
---- a/module/cmd-find/src/main/resources/plugin.yml
-+++ b/module/cmd-find/src/main/resources/plugin.yml
-@@ -1,5 +1,5 @@
- name: ${project.name}
- main: net.md_5.bungee.module.cmd.find.PluginFind
--version: ${describe}
-+version: ${project.version}
- description: ${project.description}
- author: ${module.author}
-diff --git a/module/cmd-list/src/main/resources/plugin.yml b/module/cmd-list/src/main/resources/plugin.yml
-index 272e64eb..c5999f77 100644
---- a/module/cmd-list/src/main/resources/plugin.yml
-+++ b/module/cmd-list/src/main/resources/plugin.yml
-@@ -1,5 +1,5 @@
- name: ${project.name}
- main: net.md_5.bungee.module.cmd.list.PluginList
--version: ${describe}
-+version: ${project.version}
- description: ${project.description}
- author: ${module.author}
-diff --git a/module/cmd-send/src/main/resources/plugin.yml b/module/cmd-send/src/main/resources/plugin.yml
-index a613e78b..8f0d0edd 100644
---- a/module/cmd-send/src/main/resources/plugin.yml
-+++ b/module/cmd-send/src/main/resources/plugin.yml
-@@ -1,5 +1,5 @@
- name: ${project.name}
- main: net.md_5.bungee.module.cmd.send.PluginSend
--version: ${describe}
-+version: ${project.version}
- description: ${project.description}
- author: ${module.author}
-diff --git a/module/cmd-server/src/main/resources/plugin.yml b/module/cmd-server/src/main/resources/plugin.yml
-index 006f3e3f..b0b87841 100644
---- a/module/cmd-server/src/main/resources/plugin.yml
-+++ b/module/cmd-server/src/main/resources/plugin.yml
-@@ -1,5 +1,5 @@
- name: ${project.name}
- main: net.md_5.bungee.module.cmd.server.PluginServer
--version: ${describe}
-+version: ${project.version}
- description: ${project.description}
- author: ${module.author}
-diff --git a/module/reconnect-yaml/src/main/resources/plugin.yml b/module/reconnect-yaml/src/main/resources/plugin.yml
-index 451e3c61..9757ba83 100644
---- a/module/reconnect-yaml/src/main/resources/plugin.yml
-+++ b/module/reconnect-yaml/src/main/resources/plugin.yml
-@@ -1,5 +1,5 @@
- name: ${project.name}
- main: net.md_5.bungee.module.reconnect.yaml.PluginYaml
--version: ${describe}
-+version: ${project.version}
- description: ${project.description}
- author: ${module.author}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 9aa788ea..8001d1b6 100644
+index 2232b9d5..3f5012f6 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -207,7 +207,7 @@ public class BungeeCord extends ProxyServer
@@ -145,13 +79,13 @@ index 9aa788ea..8001d1b6 100644
      @Override
      public String getVersion()
      {
--        return "0.6.7";
-+        return "1.18-1";
+-        return "0.6.8";
++        return "1.18.1-R0.1-SNAPSHOT";
      }
  
      public void reloadMessages()
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
-index aeda7963..dd6d71b7 100644
+index aeda7963..0436526c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
 +++ b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
 @@ -17,6 +17,6 @@ public class CommandBungee extends Command
@@ -159,7 +93,7 @@ index aeda7963..dd6d71b7 100644
      {
          // FlameCord - Use custom version message
 -        sender.sendMessage( ChatColor.translateAlternateColorCodes( '&', "&eThis server is running &c" + ProxyServer.getInstance().getName() + "&e version &a" + ProxyServer.getInstance().getVersion() + "&e by &bLinsaFTW & Sammwy&e." ) );
-+        sender.sendMessage( ChatColor.translateAlternateColorCodes( '&', "&eThis server is running &c" + ProxyServer.getInstance().getName() + "&e version &a" + ProxyServer.getInstance().getVersion() + "&e by &bDenaryDev&e." ) );
++        sender.sendMessage( ChatColor.translateAlternateColorCodes( '&', "&eThis server is running &c" + ProxyServer.getInstance().getName() + "&e version &a" + ProxyServer.getInstance().getVersion() + "&e by &bSapphireMC&e." ) );
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java

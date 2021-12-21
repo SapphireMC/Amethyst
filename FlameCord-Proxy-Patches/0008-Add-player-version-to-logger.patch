@@ -1,4 +1,4 @@
-From 1a920d1a2ea1e89024245eceebe152f74fcb89f8 Mon Sep 17 00:00:00 2001
+From 59d09660d10ce6fa0b53c4eaa379cbefa0da9198 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Fri, 3 Dec 2021 11:47:51 +0500
 Subject: [PATCH] Add player version to logger
@@ -76,6 +76,18 @@ index c001e4ca..62120bd8 100644
      public enum Direction
      {
  
+diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+index 3f30f25b..7329593b 100644
+--- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
++++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+@@ -507,6 +507,6 @@ public class ServerConnector extends PacketHandler
+     @Override
+     public String toString()
+     {
+-        return "[" + user.getName() + "|" + user.getAddress() + "] <-> ServerConnector [" + target.getName() + "]";
++        return "[" + user.getName() + "|" + user.getAddress() + "|" + ProtocolConstants.getVersion(user.getPendingConnection().getVersion()) + "] <-> ServerConnector [" + target.getName() + "]";
+     }
+ }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 index 3876ba19..4a168c05 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java

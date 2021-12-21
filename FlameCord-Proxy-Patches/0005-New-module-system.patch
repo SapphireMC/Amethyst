@@ -1,41 +1,27 @@
-From 3336b89f6439f9515a2112b9153d97d6e5a93a29 Mon Sep 17 00:00:00 2001
+From d95dee90f44a2b92acc9afb6ffaf76248d015db2 Mon Sep 17 00:00:00 2001
 From: Denary Planet <denaryplanet@gmail.com>
 Date: Sun, 11 Jul 2021 04:13:30 +0500
 Subject: [PATCH] New module system
 
 
 diff --git a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java b/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
-index 4fedd9ff..775ff7d1 100644
+index 3f47ed2b..45636a3f 100644
 --- a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 +++ b/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
-@@ -31,17 +31,19 @@ public class MessagesConfiguration {
- 			}
- 
- 			// Commands
--			setIfUnexistant( "command_alert", "&c&l(&4&lОбьявление&c&l) &с&l", configuration );
-+			setIfUnexistant( "command_alert", "&8&l[&c&lОбьявление&8&l] &c", configuration );
- 			setIfUnexistant( "command_alert_message_needed", "&cВы должны указать сообщение.", configuration );
--			setIfUnexistant( "command_find_online_at", "&7&l(&5Amethyst&7&l) &fИгрок &e{0} &fиграет на сервере &e{1}", configuration );
--			setIfUnexistant( "command_firewall_info","&7&l(&5Amethyst&7&l) &fСуществует &e{0} &fадресов брандмауэра. &fБрандмауэр очистится через &e{1} &fсек.", configuration );
--			setIfUnexistant( "command_flamecord_usage", "&7&l(&5Amethyst&7&l) &fИспользуйте /flame help для просмотра доступных команд", configuration );
--			setIfUnexistant( "command_flamecord_help", """
-+			setIfUnexistant( "command_amethyst_firewall","&7&l(&5Amethyst&7&l) &fСуществует &e{0} &fадресов брандмауэра. &fБрандмауэр очистится через &e{1} &fсек.", configuration );
-+			setIfUnexistant( "command_amethyst_help", """
- 						&7&m-----------------&r&7&l(&5Amethyst&7&l)&r&7&m-----------------
--						&8&l* &6/flame firewall &7- &eПоказывает информацию о брандмауэре!
--						&8&l* &6/flame help &7- &eПоказывает это сообщение!
--						&8&l* &6/flame about &7- &eИнформация про Amethyst
-+						&8&l* &6/amethyst about &7- &eПоказывает информацию про
-+						&e   ядро сервера.
-+						&8&l* &6/amethyst firewall &7- &eПоказывает информацию о
-+						&e   брандмауэре.
-+						&8&l* &6/amethyst help &7- &eПоказывает это сообщение.
- 						&r""", configuration );
-+			setIfUnexistant( "command_amethyst_usage", "&7&l(&5Amethyst&7&l) &fИспользуйте /amethyst help для просмотра доступных команд", configuration );
-+			setIfUnexistant( "command_find_online_at", "&7&l(&5Amethyst&7&l) &fИгрок &e{0} &fиграет на сервере &e{1}", configuration );
- 			setIfUnexistant( "command_ip", "&7&l(&5Amethyst&7&l) &fIP игрока &e{0}&f: &e{1}", configuration );
+@@ -38,9 +38,11 @@ public class MessagesConfiguration {
+ 			setIfUnexistant( "command_flamecord_usage", "&cИспользуйте /flame help для просмотра доступных команд", configuration );
+ 			setIfUnexistant( "command_flamecord_help", """
+ 					&7&m-----------------&r&7&l{&5Amethyst&7&l}&r&7&m-----------------
+-					&8&l* &6/flame firewall &7- &eПоказывает информацию о брандмауэре!
++					&8&l* &6/flame firewall &7- &eПоказывает информацию о
++					&e   брандмауэре.
++					&8&l* &6/flame about &7- &eПоказывает информацию про
++					&e   ядро сервера.
+ 					&8&l* &6/flame help &7- &eПоказывает это сообщение!
+-					&8&l* &6/flame about &7- &eИнформация про Amethyst
+ 					""", configuration );
+ 			setIfUnexistant( "command_ip", "&eIP игрока &6{0}&e: &6{1}", configuration );
  			setIfUnexistant( "command_list_header", """
- 						&7&m-----------------&r&7&l(&5Amethyst&7&l)&r&7&m-----------------
 diff --git a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/ModulesConfiguration.java b/flame/src/main/java/dev/_2lstudios/flamecord/configuration/ModulesConfiguration.java
 index e82c4844..7aed8dd8 100644
 --- a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/ModulesConfiguration.java
@@ -72,7 +58,7 @@ index e82c4844..7aed8dd8 100644
          }
 diff --git a/module/cmd-alert/pom.xml b/module/cmd-alert/pom.xml
 deleted file mode 100644
-index d256073e..00000000
+index 22ddba1e..00000000
 --- a/module/cmd-alert/pom.xml
 +++ /dev/null
 @@ -1,19 +0,0 @@
@@ -82,14 +68,14 @@ index d256073e..00000000
 -    <modelVersion>4.0.0</modelVersion>
 -
 -    <parent>
--        <groupId>io.amethystmc</groupId>
+-        <groupId>io.sapphiremc.amethyst</groupId>
 -        <artifactId>amethyst-module</artifactId>
--        <version>1.18-1</version>
+-        <version>1.18.1-R0.1-SNAPSHOT</version>
 -        <relativePath>../pom.xml</relativePath>
 -    </parent>
 -
 -    <artifactId>amethyst-module-cmd-alert</artifactId>
--    <version>1.18-1</version>
+-    <version>1.18.1-R0.1-SNAPSHOT</version>
 -    <packaging>jar</packaging>
 -
 -    <name>cmd_alert</name>
@@ -128,7 +114,7 @@ index 9dcf1704..00000000
 -author: ${module.author}
 diff --git a/module/cmd-find/pom.xml b/module/cmd-find/pom.xml
 deleted file mode 100644
-index 6a8debdd..00000000
+index 0a32e75c..00000000
 --- a/module/cmd-find/pom.xml
 +++ /dev/null
 @@ -1,19 +0,0 @@
@@ -138,59 +124,19 @@ index 6a8debdd..00000000
 -    <modelVersion>4.0.0</modelVersion>
 -
 -    <parent>
--        <groupId>io.amethystmc</groupId>
+-        <groupId>io.sapphiremc.amethyst</groupId>
 -        <artifactId>amethyst-module</artifactId>
--        <version>1.18-1</version>
+-        <version>1.18.1-R0.1-SNAPSHOT</version>
 -        <relativePath>../pom.xml</relativePath>
 -    </parent>
 -
 -    <artifactId>amethyst-module-cmd-find</artifactId>
--    <version>1.18-1</version>
+-    <version>1.18.1-R0.1-SNAPSHOT</version>
 -    <packaging>jar</packaging>
 -
 -    <name>cmd_find</name>
 -    <description>Provides the find command</description>
 -</project>
-diff --git a/module/cmd-find/src/main/java/net/md_5/bungee/module/cmd/find/CommandFind.java b/module/cmd-find/src/main/java/net/md_5/bungee/module/cmd/find/CommandFind.java
-deleted file mode 100644
-index 42debad6..00000000
---- a/module/cmd-find/src/main/java/net/md_5/bungee/module/cmd/find/CommandFind.java
-+++ /dev/null
-@@ -1,34 +0,0 @@
--package net.md_5.bungee.module.cmd.find;
--
--import net.md_5.bungee.api.CommandSender;
--import net.md_5.bungee.api.ProxyServer;
--import net.md_5.bungee.api.connection.ProxiedPlayer;
--import net.md_5.bungee.command.PlayerCommand;
--
--public class CommandFind extends PlayerCommand
--{
--
--    public CommandFind()
--    {
--        super( "find", "bungeecord.command.find" );
--    }
--
--    @Override
--    public void execute(CommandSender sender, String[] args)
--    {
--        if ( args.length != 1 )
--        {
--            sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "error_username_needed" ) );
--        } else
--        {
--            ProxiedPlayer player = ProxyServer.getInstance().getPlayer( args[0] );
--            if ( player == null || player.getServer() == null )
--            {
--                sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "error_user_not_online" ) );
--            } else
--            {
--                sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "command_find_online_at", player.getName(), player.getServer().getInfo().getName() ) );
--            }
--        }
--    }
--}
 diff --git a/module/cmd-find/src/main/java/net/md_5/bungee/module/cmd/find/PluginFind.java b/module/cmd-find/src/main/java/net/md_5/bungee/module/cmd/find/PluginFind.java
 deleted file mode 100644
 index 63757214..00000000
@@ -223,7 +169,7 @@ index 34efb98d..00000000
 -author: ${module.author}
 diff --git a/module/cmd-list/pom.xml b/module/cmd-list/pom.xml
 deleted file mode 100644
-index 5bcb87b6..00000000
+index d6615975..00000000
 --- a/module/cmd-list/pom.xml
 +++ /dev/null
 @@ -1,19 +0,0 @@
@@ -233,75 +179,19 @@ index 5bcb87b6..00000000
 -    <modelVersion>4.0.0</modelVersion>
 -
 -    <parent>
--        <groupId>io.amethystmc</groupId>
+-        <groupId>io.sapphiremc.amethyst</groupId>
 -        <artifactId>amethyst-module</artifactId>
--        <version>1.18-1</version>
+-        <version>1.18.1-R0.1-SNAPSHOT</version>
 -        <relativePath>../pom.xml</relativePath>
 -    </parent>
 -
 -    <artifactId>amethyst-module-cmd-list</artifactId>
--    <version>1.17.1-2</version>
+-    <version>1.18.1-R0.1-SNAPSHOT</version>
 -    <packaging>jar</packaging>
 -
 -    <name>cmd_list</name>
 -    <description>Provides the glist command</description>
 -</project>
-diff --git a/module/cmd-list/src/main/java/net/md_5/bungee/module/cmd/list/CommandList.java b/module/cmd-list/src/main/java/net/md_5/bungee/module/cmd/list/CommandList.java
-deleted file mode 100644
-index 0334eb3c..00000000
---- a/module/cmd-list/src/main/java/net/md_5/bungee/module/cmd/list/CommandList.java
-+++ /dev/null
-@@ -1,50 +0,0 @@
--package net.md_5.bungee.module.cmd.list;
--
--import java.util.ArrayList;
--import java.util.Collections;
--import java.util.List;
--import net.md_5.bungee.Util;
--import net.md_5.bungee.api.ChatColor;
--import net.md_5.bungee.api.CommandSender;
--import net.md_5.bungee.api.ProxyServer;
--import net.md_5.bungee.api.config.ServerInfo;
--import net.md_5.bungee.api.connection.ProxiedPlayer;
--import net.md_5.bungee.api.plugin.Command;
--
--/**
-- * Command to list all players connected to the proxy.
-- */
--public class CommandList extends Command
--{
--
--    public CommandList()
--    {
--        super( "glist", "bungeecord.command.list" );
--    }
--
--    @Override
--    public void execute(CommandSender sender, String[] args)
--    {
--        sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "command_list_header" ) );
--        for ( ServerInfo server : ProxyServer.getInstance().getServersCopy().values() )
--        {
--            if ( !server.canAccess( sender ) )
--            {
--                continue;
--            }
--
--            List<String> players = new ArrayList<>();
--            for ( ProxiedPlayer player : server.getPlayers() )
--            {
--                players.add( player.getDisplayName() );
--            }
--            players.sort( String.CASE_INSENSITIVE_ORDER );
--
--            sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "command_list_server", server.getName(), server.getPlayers().size(), Util.format( players, ", " ) ) );
--        }
--
--        sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "command_list_total", ProxyServer.getInstance().getOnlineCount() ) );
--
--        sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "command_list_footer" ) );
--    }
--}
 diff --git a/module/cmd-list/src/main/java/net/md_5/bungee/module/cmd/list/PluginList.java b/module/cmd-list/src/main/java/net/md_5/bungee/module/cmd/list/PluginList.java
 deleted file mode 100644
 index e2a196c1..00000000
@@ -334,7 +224,7 @@ index c5999f77..00000000
 -author: ${module.author}
 diff --git a/module/cmd-send/pom.xml b/module/cmd-send/pom.xml
 deleted file mode 100644
-index a8bb627f..00000000
+index 93411a38..00000000
 --- a/module/cmd-send/pom.xml
 +++ /dev/null
 @@ -1,19 +0,0 @@
@@ -344,14 +234,14 @@ index a8bb627f..00000000
 -    <modelVersion>4.0.0</modelVersion>
 -
 -    <parent>
--        <groupId>io.amethystmc</groupId>
+-        <groupId>io.sapphiremc.amethyst</groupId>
 -        <artifactId>amethyst-module</artifactId>
--        <version>1.18-1</version>
+-        <version>1.18.1-R0.1-SNAPSHOT</version>
 -        <relativePath>../pom.xml</relativePath>
 -    </parent>
 -
 -    <artifactId>amethyst-module-cmd-send</artifactId>
--    <version>1.18-1</version>
+-    <version>1.18.1-R0.1-SNAPSHOT</version>
 -    <packaging>jar</packaging>
 -
 -    <name>cmd_send</name>
@@ -389,7 +279,7 @@ index 8f0d0edd..00000000
 -author: ${module.author}
 diff --git a/module/cmd-server/pom.xml b/module/cmd-server/pom.xml
 deleted file mode 100644
-index f4e32230..00000000
+index 56a2a18f..00000000
 --- a/module/cmd-server/pom.xml
 +++ /dev/null
 @@ -1,19 +0,0 @@
@@ -399,14 +289,14 @@ index f4e32230..00000000
 -    <modelVersion>4.0.0</modelVersion>
 -
 -    <parent>
--        <groupId>io.amethystmc</groupId>
+-        <groupId>io.sapphiremc.amethyst</groupId>
 -        <artifactId>amethyst-module</artifactId>
--        <version>1.18-1</version>
+-        <version>1.18.1-R0.1-SNAPSHOT</version>
 -        <relativePath>../pom.xml</relativePath>
 -    </parent>
 -
 -    <artifactId>amethyst-module-cmd-server</artifactId>
--    <version>1.18-1</version>
+-    <version>1.18.1-R0.1-SNAPSHOT</version>
 -    <packaging>jar</packaging>
 -
 -    <name>cmd_server</name>
@@ -444,7 +334,7 @@ index b0b87841..00000000
 -author: ${module.author}
 diff --git a/module/pom.xml b/module/pom.xml
 deleted file mode 100644
-index ad2ef4e9..00000000
+index 0a4cb1e9..00000000
 --- a/module/pom.xml
 +++ /dev/null
 @@ -1,53 +0,0 @@
@@ -454,14 +344,14 @@ index ad2ef4e9..00000000
 -    <modelVersion>4.0.0</modelVersion>
 -
 -    <parent>
--        <groupId>io.amethystmc</groupId>
+-        <groupId>io.sapphiremc.amethyst</groupId>
 -        <artifactId>amethyst-parent</artifactId>
--        <version>1.18-1</version>
+-        <version>1.18.1-R0.1-SNAPSHOT</version>
 -        <relativePath>../pom.xml</relativePath>
 -    </parent>
 -
 -    <artifactId>amethyst-module</artifactId>
--    <version>1.18-1</version>
+-    <version>1.18.1-R0.1-SNAPSHOT</version>
 -    <packaging>pom</packaging>
 -
 -    <name>Amethyst-Modules</name>
@@ -484,7 +374,7 @@ index ad2ef4e9..00000000
 -
 -    <dependencies>
 -        <dependency>
--            <groupId>io.amethystmc</groupId>
+-            <groupId>${project.groupId}</groupId>
 -            <artifactId>amethyst-api</artifactId>
 -            <version>${project.version}</version>
 -            <scope>compile</scope>
@@ -503,7 +393,7 @@ index ad2ef4e9..00000000
 -</project>
 diff --git a/module/reconnect-yaml/pom.xml b/module/reconnect-yaml/pom.xml
 deleted file mode 100644
-index 9291e072..00000000
+index 80dd0fc2..00000000
 --- a/module/reconnect-yaml/pom.xml
 +++ /dev/null
 @@ -1,19 +0,0 @@
@@ -513,14 +403,14 @@ index 9291e072..00000000
 -    <modelVersion>4.0.0</modelVersion>
 -
 -    <parent>
--        <groupId>io.amethystmc</groupId>
+-        <groupId>io.sapphiremc.amethyst</groupId>
 -        <artifactId>amethyst-module</artifactId>
--        <version>1.18-1</version>
+-        <version>1.18.1-R0.1-SNAPSHOT</version>
 -        <relativePath>../pom.xml</relativePath>
 -    </parent>
 -
 -    <artifactId>amethyst-module-reconnect-yaml</artifactId>
--    <version>1.18-1</version>
+-    <version>1.18.1-R0.1-SNAPSHOT</version>
 -    <packaging>jar</packaging>
 -
 -    <name>reconnect_yaml</name>
@@ -566,12 +456,12 @@ index 9757ba83..00000000
 -description: ${project.description}
 -author: ${module.author}
 diff --git a/pom.xml b/pom.xml
-index 8560257c..160f29df 100644
+index 14d01ccf..d893927f 100644
 --- a/pom.xml
 +++ b/pom.xml
-@@ -42,7 +42,9 @@
+@@ -40,7 +40,9 @@
+         <module>event</module>
          <module>log</module>
-         -->
          <module>log4j</module>
 +        <!-- Amethyst - use our module system
          <module>module</module>
@@ -580,7 +470,7 @@ index 8560257c..160f29df 100644
          <module>proxy</module>
          <module>query</module>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 605a2700..96a5af88 100644
+index 54e029d8..1b5c5e01 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -157,6 +157,7 @@
@@ -589,7 +479,7 @@ index 605a2700..96a5af88 100644
          </dependency>
 +        <!-- Amethyst - use our module system
          <dependency>
-             <groupId>io.amethystmc</groupId>
+             <groupId>${project.groupId}</groupId>
              <artifactId>amethyst-module-cmd-alert</artifactId>
 @@ -193,6 +194,7 @@
              <version>${project.version}</version>
@@ -601,7 +491,7 @@ index 605a2700..96a5af88 100644
  
 diff --git a/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java b/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
 deleted file mode 100644
-index 08502063..00000000
+index a37ec1de..00000000
 --- a/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
 +++ /dev/null
 @@ -1,66 +0,0 @@
@@ -623,7 +513,7 @@ index 08502063..00000000
 -private final BungeeCord bungeeCord;
 -
 -    public FlameCordCommand(final BungeeCord bungeeCord) {
--        super("flamecord", "flamecord.usage", "flame");
+-        super("flamecord", "bungeecord.command.flamecord", "flame");
 -
 -        this.bungeeCord = bungeeCord;
 -    }
@@ -671,16 +561,27 @@ index 08502063..00000000
 -        }
 -    }
 -}
-diff --git a/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlert.java b/proxy/src/main/java/io/amethystmc/amethyst/module/CommandAlert.java
-similarity index 63%
+diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
+index ff4bbf34..1b34d6bd 100644
+--- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
++++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
+@@ -1,6 +1,5 @@
+ package io.github.waterfallmc.waterfall.conf;
+ 
+-import com.google.common.base.Joiner;
+ import net.md_5.bungee.conf.Configuration;
+ import net.md_5.bungee.conf.YamlConfig;
+ import net.md_5.bungee.protocol.ProtocolConstants;
+diff --git a/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlert.java b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandAlert.java
+similarity index 67%
 rename from module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlert.java
-rename to proxy/src/main/java/io/amethystmc/amethyst/module/CommandAlert.java
-index 3d95b789..f55030f1 100644
+rename to proxy/src/main/java/io/sapphiremc/amethyst/module/CommandAlert.java
+index 3d95b789..5a8317a7 100644
 --- a/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlert.java
-+++ b/proxy/src/main/java/io/amethystmc/amethyst/module/CommandAlert.java
++++ b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandAlert.java
 @@ -1,8 +1,8 @@
 -package net.md_5.bungee.module.cmd.alert;
-+package io.amethystmc.amethyst.module;
++package io.sapphiremc.amethyst.module;
  
 +import net.md_5.bungee.BungeeCord;
  import net.md_5.bungee.api.ChatColor;
@@ -689,15 +590,6 @@ index 3d95b789..f55030f1 100644
  import net.md_5.bungee.api.chat.TextComponent;
  import net.md_5.bungee.api.plugin.Command;
  
-@@ -11,7 +11,7 @@ public class CommandAlert extends Command
- 
-     public CommandAlert()
-     {
--        super( "alert", "bungeecord.command.alert" );
-+        super( "alert", "amethyst.command.alert" );
-     }
- 
-     @Override
 @@ -19,17 +19,17 @@ public class CommandAlert extends Command
      {
          if ( args.length == 0 )
@@ -728,16 +620,16 @@ index 3d95b789..f55030f1 100644
          }
      }
  }
-diff --git a/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlertRaw.java b/proxy/src/main/java/io/amethystmc/amethyst/module/CommandAlertRaw.java
+diff --git a/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlertRaw.java b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandAlertRaw.java
 similarity index 68%
 rename from module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlertRaw.java
-rename to proxy/src/main/java/io/amethystmc/amethyst/module/CommandAlertRaw.java
-index 4bbe525b..305f064b 100644
+rename to proxy/src/main/java/io/sapphiremc/amethyst/module/CommandAlertRaw.java
+index 4bbe525b..8aafd30f 100644
 --- a/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlertRaw.java
-+++ b/proxy/src/main/java/io/amethystmc/amethyst/module/CommandAlertRaw.java
++++ b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandAlertRaw.java
 @@ -1,9 +1,9 @@
 -package net.md_5.bungee.module.cmd.alert;
-+package io.amethystmc.amethyst.module;
++package io.sapphiremc.amethyst.module;
  
  import com.google.common.base.Joiner;
 +import net.md_5.bungee.BungeeCord;
@@ -752,7 +644,7 @@ index 4bbe525b..305f064b 100644
      public CommandAlertRaw()
      {
 -        super( "alertraw", "bungeecord.command.alert" );
-+        super( "alertraw", "amethyst.command.alertraw" );
++        super( "alertraw", "bungeecord.command.alertraw" );
      }
  
      @Override
@@ -791,108 +683,112 @@ index 4bbe525b..305f064b 100644
                  }
              }
          }
-diff --git a/proxy/src/main/java/io/amethystmc/amethyst/module/CommandFind.java b/proxy/src/main/java/io/amethystmc/amethyst/module/CommandFind.java
-new file mode 100644
-index 00000000..1a7e319d
---- /dev/null
-+++ b/proxy/src/main/java/io/amethystmc/amethyst/module/CommandFind.java
-@@ -0,0 +1,34 @@
-+package io.amethystmc.amethyst.module;
-+
+diff --git a/module/cmd-find/src/main/java/net/md_5/bungee/module/cmd/find/CommandFind.java b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandFind.java
+similarity index 50%
+rename from module/cmd-find/src/main/java/net/md_5/bungee/module/cmd/find/CommandFind.java
+rename to proxy/src/main/java/io/sapphiremc/amethyst/module/CommandFind.java
+index 42debad6..e4261e7f 100644
+--- a/module/cmd-find/src/main/java/net/md_5/bungee/module/cmd/find/CommandFind.java
++++ b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandFind.java
+@@ -1,7 +1,7 @@
+-package net.md_5.bungee.module.cmd.find;
++package io.sapphiremc.amethyst.module;
+ 
 +import net.md_5.bungee.BungeeCord;
-+import net.md_5.bungee.api.CommandSender;
-+import net.md_5.bungee.api.connection.ProxiedPlayer;
-+import net.md_5.bungee.command.PlayerCommand;
-+
-+public class CommandFind extends PlayerCommand
-+{
-+
-+    public CommandFind()
-+    {
-+        super( "find", "amethyst.command.find" );
-+    }
-+
-+    @Override
-+    public void execute(CommandSender sender, String[] args)
-+    {
-+        if ( args.length != 1 )
-+        {
+ import net.md_5.bungee.api.CommandSender;
+-import net.md_5.bungee.api.ProxyServer;
+ import net.md_5.bungee.api.connection.ProxiedPlayer;
+ import net.md_5.bungee.command.PlayerCommand;
+ 
+@@ -18,16 +18,16 @@ public class CommandFind extends PlayerCommand
+     {
+         if ( args.length != 1 )
+         {
+-            sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "error_username_needed" ) );
 +            sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "error_username_needed" ) );
-+        } else
-+        {
+         } else
+         {
+-            ProxiedPlayer player = ProxyServer.getInstance().getPlayer( args[0] );
 +            ProxiedPlayer player = BungeeCord.getInstance().getPlayer( args[0] );
-+            if ( player == null || player.getServer() == null )
-+            {
+             if ( player == null || player.getServer() == null )
+             {
+-                sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "error_user_not_online" ) );
 +                sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "error_user_not_online" ) );
-+            } else
-+            {
+             } else
+             {
+-                sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "command_find_online_at", player.getName(), player.getServer().getInfo().getName() ) );
 +                sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_find_user_online_at", player.getName(), player.getServer().getInfo().getName() ) );
-+            }
-+        }
-+    }
-+}
-diff --git a/proxy/src/main/java/io/amethystmc/amethyst/module/CommandList.java b/proxy/src/main/java/io/amethystmc/amethyst/module/CommandList.java
-new file mode 100644
-index 00000000..84512b74
---- /dev/null
-+++ b/proxy/src/main/java/io/amethystmc/amethyst/module/CommandList.java
-@@ -0,0 +1,46 @@
-+package io.amethystmc.amethyst.module;
-+
+             }
+         }
+     }
+diff --git a/module/cmd-list/src/main/java/net/md_5/bungee/module/cmd/list/CommandList.java b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandList.java
+similarity index 50%
+rename from module/cmd-list/src/main/java/net/md_5/bungee/module/cmd/list/CommandList.java
+rename to proxy/src/main/java/io/sapphiremc/amethyst/module/CommandList.java
+index 0334eb3c..e87b1c6e 100644
+--- a/module/cmd-list/src/main/java/net/md_5/bungee/module/cmd/list/CommandList.java
++++ b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandList.java
+@@ -1,19 +1,15 @@
+-package net.md_5.bungee.module.cmd.list;
++package io.sapphiremc.amethyst.module;
+ 
+-import java.util.ArrayList;
+-import java.util.Collections;
+-import java.util.List;
 +import net.md_5.bungee.BungeeCord;
-+import net.md_5.bungee.Util;
-+import net.md_5.bungee.api.CommandSender;
-+import net.md_5.bungee.api.config.ServerInfo;
-+import net.md_5.bungee.api.connection.ProxiedPlayer;
-+import net.md_5.bungee.api.plugin.Command;
-+
+ import net.md_5.bungee.Util;
+-import net.md_5.bungee.api.ChatColor;
+ import net.md_5.bungee.api.CommandSender;
+-import net.md_5.bungee.api.ProxyServer;
+ import net.md_5.bungee.api.config.ServerInfo;
+ import net.md_5.bungee.api.connection.ProxiedPlayer;
+ import net.md_5.bungee.api.plugin.Command;
+ 
+-/**
+- * Command to list all players connected to the proxy.
+- */
 +import java.util.ArrayList;
 +import java.util.List;
 +
-+public class CommandList extends Command
-+{
-+
-+    public CommandList()
-+    {
-+        super( "glist", "amethyst.command.list" );
-+    }
-+
-+    @Override
-+    public void execute(CommandSender sender, String[] args)
-+    {
+ public class CommandList extends Command
+ {
+ 
+@@ -25,8 +21,8 @@ public class CommandList extends Command
+     @Override
+     public void execute(CommandSender sender, String[] args)
+     {
+-        sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "command_list_header" ) );
+-        for ( ServerInfo server : ProxyServer.getInstance().getServersCopy().values() )
 +        sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_list_header" ) );
 +        for ( ServerInfo server : BungeeCord.getInstance().getServersCopy().values() )
-+        {
-+            if ( !server.canAccess( sender ) )
-+            {
-+                continue;
-+            }
-+
-+            List<String> players = new ArrayList<>();
-+            for ( ProxiedPlayer player : server.getPlayers() )
-+            {
-+                players.add( player.getDisplayName() );
-+            }
-+            players.sort( String.CASE_INSENSITIVE_ORDER );
-+
+         {
+             if ( !server.canAccess( sender ) )
+             {
+@@ -40,11 +36,11 @@ public class CommandList extends Command
+             }
+             players.sort( String.CASE_INSENSITIVE_ORDER );
+ 
+-            sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "command_list_server", server.getName(), server.getPlayers().size(), Util.format( players, ", " ) ) );
 +            sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_list_server", server.getName(), server.getPlayers().size(), Util.format( players, ", " ) ) );
-+        }
-+
+         }
+ 
+-        sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "command_list_total", ProxyServer.getInstance().getOnlineCount() ) );
 +        sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_list_total", BungeeCord.getInstance().getOnlineCount() ) );
-+
+ 
+-        sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "command_list_footer" ) );
 +        sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_list_footer" ) );
-+    }
-+}
-diff --git a/module/cmd-send/src/main/java/net/md_5/bungee/module/cmd/send/CommandSend.java b/proxy/src/main/java/io/amethystmc/amethyst/module/CommandSend.java
+     }
+ }
+diff --git a/module/cmd-send/src/main/java/net/md_5/bungee/module/cmd/send/CommandSend.java b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandSend.java
 similarity index 71%
 rename from module/cmd-send/src/main/java/net/md_5/bungee/module/cmd/send/CommandSend.java
-rename to proxy/src/main/java/io/amethystmc/amethyst/module/CommandSend.java
-index c2def0ee..87ed4c5a 100644
+rename to proxy/src/main/java/io/sapphiremc/amethyst/module/CommandSend.java
+index 1989453c..d5187121 100644
 --- a/module/cmd-send/src/main/java/net/md_5/bungee/module/cmd/send/CommandSend.java
-+++ b/proxy/src/main/java/io/amethystmc/amethyst/module/CommandSend.java
++++ b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandSend.java
 @@ -1,4 +1,4 @@
 -package net.md_5.bungee.module.cmd.send;
-+package io.amethystmc.amethyst.module;
++package io.sapphiremc.amethyst.module;
  
  import com.google.common.base.Joiner;
  import com.google.common.collect.ImmutableSet;
@@ -1016,8 +912,8 @@ index c2def0ee..87ed4c5a 100644
              player.connect( request );
          }
  
--        sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "command_send_sender", targets.size(), server.getName() ) );
-+        sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_send_sender", targets.size(), server.getName() ) );
+-        sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "command_send_attempt", targets.size(), server.getName() ) );
++        sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_send_attempt", targets.size(), server.getName() ) );
      }
  
      @Override
@@ -1039,16 +935,16 @@ index c2def0ee..87ed4c5a 100644
              {
                  if ( server.toLowerCase( Locale.ROOT ).startsWith( search ) )
                  {
-diff --git a/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java b/proxy/src/main/java/io/amethystmc/amethyst/module/CommandServer.java
-similarity index 67%
+diff --git a/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandServer.java
+similarity index 69%
 rename from module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
-rename to proxy/src/main/java/io/amethystmc/amethyst/module/CommandServer.java
-index 43093d21..dc6a41e9 100644
+rename to proxy/src/main/java/io/sapphiremc/amethyst/module/CommandServer.java
+index 00c7ea75..041ff3d2 100644
 --- a/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
-+++ b/proxy/src/main/java/io/amethystmc/amethyst/module/CommandServer.java
++++ b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandServer.java
 @@ -1,13 +1,9 @@
 -package net.md_5.bungee.module.cmd.server;
-+package io.amethystmc.amethyst.module;
++package io.sapphiremc.amethyst.module;
  
 -import com.google.common.base.Function;
  import com.google.common.base.Predicate;
@@ -1062,7 +958,7 @@ index 43093d21..dc6a41e9 100644
  import net.md_5.bungee.api.chat.ClickEvent;
  import net.md_5.bungee.api.chat.ComponentBuilder;
  import net.md_5.bungee.api.chat.HoverEvent;
-@@ -18,29 +14,30 @@ import net.md_5.bungee.api.event.ServerConnectEvent;
+@@ -18,9 +14,10 @@ import net.md_5.bungee.api.event.ServerConnectEvent;
  import net.md_5.bungee.api.plugin.Command;
  import net.md_5.bungee.api.plugin.TabExecutor;
  
@@ -1076,12 +972,7 @@ index 43093d21..dc6a41e9 100644
  public class CommandServer extends Command implements TabExecutor
  {
  
-     public CommandServer()
-     {
--        super( "server", "bungeecord.command.server" );
-+        super( "server", "amethyst.command.server" );
-     }
- 
+@@ -32,15 +29,15 @@ public class CommandServer extends Command implements TabExecutor
      @Override
      public void execute(CommandSender sender, String[] args)
      {
@@ -1109,7 +1000,7 @@ index 43093d21..dc6a41e9 100644
                      );
                      serverTextComponent.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/server " + server.getName() ) );
                      serverList.append( serverTextComponent );
-@@ -68,10 +65,10 @@ public class CommandServer extends Command implements TabExecutor
+@@ -69,10 +66,10 @@ public class CommandServer extends Command implements TabExecutor
              ServerInfo server = servers.get( args[0] );
              if ( server == null )
              {
@@ -1122,7 +1013,7 @@ index 43093d21..dc6a41e9 100644
              } else
              {
                  player.connect( server, ServerConnectEvent.Reason.COMMAND );
-@@ -82,7 +79,7 @@ public class CommandServer extends Command implements TabExecutor
+@@ -83,7 +80,7 @@ public class CommandServer extends Command implements TabExecutor
      @Override
      public Iterable<String> onTabComplete(final CommandSender sender, final String[] args)
      {
@@ -1131,7 +1022,7 @@ index 43093d21..dc6a41e9 100644
          {
              private final String lower = ( args.length == 0 ) ? "" : args[0].toLowerCase( Locale.ROOT );
  
-@@ -91,13 +88,6 @@ public class CommandServer extends Command implements TabExecutor
+@@ -92,13 +89,6 @@ public class CommandServer extends Command implements TabExecutor
              {
                  return input.getName().toLowerCase( Locale.ROOT ).startsWith( lower ) && input.canAccess( sender );
              }
@@ -1146,16 +1037,16 @@ index 43093d21..dc6a41e9 100644
 +        } ), ServerInfo::getName);
      }
  }
-diff --git a/module/reconnect-yaml/src/main/java/net/md_5/bungee/module/reconnect/yaml/YamlReconnectHandler.java b/proxy/src/main/java/io/amethystmc/amethyst/module/YamlReconnectHandler.java
+diff --git a/module/reconnect-yaml/src/main/java/net/md_5/bungee/module/reconnect/yaml/YamlReconnectHandler.java b/proxy/src/main/java/io/sapphiremc/amethyst/module/YamlReconnectHandler.java
 similarity index 97%
 rename from module/reconnect-yaml/src/main/java/net/md_5/bungee/module/reconnect/yaml/YamlReconnectHandler.java
-rename to proxy/src/main/java/io/amethystmc/amethyst/module/YamlReconnectHandler.java
-index 3a514a76..d814fcbb 100644
+rename to proxy/src/main/java/io/sapphiremc/amethyst/module/YamlReconnectHandler.java
+index 3a514a76..9a58168b 100644
 --- a/module/reconnect-yaml/src/main/java/net/md_5/bungee/module/reconnect/yaml/YamlReconnectHandler.java
-+++ b/proxy/src/main/java/io/amethystmc/amethyst/module/YamlReconnectHandler.java
++++ b/proxy/src/main/java/io/sapphiremc/amethyst/module/YamlReconnectHandler.java
 @@ -1,4 +1,4 @@
 -package net.md_5.bungee.module.reconnect.yaml;
-+package io.amethystmc.amethyst.module;
++package io.sapphiremc.amethyst.module;
  
  import java.io.File;
  import java.io.FileReader;
@@ -1168,36 +1059,39 @@ index 3a514a76..d814fcbb 100644
          lock.readLock().lock();
          try
          {
-diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index ff4bbf34..1b34d6bd 100644
---- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-+++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-@@ -1,6 +1,5 @@
- package io.github.waterfallmc.waterfall.conf;
- 
--import com.google.common.base.Joiner;
- import net.md_5.bungee.conf.Configuration;
- import net.md_5.bungee.conf.YamlConfig;
- import net.md_5.bungee.protocol.ProtocolConstants;
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index e3bdd255..71c982ba 100644
+index 287794ec..10009aea 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -10,10 +10,10 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
- import com.google.gson.Gson;
+@@ -11,10 +11,16 @@ import com.google.gson.Gson;
  import com.google.gson.GsonBuilder;
+ 
  import dev._2lstudios.flamecord.FlameCord;
 -import dev._2lstudios.flamecord.commands.FlameCordCommand;
  import dev._2lstudios.flamecord.configuration.ModulesConfiguration;
  import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
- import io.amethystmc.amethyst.command.CommandLobby;
-+import io.amethystmc.amethyst.module.*;
+ import io.sapphiremc.amethyst.command.CommandLobby;
++import io.sapphiremc.amethyst.module.CommandAlert;
++import io.sapphiremc.amethyst.module.CommandAlertRaw;
++import io.sapphiremc.amethyst.module.CommandFind;
++import io.sapphiremc.amethyst.module.CommandList;
++import io.sapphiremc.amethyst.module.CommandSend;
++import io.sapphiremc.amethyst.module.CommandServer;
++import io.sapphiremc.amethyst.module.YamlReconnectHandler;
  import io.github.waterfallmc.waterfall.conf.WaterfallConfiguration;
  import io.github.waterfallmc.waterfall.event.ProxyExceptionEvent;
  import io.github.waterfallmc.waterfall.exception.ProxyPluginEnableDisableException;
-@@ -34,17 +34,8 @@ import net.md_5.bungee.api.plugin.PluginManager;
- import net.md_5.bungee.chat.*;
- import net.md_5.bungee.command.*;
+@@ -80,24 +86,15 @@ import net.md_5.bungee.chat.ScoreComponentSerializer;
+ import net.md_5.bungee.chat.SelectorComponentSerializer;
+ import net.md_5.bungee.chat.TextComponentSerializer;
+ import net.md_5.bungee.chat.TranslatableComponentSerializer;
+-import net.md_5.bungee.command.CommandBungee;
+ import net.md_5.bungee.command.CommandEnd;
++import net.md_5.bungee.command.CommandFlame;
+ import net.md_5.bungee.command.CommandIP;
+ import net.md_5.bungee.command.CommandPerms;
+ import net.md_5.bungee.command.CommandReload;
+ import net.md_5.bungee.command.ConsoleCommandSender;
  import net.md_5.bungee.compress.CompressFactory;
 -import net.md_5.bungee.conf.Configuration;
 -import net.md_5.bungee.conf.YamlConfig;
@@ -1214,19 +1108,7 @@ index e3bdd255..71c982ba 100644
  import net.md_5.bungee.netty.PipelineUtils;
  import net.md_5.bungee.protocol.DefinedPacket;
  import net.md_5.bungee.protocol.ProtocolConstants;
-@@ -84,8 +75,9 @@ public class BungeeCord extends ProxyServer
-     /**
-      * Localization bundle.
-      */
--    private ResourceBundle baseBundle;
--    private ResourceBundle customBundle;
-+    // Amethyst - use FlameCord message system
-+   // private ResourceBundle baseBundle;
-+   // private ResourceBundle customBundle;
-     public EventLoopGroup bossEventLoopGroup, workerEventLoopGroup;
-     /**
-      * locations.yml save thread.
-@@ -152,7 +144,8 @@ public class BungeeCord extends ProxyServer
+@@ -192,7 +189,8 @@ public class BungeeCord extends ProxyServer
      // FlameCord end - 1.7.x support
      @Getter
      private ConnectionThrottle connectionThrottle;
@@ -1236,28 +1118,7 @@ index e3bdd255..71c982ba 100644
  
      {
          // TODO: Proper fallback when we interface the manager
-@@ -169,7 +162,8 @@ public class BungeeCord extends ProxyServer
-     {
-         // Java uses ! to indicate a resource inside of a jar/zip/other container. Running Bungee from within a directory that has a ! will cause this to muck up.
-         Preconditions.checkState( new File( "." ).getAbsolutePath().indexOf( '!' ) == -1, "Cannot use Amethyst in directory with ! in path." );
--
-+        // Amethyst start - use FlameCord message system
-+        /*
-         try
-         {
-             baseBundle = ResourceBundle.getBundle( "messages" );
-@@ -177,7 +171,9 @@ public class BungeeCord extends ProxyServer
-         {
-             baseBundle = ResourceBundle.getBundle( "messages", Locale.ENGLISH );
-         }
--        // reloadMessages(); // Amethyst - use FlameCord message system
-+        reloadMessages();
-+         */
-+        // Amethyst end
- 
-         // This is a workaround for quite possibly the weirdest bug I have ever encountered in my life!
-         // When jansi attempts to extract its natives, by default it tries to extract a specific version,
-@@ -209,7 +205,7 @@ public class BungeeCord extends ProxyServer
+@@ -253,7 +251,7 @@ public class BungeeCord extends ProxyServer
          //getPluginManager().registerCommand( null, new CommandReload() );
          //getPluginManager().registerCommand( null, new CommandEnd() );
          //getPluginManager().registerCommand( null, new CommandIP() );
@@ -1266,7 +1127,7 @@ index e3bdd255..71c982ba 100644
          //getPluginManager().registerCommand( null, new CommandPerms() );
  
          if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
-@@ -812,7 +808,7 @@ public class BungeeCord extends ProxyServer
+@@ -857,7 +855,7 @@ public class BungeeCord extends ProxyServer
  
          // Bungeecord Commands
          pluginManager.registerCommand(null, new CommandEnd());
@@ -1275,7 +1136,7 @@ index e3bdd255..71c982ba 100644
  
          if (modulesConfiguration.reloadEnabled) {
              pluginManager.registerCommand(null, new CommandReload());
-@@ -829,6 +825,9 @@ public class BungeeCord extends ProxyServer
+@@ -874,6 +872,9 @@ public class BungeeCord extends ProxyServer
              pluginManager.registerCommand(null, new CommandAlert());
              pluginManager.registerCommand(null, new CommandAlertRaw());
          }
@@ -1285,19 +1146,19 @@ index e3bdd255..71c982ba 100644
          if (modulesConfiguration.findEnabled) {
              pluginManager.registerCommand(null, new CommandFind());
          }
-@@ -855,9 +854,6 @@ public class BungeeCord extends ProxyServer
-         if (getFlameCord().getFlameCordConfiguration().isLobbyEnabled()) {
+@@ -901,9 +902,6 @@ public class BungeeCord extends ProxyServer
              pluginManager.registerCommand(null, new CommandLobby());
          }
+         // Amethyst end
 -
 -        // Flamecord - Commands (Had to make it like this because of maven limitations)
 -        pluginManager.registerCommand(null, new FlameCordCommand(this));
      }
  
-     @Override
+     // Amethyst start - add method to get FlameCord's instance
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
 deleted file mode 100644
-index dd6d71b7..00000000
+index 0436526c..00000000
 --- a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
 +++ /dev/null
 @@ -1,22 +0,0 @@
@@ -1320,34 +1181,12 @@ index dd6d71b7..00000000
 -    public void execute(CommandSender sender, String[] args)
 -    {
 -        // FlameCord - Use custom version message
--        sender.sendMessage( ChatColor.translateAlternateColorCodes( '&', "&eThis server is running &c" + ProxyServer.getInstance().getName() + "&e version &a" + ProxyServer.getInstance().getVersion() + "&e by &bDenaryDev&e." ) );
+-        sender.sendMessage( ChatColor.translateAlternateColorCodes( '&', "&eThis server is running &c" + ProxyServer.getInstance().getName() + "&e version &a" + ProxyServer.getInstance().getVersion() + "&e by &bSapphireMC&e." ) );
 -    }
 -}
-diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandEnd.java b/proxy/src/main/java/net/md_5/bungee/command/CommandEnd.java
-index 03feeb39..adc577fe 100644
---- a/proxy/src/main/java/net/md_5/bungee/command/CommandEnd.java
-+++ b/proxy/src/main/java/net/md_5/bungee/command/CommandEnd.java
-@@ -6,16 +6,12 @@ import net.md_5.bungee.api.ChatColor;
- import net.md_5.bungee.api.CommandSender;
- import net.md_5.bungee.api.plugin.Command;
- 
--/**
-- * Command to terminate the proxy instance. May only be used by the console by
-- * default.
-- */
- public class CommandEnd extends Command
- {
- 
-     public CommandEnd()
-     {
--        super( "end", "bungeecord.command.end" );
-+        super( "end", "amethyst.command.end" );
-     }
- 
-     @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandFlame.java b/proxy/src/main/java/net/md_5/bungee/command/CommandFlame.java
 new file mode 100644
-index 00000000..4e6dce0e
+index 00000000..4144bd28
 --- /dev/null
 +++ b/proxy/src/main/java/net/md_5/bungee/command/CommandFlame.java
 @@ -0,0 +1,39 @@
@@ -1363,7 +1202,7 @@ index 00000000..4e6dce0e
 +
 +    public CommandFlame()
 +    {
-+        super( "amethyst", "amethyst.command.amethyst" );
++        super( "flame", "bungeecord.command.flame" );
 +    }
 +
 +    @Override
@@ -1374,24 +1213,24 @@ index 00000000..4e6dce0e
 +
 +            switch ( arg0 ) {
 +                case "firewall" ->
-+                        sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_amethyst_firewall",
++                        sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_firewall",
 +                                BungeeCord.getInstance().getFlameCord().getFirewallManager().getFirewalled().size(),
 +                                BungeeCord.getInstance().getFlameCord().getFirewallManager().getSeconds() ) );
 +                case "about" -> sender.sendMessage(TextComponent.fromLegacyText( String.format( """
-+                        §7§m------------§r§7§l(§5Amethyst§7§l)§r§7§m------------
-+                        §6Amethyst v%s §eby DenaryDev
-+                        §6More commands §7- §e/amethyst
++                        §7§m------------§r§7§l{§5Amethyst§7§l}§r§7§m------------
++                        §6Amethyst v%s §eby SapphireMC
++                        §6More commands §7- §e/flame help
 +                        §r""", BungeeCord.getInstance().getVersion() ) ) );
-+                case "help" -> sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_amethyst_help" ) );
-+                default -> sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_amethyst_usage" ) );
++                case "help" -> sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_flamecord_help" ) );
++                default -> sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_flamecord_usage" ) );
 +            }
 +        } else {
-+            sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_amethyst_usage" ) );
++            sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_flamecord_usage" ) );
 +        }
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandIP.java b/proxy/src/main/java/net/md_5/bungee/command/CommandIP.java
-index 97c70f5c..f1d30529 100644
+index 97c70f5c..b5b05ec0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/command/CommandIP.java
 +++ b/proxy/src/main/java/net/md_5/bungee/command/CommandIP.java
 @@ -1,7 +1,7 @@
@@ -1403,15 +1242,6 @@ index 97c70f5c..f1d30529 100644
  import net.md_5.bungee.api.connection.ProxiedPlayer;
  
  public class CommandIP extends PlayerCommand
-@@ -9,7 +9,7 @@ public class CommandIP extends PlayerCommand
- 
-     public CommandIP()
-     {
--        super( "ip", "bungeecord.command.ip" );
-+        super( "ip", "amethyst.command.ip" );
-     }
- 
-     @Override
 @@ -17,16 +17,16 @@ public class CommandIP extends PlayerCommand
      {
          if ( args.length < 1 )
@@ -1434,7 +1264,7 @@ index 97c70f5c..f1d30529 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandPerms.java b/proxy/src/main/java/net/md_5/bungee/command/CommandPerms.java
-index 06147382..e2cd55a7 100644
+index 06147382..a0cc3566 100644
 --- a/proxy/src/main/java/net/md_5/bungee/command/CommandPerms.java
 +++ b/proxy/src/main/java/net/md_5/bungee/command/CommandPerms.java
 @@ -2,9 +2,10 @@ package net.md_5.bungee.command;
@@ -1454,7 +1284,7 @@ index 06147382..e2cd55a7 100644
      public CommandPerms()
      {
 -        super( "perms" );
-+        super( "perms", "amethyst.command.perms" );
++        super( "perms", "bungeecord.command.perms" );
      }
  
      @Override
@@ -1476,10 +1306,10 @@ index 06147382..e2cd55a7 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
-index 065bb51a..75e9cfba 100644
+index 2f7a254d..4d16d246 100644
 --- a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
 +++ b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
-@@ -1,17 +1,21 @@
+@@ -1,11 +1,15 @@
  package net.md_5.bungee.command;
  
 +import dev._2lstudios.flamecord.FlameCord;
@@ -1496,13 +1326,6 @@ index 065bb51a..75e9cfba 100644
  public class CommandReload extends Command
  {
  
-     public CommandReload()
-     {
--        super( "greload", "bungeecord.command.reload" );
-+        super( "greload", "amethyst.command.reload" );
-     }
- 
-     @Override
 @@ -22,8 +26,14 @@ public class CommandReload extends Command
          BungeeCord.getInstance().stopListeners();
          BungeeCord.getInstance().startListeners();
@@ -1515,16 +1338,16 @@ index 065bb51a..75e9cfba 100644
 +
 +        FlameCord.renew( BungeeCord.getInstance().getLogger(), whitelistedAddresses );
  
--        sender.sendMessage( ChatColor.BOLD.toString() + ChatColor.RED + "Amethyst has been reloaded."
+-        sender.sendMessage( ChatColor.BOLD.toString() + ChatColor.RED.toString() + "Amethyst has been reloaded."
 -                + " This is NOT advisable and you will not be supported with any issues that arise! Please restart Amethyst ASAP." );
 +        sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_reload" ) );
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-index dd69c6a5..f42d29a0 100644
+index 52a9fc71..82393d9c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-@@ -78,7 +78,7 @@ public class YamlConfig implements ConfigurationAdapter
+@@ -83,7 +83,7 @@ public class YamlConfig implements ConfigurationAdapter
              {
                  try
                  {
@@ -1533,32 +1356,7 @@ index dd69c6a5..f42d29a0 100644
                  } catch ( YAMLException ex )
                  {
                      throw new RuntimeException( "Invalid configuration encountered - this is a configuration error and NOT a bug! Please attempt to fix the error or see https://www.spigotmc.org/ for help.", ex );
-@@ -101,20 +101,15 @@ public class YamlConfig implements ConfigurationAdapter
-         Map<String, Object> permissions = get( "permissions", null );
-         if ( permissions == null )
-         {
--            set( "permissions.default", Arrays.asList( new String[]
--            {
--                "bungeecord.command.server", "bungeecord.command.list"
--            } ) );
--            set( "permissions.admin", Arrays.asList( new String[]
--            {
--                "bungeecord.command.alert", "bungeecord.command.end", "bungeecord.command.ip", "bungeecord.command.reload"
--            } ) );
-+            set( "permissions.default", Arrays.asList( "amethyst.command.lobby", "amethyst.command.amethyst" ) );
-+            set( "permissions.admin", Arrays.asList( "amethyst.command.alert", "amethyst.command.alertraw", "amethyst.command.end", "amethyst.command.find",
-+                    "amethyst.command.ip", "amethyst.command.list", "amethyst.command.perms", "amethyst.command.reload", "amethyst.command.send", "amethyst.command.server" ) );
-         }
- 
-         Map<String, Object> groups = get( "groups", null );
-         if ( groups == null )
-         {
--            set( "groups.md_5", Collections.singletonList( "admin" ) );
-+            set( "groups.md_5", Collections.singletonList( "default" ) );
-         }
-     }
- 
-@@ -140,7 +135,7 @@ public class YamlConfig implements ConfigurationAdapter
+@@ -145,7 +145,7 @@ public class YamlConfig implements ConfigurationAdapter
          } else
          {
              String first = path.substring( 0, index );
@@ -1567,7 +1365,7 @@ index dd69c6a5..f42d29a0 100644
              Map sub = (Map) submap.get( first );
              if ( sub == null )
              {
-@@ -173,7 +168,7 @@ public class YamlConfig implements ConfigurationAdapter
+@@ -178,7 +178,7 @@ public class YamlConfig implements ConfigurationAdapter
          } else
          {
              String first = path.substring( 0, index );
@@ -1576,7 +1374,7 @@ index dd69c6a5..f42d29a0 100644
              Map sub = (Map) submap.get( first );
              if ( sub == null )
              {
-@@ -310,14 +305,13 @@ public class YamlConfig implements ConfigurationAdapter
+@@ -315,14 +315,13 @@ public class YamlConfig implements ConfigurationAdapter
      }
  
      @Override
@@ -1875,5 +1673,5 @@ index d52b8106..00000000
 -    }
 -}
 -- 
-2.33.0
+2.29.2.windows.3
 
