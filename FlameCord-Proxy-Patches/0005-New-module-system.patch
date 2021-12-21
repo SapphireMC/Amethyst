@@ -1,11 +1,11 @@
-From acec7cdd0c9a0d0ea588b247ececfccb13ae37ed Mon Sep 17 00:00:00 2001
+From 124f013260e2fa6c3721a5f8253de9c48834f08e Mon Sep 17 00:00:00 2001
 From: Denary Planet <denaryplanet@gmail.com>
 Date: Sun, 11 Jul 2021 04:13:30 +0500
 Subject: [PATCH] New module system
 
 
 diff --git a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java b/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
-index 3f47ed2b..1ea90cd3 100644
+index 643b7487..eb2f7340 100644
 --- a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 +++ b/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 @@ -35,12 +35,14 @@ public class MessagesConfiguration {
@@ -14,9 +14,9 @@ index 3f47ed2b..1ea90cd3 100644
  			setIfUnexistant( "command_firewall_info","&eСуществует &6{0} &eадресов брандмауэра. Брандмауэр очистится через &6{1} &eсек.", configuration );
 -			setIfUnexistant( "command_flamecord_usage", "&cИспользуйте /flame help для просмотра доступных команд", configuration );
 -			setIfUnexistant( "command_flamecord_help", """
-+			setIfUnexistant( "command_bungee_usage", "&cИспользуйте /flame help для просмотра доступных команд", configuration );
++			setIfUnexistant( "command_bungee_usage", "&cИспользуйте /bungee help для просмотра доступных команд", configuration );
 +			setIfUnexistant( "command_bungee_help", """
- 					&7&m-----------------&r&7&l{&5Amethyst&7&l}&r&7&m-----------------
+ 					&7&m-----------------&r&7&l(&5Amethyst&7&l)&r&7&m-----------------
 -					&8&l* &6/flame firewall &7- &eПоказывает информацию о брандмауэре!
 -					&8&l* &6/flame help &7- &eПоказывает это сообщение!
 -					&8&l* &6/flame about &7- &eИнформация про Amethyst
@@ -1219,7 +1219,7 @@ index cddf36a8..14ef5a26 100644
  
      // Amethyst start - add method to get FlameCord's instance
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
-index 0436526c..affcfd1b 100644
+index 0436526c..2d28f48b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
 +++ b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
 @@ -1,8 +1,8 @@
@@ -1233,7 +1233,7 @@ index 0436526c..affcfd1b 100644
  import net.md_5.bungee.api.plugin.Command;
  
  public class CommandBungee extends Command
-@@ -10,13 +10,30 @@ public class CommandBungee extends Command
+@@ -10,13 +10,31 @@ public class CommandBungee extends Command
  
      public CommandBungee()
      {
@@ -1257,9 +1257,10 @@ index 0436526c..affcfd1b 100644
 +                                BungeeCord.getInstance().getFlameCord().getFirewallManager().getFirewalled().size(),
 +                                BungeeCord.getInstance().getFlameCord().getFirewallManager().getSeconds() ) );
 +                case "about" -> sender.sendMessage(TextComponent.fromLegacyText( String.format( """
-+                        §7§m------------§r§7§l{§5Amethyst§7§l}§r§7§m------------
-+                        §6Amethyst v%s §eby SapphireMC
-+                        §6More commands §7- §e/flame help
++                        §7§m------------§r§7§l(§5Amethyst§7§l)§r§7§m------------
++                        §6Amethyst v%s
++                        §6Contributed by SapphireMC
++                        §6More commands §7- §e/bungee help
 +                        §r""", BungeeCord.getInstance().getVersion() ) ) );
 +                case "help" -> sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_bungee_help" ) );
 +                default -> sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_bungee_usage" ) );

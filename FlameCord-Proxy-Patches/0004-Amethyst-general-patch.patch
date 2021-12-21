@@ -1,4 +1,4 @@
-From d55b2bbfead2725d33e5b1858a908ba52a682f96 Mon Sep 17 00:00:00 2001
+From d73d154fd6d77e9b08eda4fc39d747657567d966 Mon Sep 17 00:00:00 2001
 From: Denary Planet <denaryplanet@gmail.com>
 Date: Sat, 10 Jul 2021 17:22:34 +0500
 Subject: [PATCH] Amethyst general patch
@@ -177,7 +177,7 @@ index f3f602e0..4e84ce45 100644
 +    }
  }
 diff --git a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java b/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
-index 72d48d66..3f47ed2b 100644
+index 72d48d66..643b7487 100644
 --- a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 +++ b/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 @@ -30,71 +30,86 @@ public class MessagesConfiguration {
@@ -256,16 +256,16 @@ index 72d48d66..3f47ed2b 100644
 +			setIfUnexistant( "command_firewall_info","&eСуществует &6{0} &eадресов брандмауэра. Брандмауэр очистится через &6{1} &eсек.", configuration );
 +			setIfUnexistant( "command_flamecord_usage", "&cИспользуйте /flame help для просмотра доступных команд", configuration );
 +			setIfUnexistant( "command_flamecord_help", """
-+					&7&m-----------------&r&7&l{&5Amethyst&7&l}&r&7&m-----------------
++					&7&m-----------------&r&7&l(&5Amethyst&7&l)&r&7&m-----------------
 +					&8&l* &6/flame firewall &7- &eПоказывает информацию о брандмауэре!
 +					&8&l* &6/flame help &7- &eПоказывает это сообщение!
 +					&8&l* &6/flame about &7- &eИнформация про Amethyst
 +					""", configuration );
 +			setIfUnexistant( "command_ip", "&eIP игрока &6{0}&e: &6{1}", configuration );
 +			setIfUnexistant( "command_list_header", """
-+					&7&m-----------------&r&7&l{&5Amethyst&7&l}&r&7&m-----------------
++					&7&m-----------------&r&7&l(&5Amethyst&7&l)&r&7&m-----------------
 +					&fСписок всех серверов:""", configuration );
-+			setIfUnexistant( "command_list_server", "&e{0}&8: &fОнлайн (&7{1}&f): &7{2}", configuration );
++			setIfUnexistant( "command_list_server", "&e{0}&8: &fИгроки (&7{1}&f): &7{2}", configuration );
 +			setIfUnexistant( "command_list_footer", "&7&m-------------------------------------------", configuration );
 +			setIfUnexistant( "command_list_total", "&fВсего игроков на сервере: &e{0}", configuration );
 +			setIfUnexistant( "command_lobby_already_in", "&cВы уже подключены к этому серверу!", configuration );
@@ -332,7 +332,7 @@ index 72d48d66..3f47ed2b 100644
  
  			if (!configurationExists) {
  				configurationProvider.save(configuration, configurationFile);
-@@ -114,7 +129,7 @@ public class MessagesConfiguration {
+@@ -114,11 +129,16 @@ public class MessagesConfiguration {
  
  	public String getTranslation(final String name, final Object... args) {
  		if (!messages.containsKey(name)) {
@@ -341,6 +341,16 @@ index 72d48d66..3f47ed2b 100644
  					+ "' from messages.yml file but wasn't found. Please try resetting this file or report to a developer.");
  		}
  
+-		return MessageFormat.format(messages.getOrDefault(name, "<translation '" + name + "' missing>"), args);
++		String text = messages.getOrDefault(name, "<translation '" + name + "' missing>");
++		if (args.length > 0) {
++			return MessageFormat.format(text, args);
++		} else {
++			return text;
++		}
+ 	}
+ 
+ 	private void setIfUnexistant(final String arg1, final Object arg2, final Configuration configuration) {
 diff --git a/flame/src/main/java/dev/_2lstudios/flamecord/firewall/FirewallManager.java b/flame/src/main/java/dev/_2lstudios/flamecord/firewall/FirewallManager.java
 index dfb5c6d3..77f433e8 100644
 --- a/flame/src/main/java/dev/_2lstudios/flamecord/firewall/FirewallManager.java

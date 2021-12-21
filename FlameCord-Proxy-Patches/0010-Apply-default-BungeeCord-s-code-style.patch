@@ -1,7 +1,7 @@
-From ad10e71c76b68f8b51266daeb205645a92da7949 Mon Sep 17 00:00:00 2001
+From 5649c0596aabb83409220db8f9a9a12c42f83010 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Tue, 21 Dec 2021 13:25:12 +0500
-Subject: [PATCH] Apply default BungeeCord's code style to FlameCord's classes
+Subject: [PATCH] Apply default BungeeCord's code style
 
 
 diff --git a/flame/src/main/java/dev/_2lstudios/flamecord/FlameCord.java b/flame/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
@@ -243,7 +243,7 @@ index 3b8bec29..68ba9320 100644
      }
  
 diff --git a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java b/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
-index 242b88d2..db7c1f5e 100644
+index 97851592..372d0993 100644
 --- a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 +++ b/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 @@ -11,23 +11,29 @@ import net.md_5.bungee.api.ChatColor;
@@ -283,7 +283,7 @@ index 242b88d2..db7c1f5e 100644
  			}
  
  			// Commands
-@@ -116,34 +122,41 @@ public class MessagesConfiguration {
+@@ -116,39 +122,48 @@ public class MessagesConfiguration {
  			setIfUnexistant( "error_user_not_online", "&cДанный игрок не онлайн.", configuration );
  			setIfUnexistant( "error_username_needed", "&cПожалуйста укажите имя игрока.", configuration );
  
@@ -325,8 +325,18 @@ index 242b88d2..db7c1f5e 100644
 +			logger.warning( "[Amethyst] Tried to get translation '" + name + "' from messages.yml file but wasn't found. Please try resetting this file or report to a developer." );
  		}
  
--		return MessageFormat.format(messages.getOrDefault(name, "<translation '" + name + "' missing>"), args);
-+		return MessageFormat.format( messages.getOrDefault( name, "<translation '" + name + "' missing>" ), args );
+-		String text = messages.getOrDefault(name, "<translation '" + name + "' missing>");
+-		if (args.length > 0) {
+-			return MessageFormat.format(text, args);
+-		} else {
++		String text = messages.getOrDefault( name, "<translation '" + name + "' missing>" );
++		if ( args.length > 0 )
++		{
++			return MessageFormat.format( text, args );
++		} else
++		{
+ 			return text;
+ 		}
  	}
  
 -	private void setIfUnexistant(final String arg1, final Object arg2, final Configuration configuration) {

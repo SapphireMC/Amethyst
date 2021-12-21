@@ -1,4 +1,4 @@
-From e1ed3e8626376acb8dd8a20b66d1cfe5022313df Mon Sep 17 00:00:00 2001
+From 51bf2226d28a4583a2432e8ec0350c791214a488 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Fri, 17 Dec 2021 18:59:33 +0500
 Subject: [PATCH] Add more plugin api
@@ -632,7 +632,7 @@ index 4e84ce45..3b8bec29 100644
              if (!configurationExists) {
                  configurationProvider.save(configuration, configurationFile);
 diff --git a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java b/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
-index 1ea90cd3..242b88d2 100644
+index eb2f7340..97851592 100644
 --- a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 +++ b/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 @@ -34,14 +34,17 @@ public class MessagesConfiguration {
@@ -641,10 +641,10 @@ index 1ea90cd3..242b88d2 100644
  			setIfUnexistant( "command_find_online_at", "&eИгрок &6{0} &eиграет на сервере &6{1}", configuration );
 -			setIfUnexistant( "command_firewall_info","&eСуществует &6{0} &eадресов брандмауэра. Брандмауэр очистится через &6{1} &eсек.", configuration );
 +			setIfUnexistant( "command_bungee_firewall","&eСуществует &6{0} &eадресов брандмауэра. Брандмауэр очистится через &6{1} &eсек.", configuration );
- 			setIfUnexistant( "command_bungee_usage", "&cИспользуйте /flame help для просмотра доступных команд", configuration );
+ 			setIfUnexistant( "command_bungee_usage", "&cИспользуйте /bungee help для просмотра доступных команд", configuration );
 +			setIfUnexistant( "command_bungee_plugins", "&fУстановленные на прокси плагины ({0}): {1}", configuration );
  			setIfUnexistant( "command_bungee_help", """
- 					&7&m-----------------&r&7&l{&5Amethyst&7&l}&r&7&m-----------------
+ 					&7&m-----------------&r&7&l(&5Amethyst&7&l)&r&7&m-----------------
 -					&8&l* &6/bungee firewall &7- &eПоказывает информацию о
 +					&8&l* &6/bungee firewall|fw &7- &eПоказывает информацию о
  					&e   брандмауэре.
@@ -676,7 +676,7 @@ index 760be981..71b69528 100644
                  {
                      handler.close();
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
-index affcfd1b..9530fa1a 100644
+index 2d28f48b..a0cd5e78 100644
 --- a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
 +++ b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
 @@ -1,9 +1,13 @@
@@ -712,7 +712,7 @@ index affcfd1b..9530fa1a 100644
                                  BungeeCord.getInstance().getFlameCord().getFirewallManager().getFirewalled().size(),
                                  BungeeCord.getInstance().getFlameCord().getFirewallManager().getSeconds() ) );
                  case "about" -> sender.sendMessage(TextComponent.fromLegacyText( String.format( """
-@@ -31,8 +37,40 @@ public class CommandBungee extends Command
+@@ -32,8 +38,40 @@ public class CommandBungee extends Command
                          §r""", BungeeCord.getInstance().getVersion() ) ) );
                  case "help" -> sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_bungee_help" ) );
                  default -> sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_bungee_usage" ) );
