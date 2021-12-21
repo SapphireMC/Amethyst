@@ -1,24 +1,30 @@
-From d95dee90f44a2b92acc9afb6ffaf76248d015db2 Mon Sep 17 00:00:00 2001
+From acec7cdd0c9a0d0ea588b247ececfccb13ae37ed Mon Sep 17 00:00:00 2001
 From: Denary Planet <denaryplanet@gmail.com>
 Date: Sun, 11 Jul 2021 04:13:30 +0500
 Subject: [PATCH] New module system
 
 
 diff --git a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java b/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
-index 3f47ed2b..45636a3f 100644
+index 3f47ed2b..1ea90cd3 100644
 --- a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 +++ b/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
-@@ -38,9 +38,11 @@ public class MessagesConfiguration {
- 			setIfUnexistant( "command_flamecord_usage", "&cИспользуйте /flame help для просмотра доступных команд", configuration );
- 			setIfUnexistant( "command_flamecord_help", """
+@@ -35,12 +35,14 @@ public class MessagesConfiguration {
+ 			setIfUnexistant( "command_alert", "&8&l[&4&lОбьявление&8&l] &c&l", configuration );
+ 			setIfUnexistant( "command_find_online_at", "&eИгрок &6{0} &eиграет на сервере &6{1}", configuration );
+ 			setIfUnexistant( "command_firewall_info","&eСуществует &6{0} &eадресов брандмауэра. Брандмауэр очистится через &6{1} &eсек.", configuration );
+-			setIfUnexistant( "command_flamecord_usage", "&cИспользуйте /flame help для просмотра доступных команд", configuration );
+-			setIfUnexistant( "command_flamecord_help", """
++			setIfUnexistant( "command_bungee_usage", "&cИспользуйте /flame help для просмотра доступных команд", configuration );
++			setIfUnexistant( "command_bungee_help", """
  					&7&m-----------------&r&7&l{&5Amethyst&7&l}&r&7&m-----------------
 -					&8&l* &6/flame firewall &7- &eПоказывает информацию о брандмауэре!
-+					&8&l* &6/flame firewall &7- &eПоказывает информацию о
-+					&e   брандмауэре.
-+					&8&l* &6/flame about &7- &eПоказывает информацию про
-+					&e   ядро сервера.
- 					&8&l* &6/flame help &7- &eПоказывает это сообщение!
+-					&8&l* &6/flame help &7- &eПоказывает это сообщение!
 -					&8&l* &6/flame about &7- &eИнформация про Amethyst
++					&8&l* &6/bungee firewall &7- &eПоказывает информацию о
++					&e   брандмауэре.
++					&8&l* &6/bungee about &7- &eПоказывает информацию про
++					&e   ядро сервера.
++					&8&l* &6/bungee help &7- &eПоказывает это сообщение!
  					""", configuration );
  			setIfUnexistant( "command_ip", "&eIP игрока &6{0}&e: &6{1}", configuration );
  			setIfUnexistant( "command_list_header", """
@@ -491,10 +497,10 @@ index 54e029d8..1b5c5e01 100644
  
 diff --git a/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java b/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
 deleted file mode 100644
-index a37ec1de..00000000
+index 19e31e9c..00000000
 --- a/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
 +++ /dev/null
-@@ -1,66 +0,0 @@
+@@ -1,72 +0,0 @@
 -package dev._2lstudios.flamecord.commands;
 -
 -import java.util.Collection;
@@ -509,55 +515,61 @@ index a37ec1de..00000000
 -import net.md_5.bungee.api.config.ServerInfo;
 -import net.md_5.bungee.api.plugin.Command;
 -
--public class FlameCordCommand extends Command {
--private final BungeeCord bungeeCord;
+-public class FlameCordCommand extends Command
+-{
 -
--    public FlameCordCommand(final BungeeCord bungeeCord) {
--        super("flamecord", "bungeecord.command.flamecord", "flame");
+-    private final BungeeCord bungeeCord;
+-
+-    public FlameCordCommand(final BungeeCord bungeeCord)
+-    {
+-        super( "flamecord", "bungeecord.command.flamecord", "flame" );
 -
 -        this.bungeeCord = bungeeCord;
 -    }
 -
 -    @Override
--    public void execute(final CommandSender sender, final String[] args) {
+-    public void execute(final CommandSender sender, final String[] args)
+-    {
 -        final FlameCord flameCord = FlameCord.getInstance();
 -        final MessagesConfiguration messagesConfiguration = flameCord.getMessagesConfiguration();
 -
--        if (args.length > 0) {
+-        if (args.length > 0)
+-        {
 -            final String arg0 = args[0];
 -
--            switch (arg0) {
--                case "firewall": {
+-            switch (arg0)
+-            {
+-                case "firewall":
+-                {
 -                    final FirewallManager firewallManager = flameCord.getFirewallManager();
--                    final int amount = firewallManager.getFirewalled().size(),
--                            seconds = firewallManager.getSeconds();
+-                    final int amount = firewallManager.getFirewalled().size(), seconds = firewallManager.getSeconds();
 -
--                    sender.sendMessage(TextComponent.fromLegacyText(
--                            messagesConfiguration.getTranslation("command_firewall_info", amount, seconds)));
+-                    sender.sendMessage( TextComponent.fromLegacyText( messagesConfiguration.getTranslation( "command_firewall_info", amount, seconds ) ) );
 -                    break;
 -                }
--                case "reload": {
+-                case "reload":
+-                {
 -                    // FlameCord - Collect ips from servers
 -                    final Collection<String> whitelistedAddresses = new HashSet<>();
 -
--                    for (final ServerInfo serverInfo : bungeeCord.getServers().values()) {
--                        whitelistedAddresses.add(serverInfo.getSocketAddress().toString());
+-                    for ( final ServerInfo serverInfo : bungeeCord.getServers().values() )
+-                    {
+-                        whitelistedAddresses.add( serverInfo.getSocketAddress().toString() );
 -                    }
 -
--                    FlameCord.renew(bungeeCord.getLogger(), whitelistedAddresses);
--                    sender.sendMessage(TextComponent
--                            .fromLegacyText(messagesConfiguration.getTranslation("command_reload")));
+-                    FlameCord.renew( bungeeCord.getLogger(), whitelistedAddresses );
+-                    sender.sendMessage( TextComponent.fromLegacyText( messagesConfiguration.getTranslation( "command_reload" ) ) );
 -                    break;
 -                }
--                default: {
--                    sender.sendMessage(TextComponent.fromLegacyText(
--                            messagesConfiguration.getTranslation("command_flamecord_help", bungeeCord.getVersion())));
+-                default:
+-                {
+-                    sender.sendMessage( TextComponent.fromLegacyText( messagesConfiguration.getTranslation( "command_flamecord_help", bungeeCord.getVersion() ) ) );
 -                    break;
 -                }
 -            }
--            } else {
--            sender.sendMessage(TextComponent.fromLegacyText(
--                    messagesConfiguration.getTranslation("command_flamecord_help", bungeeCord.getVersion())));
+-            } else
+-            {
+-            sender.sendMessage( TextComponent.fromLegacyText( messagesConfiguration.getTranslation( "command_flamecord_help", bungeeCord.getVersion() ) ) );
 -        }
 -    }
 -}
@@ -1060,7 +1072,7 @@ index 3a514a76..9a58168b 100644
          try
          {
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 287794ec..10009aea 100644
+index cddf36a8..14ef5a26 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -11,10 +11,16 @@ import com.google.gson.Gson;
@@ -1081,13 +1093,36 @@ index 287794ec..10009aea 100644
  import io.github.waterfallmc.waterfall.conf.WaterfallConfiguration;
  import io.github.waterfallmc.waterfall.event.ProxyExceptionEvent;
  import io.github.waterfallmc.waterfall.exception.ProxyPluginEnableDisableException;
-@@ -80,24 +86,15 @@ import net.md_5.bungee.chat.ScoreComponentSerializer;
+@@ -27,12 +33,9 @@ import io.netty.channel.ChannelOption;
+ import io.netty.channel.EventLoopGroup;
+ import io.netty.util.ResourceLeakDetector;
+ import java.io.File;
+-import java.io.FileReader;
+ import java.io.IOException;
+-import java.io.PrintStream;
+ import java.net.InetSocketAddress;
+ import java.net.SocketAddress;
+-import java.text.MessageFormat;
+ import java.util.ArrayList;
+ import java.util.Collection;
+ import java.util.Collections;
+@@ -40,9 +43,6 @@ import java.util.HashMap;
+ import java.util.HashSet;
+ import java.util.Locale;
+ import java.util.Map;
+-import java.util.MissingResourceException;
+-import java.util.PropertyResourceBundle;
+-import java.util.ResourceBundle;
+ import java.util.Timer;
+ import java.util.TimerTask;
+ import java.util.UUID;
+@@ -80,24 +80,15 @@ import net.md_5.bungee.chat.ScoreComponentSerializer;
  import net.md_5.bungee.chat.SelectorComponentSerializer;
  import net.md_5.bungee.chat.TextComponentSerializer;
  import net.md_5.bungee.chat.TranslatableComponentSerializer;
 -import net.md_5.bungee.command.CommandBungee;
  import net.md_5.bungee.command.CommandEnd;
-+import net.md_5.bungee.command.CommandFlame;
++import net.md_5.bungee.command.CommandBungee;
  import net.md_5.bungee.command.CommandIP;
  import net.md_5.bungee.command.CommandPerms;
  import net.md_5.bungee.command.CommandReload;
@@ -1108,7 +1143,7 @@ index 287794ec..10009aea 100644
  import net.md_5.bungee.netty.PipelineUtils;
  import net.md_5.bungee.protocol.DefinedPacket;
  import net.md_5.bungee.protocol.ProtocolConstants;
-@@ -192,7 +189,8 @@ public class BungeeCord extends ProxyServer
+@@ -192,7 +183,8 @@ public class BungeeCord extends ProxyServer
      // FlameCord end - 1.7.x support
      @Getter
      private ConnectionThrottle connectionThrottle;
@@ -1118,7 +1153,7 @@ index 287794ec..10009aea 100644
  
      {
          // TODO: Proper fallback when we interface the manager
-@@ -253,7 +251,7 @@ public class BungeeCord extends ProxyServer
+@@ -253,7 +245,7 @@ public class BungeeCord extends ProxyServer
          //getPluginManager().registerCommand( null, new CommandReload() );
          //getPluginManager().registerCommand( null, new CommandEnd() );
          //getPluginManager().registerCommand( null, new CommandIP() );
@@ -1127,85 +1162,90 @@ index 287794ec..10009aea 100644
          //getPluginManager().registerCommand( null, new CommandPerms() );
  
          if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
-@@ -857,7 +855,7 @@ public class BungeeCord extends ProxyServer
+@@ -860,34 +852,38 @@ public class BungeeCord extends ProxyServer
+         pluginManager.registerCommand( null, new CommandEnd() );
+         pluginManager.registerCommand( null, new CommandBungee() );
  
-         // Bungeecord Commands
-         pluginManager.registerCommand(null, new CommandEnd());
--        pluginManager.registerCommand(null, new CommandBungee());
-+        pluginManager.registerCommand(null, new CommandFlame());
- 
-         if (modulesConfiguration.reloadEnabled) {
-             pluginManager.registerCommand(null, new CommandReload());
-@@ -874,6 +872,9 @@ public class BungeeCord extends ProxyServer
-             pluginManager.registerCommand(null, new CommandAlert());
-             pluginManager.registerCommand(null, new CommandAlertRaw());
+-        if ( modulesConfiguration.reloadEnabled)
++        if ( modulesConfiguration.reloadEnabled )
+         {
+             pluginManager.registerCommand( null, new CommandReload() );
          }
-+        if (modulesConfiguration.alertRawEnabled) {
-+            pluginManager.registerCommand(null, new CommandAlertRaw());
+-        if ( modulesConfiguration.ipEnabled)
++        if ( modulesConfiguration.ipEnabled )
+         {
+             pluginManager.registerCommand( null, new CommandIP() );
+         }
+-        if ( modulesConfiguration.permsEnabled)
++        if ( modulesConfiguration.permsEnabled )
+         {
+             pluginManager.registerCommand( null, new CommandPerms() );
+         }
+ 
+         // Modules Commands
+-        if ( modulesConfiguration.alertEnabled)
++        if ( modulesConfiguration.alertEnabled )
+         {
+             pluginManager.registerCommand( null, new CommandAlert() );
+             pluginManager.registerCommand( null, new CommandAlertRaw() );
+         }
+-        if ( modulesConfiguration.findEnabled)
++        if (modulesConfiguration.alertRawEnabled )
++        {
++            pluginManager.registerCommand( null, new CommandAlertRaw() );
 +        }
-         if (modulesConfiguration.findEnabled) {
-             pluginManager.registerCommand(null, new CommandFind());
++        if ( modulesConfiguration.findEnabled )
+         {
+             pluginManager.registerCommand( null, new CommandFind() );
          }
-@@ -901,9 +902,6 @@ public class BungeeCord extends ProxyServer
-             pluginManager.registerCommand(null, new CommandLobby());
+-        if ( modulesConfiguration.listEnabled)
++        if ( modulesConfiguration.listEnabled )
+         {
+             pluginManager.registerCommand( null, new CommandList() );
+         }
+-        if ( modulesConfiguration.sendEnabled)
++        if ( modulesConfiguration.sendEnabled )
+         {
+             pluginManager.registerCommand( null, new CommandSend() );
+         }
+@@ -914,9 +910,6 @@ public class BungeeCord extends ProxyServer
+             pluginManager.registerCommand( null, new CommandLobby() );
          }
          // Amethyst end
 -
 -        // Flamecord - Commands (Had to make it like this because of maven limitations)
--        pluginManager.registerCommand(null, new FlameCordCommand(this));
+-        pluginManager.registerCommand( null, new FlameCordCommand( this ) );
      }
  
      // Amethyst start - add method to get FlameCord's instance
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
-deleted file mode 100644
-index 0436526c..00000000
+index 0436526c..affcfd1b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
-+++ /dev/null
-@@ -1,22 +0,0 @@
--package net.md_5.bungee.command;
--
++++ b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
+@@ -1,8 +1,8 @@
+ package net.md_5.bungee.command;
+ 
 -import net.md_5.bungee.api.ChatColor;
--import net.md_5.bungee.api.CommandSender;
++import net.md_5.bungee.BungeeCord;
+ import net.md_5.bungee.api.CommandSender;
 -import net.md_5.bungee.api.ProxyServer;
--import net.md_5.bungee.api.plugin.Command;
--
--public class CommandBungee extends Command
--{
--
--    public CommandBungee()
--    {
++import net.md_5.bungee.api.chat.TextComponent;
+ import net.md_5.bungee.api.plugin.Command;
+ 
+ public class CommandBungee extends Command
+@@ -10,13 +10,30 @@ public class CommandBungee extends Command
+ 
+     public CommandBungee()
+     {
 -        super( "bungee" );
--    }
--
--    @Override
++        super( "bungee", "bungeecord.command.bungee" );
+     }
+ 
+     @Override
 -    public void execute(CommandSender sender, String[] args)
 -    {
 -        // FlameCord - Use custom version message
 -        sender.sendMessage( ChatColor.translateAlternateColorCodes( '&', "&eThis server is running &c" + ProxyServer.getInstance().getName() + "&e version &a" + ProxyServer.getInstance().getVersion() + "&e by &bSapphireMC&e." ) );
--    }
--}
-diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandFlame.java b/proxy/src/main/java/net/md_5/bungee/command/CommandFlame.java
-new file mode 100644
-index 00000000..4144bd28
---- /dev/null
-+++ b/proxy/src/main/java/net/md_5/bungee/command/CommandFlame.java
-@@ -0,0 +1,39 @@
-+package net.md_5.bungee.command;
-+
-+import net.md_5.bungee.BungeeCord;
-+import net.md_5.bungee.api.CommandSender;
-+import net.md_5.bungee.api.chat.TextComponent;
-+import net.md_5.bungee.api.plugin.Command;
-+
-+public class CommandFlame extends Command
-+{
-+
-+    public CommandFlame()
-+    {
-+        super( "flame", "bungeecord.command.flame" );
-+    }
-+
-+    @Override
 +    public void execute(final CommandSender sender, final String[] args) {
 +
 +        if ( args.length > 0 ) {
@@ -1213,7 +1253,7 @@ index 00000000..4144bd28
 +
 +            switch ( arg0 ) {
 +                case "firewall" ->
-+                        sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_firewall",
++                        sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_firewall_info",
 +                                BungeeCord.getInstance().getFlameCord().getFirewallManager().getFirewalled().size(),
 +                                BungeeCord.getInstance().getFlameCord().getFirewallManager().getSeconds() ) );
 +                case "about" -> sender.sendMessage(TextComponent.fromLegacyText( String.format( """
@@ -1221,14 +1261,14 @@ index 00000000..4144bd28
 +                        §6Amethyst v%s §eby SapphireMC
 +                        §6More commands §7- §e/flame help
 +                        §r""", BungeeCord.getInstance().getVersion() ) ) );
-+                case "help" -> sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_flamecord_help" ) );
-+                default -> sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_flamecord_usage" ) );
++                case "help" -> sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_bungee_help" ) );
++                default -> sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_bungee_usage" ) );
 +            }
 +        } else {
-+            sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_flamecord_usage" ) );
++            sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_bungee_usage" ) );
 +        }
-+    }
-+}
+     }
+ }
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandIP.java b/proxy/src/main/java/net/md_5/bungee/command/CommandIP.java
 index 97c70f5c..b5b05ec0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/command/CommandIP.java
@@ -1306,7 +1346,7 @@ index 06147382..a0cc3566 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
-index 2f7a254d..4d16d246 100644
+index 2f7a254d..782c39de 100644
 --- a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
 +++ b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
 @@ -1,11 +1,15 @@
@@ -1326,13 +1366,14 @@ index 2f7a254d..4d16d246 100644
  public class CommandReload extends Command
  {
  
-@@ -22,8 +26,14 @@ public class CommandReload extends Command
+@@ -22,8 +26,15 @@ public class CommandReload extends Command
          BungeeCord.getInstance().stopListeners();
          BungeeCord.getInstance().startListeners();
          BungeeCord.getInstance().getPluginManager().callEvent( new ProxyReloadEvent( sender ) );
 +        final Collection<String> whitelistedAddresses = new HashSet<>();
 +
-+        for ( final ServerInfo serverInfo : BungeeCord.getInstance().getServers().values() ) {
++        for ( final ServerInfo serverInfo : BungeeCord.getInstance().getServers().values() )
++        {
 +            whitelistedAddresses.add( serverInfo.getSocketAddress().toString() );
 +        }
 +

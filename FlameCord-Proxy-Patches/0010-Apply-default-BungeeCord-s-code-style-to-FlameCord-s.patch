@@ -1,0 +1,682 @@
+From ad10e71c76b68f8b51266daeb205645a92da7949 Mon Sep 17 00:00:00 2001
+From: DenaryDev <denaryplanet@gmail.com>
+Date: Tue, 21 Dec 2021 13:25:12 +0500
+Subject: [PATCH] Apply default BungeeCord's code style to FlameCord's classes
+
+
+diff --git a/flame/src/main/java/dev/_2lstudios/flamecord/FlameCord.java b/flame/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
+index fd889644..05048b1b 100644
+--- a/flame/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
++++ b/flame/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
+@@ -11,7 +11,9 @@ import lombok.Getter;
+ import net.md_5.bungee.config.ConfigurationProvider;
+ import net.md_5.bungee.config.YamlConfiguration;
+ 
+-public class FlameCord {
++public class FlameCord
++{
++
+     @Getter
+     private static FlameCord instance;
+     @Getter
+@@ -27,36 +29,41 @@ public class FlameCord {
+     private boolean running = true;
+ 
+     public static void renew(final Logger logger, final Collection<String> whitelistedAddresses) {
+-        if (FlameCord.instance != null) {
++        if ( FlameCord.instance != null )
++        {
+             FlameCord.instance.running = false;
+         }
+ 
+-        final FlameCord instance = new FlameCord(logger, whitelistedAddresses);
+-
+-        FlameCord.instance = instance;
++        FlameCord.instance = new FlameCord(logger, whitelistedAddresses);
+     }
+ 
+-    private FlameCord(final Logger logger, final Collection<String> whitelistedAddresses) {
+-        final ConfigurationProvider configurationProvider = ConfigurationProvider.getProvider(YamlConfiguration.class);
++    private FlameCord(final Logger logger, final Collection<String> whitelistedAddresses)
++    {
++        final ConfigurationProvider configurationProvider = ConfigurationProvider.getProvider( YamlConfiguration.class );
+ 
+-        this.flameCordConfiguration = new FlameCordConfiguration(configurationProvider);
+-        this.firewallManager = new FirewallManager(logger, whitelistedAddresses,
+-                flameCordConfiguration.getFirewallSeconds());
+-        this.modulesConfiguration = new ModulesConfiguration(configurationProvider);
+-        this.messagesConfiguration = new MessagesConfiguration(logger, configurationProvider);
+-        this.thread = new Thread() {
++        this.flameCordConfiguration = new FlameCordConfiguration( configurationProvider );
++        this.firewallManager = new FirewallManager( logger, whitelistedAddresses, flameCordConfiguration.getFirewallSeconds() );
++        this.modulesConfiguration = new ModulesConfiguration( configurationProvider );
++        this.messagesConfiguration = new MessagesConfiguration( logger, configurationProvider );
++        this.thread = new Thread()
++        {
+             @Override
+-            public void run() {
+-                while (running) {
+-                    try {
+-                        sleep(1000L);
++            public void run()
++            {
++                while ( running )
++                {
++                    try
++                    {
++                        sleep( 1000L );
+ 
+-                        if (!running) {
++                        if ( !running )
++                        {
+                             return;
+                         }
+ 
+                         firewallManager.tick();
+-                    } catch (final Exception e) {
++                    } catch ( final Exception e )
++                    {
+                         // Ignored
+                     }
+                 }
+@@ -65,4 +72,4 @@ public class FlameCord {
+ 
+         this.thread.start();
+     }
+-}
+\ No newline at end of file
++}
+diff --git a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flame/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
+index 3b8bec29..68ba9320 100644
+--- a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
++++ b/flame/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
+@@ -14,16 +14,18 @@ import net.md_5.bungee.api.ChatColor;
+ import net.md_5.bungee.config.Configuration;
+ import net.md_5.bungee.config.ConfigurationProvider;
+ 
+-public class FlameCordConfiguration {
++public class FlameCordConfiguration
++{
+ 
+     @Getter
+     private boolean customMotdEnabled = false;
+-    private List<String> customMotdMotds = List.of("&eDefault &5Amethyst&e custom motd!\n&eChange me in &cflamecord.yml&e file!");
++    private List<String> customMotdMotds = List.of( "&eDefault &5Amethyst&e custom motd!\n&eChange me in &cflamecord.yml&e file!" );
+ 
+-    public String getRandomMotd() {
++    public String getRandomMotd()
++    {
+         final Random random = new Random();
+ 
+-        return customMotdMotds.get(random.nextInt(customMotdMotds.size()));
++        return customMotdMotds.get( random.nextInt( customMotdMotds.size() ) );
+     }
+ 
+     @Getter
+@@ -43,79 +45,91 @@ public class FlameCordConfiguration {
+     @Getter
+     private int firewallSeconds = 60;
+     @Getter
+-    private Collection<String> firewallNames = new HashSet<>(List.of("mcspam"));
++    private Collection<String> firewallNames = new HashSet<>( List.of( "mcspam" ) );
+ 
+     @Getter
+     private boolean lobbyEnabled = true;
+     @Getter
+     private String minimumApiVersion = "1.18";
+     @Getter
+-    private Collection<String> lobbies = new HashSet<>(List.of("lobby"));
++    private Collection<String> lobbies = new HashSet<>( List.of( "lobby" ) );
+ 
+     public FlameCordConfiguration(final ConfigurationProvider configurationProvider) {
+-        try {
++        try
++        {
+             final String fileName = "./flamecord.yml";
+-            final File configurationFile = new File(fileName);
++            final File configurationFile = new File( fileName );
+             final Configuration configuration;
+             final boolean configurationExists = configurationFile.exists();
+ 
+-            if (!configurationExists) {
++            if ( !configurationExists )
++            {
+                 configuration = new Configuration();
+-            } else {
+-                configuration = configurationProvider.load(configurationFile);
++            } else
++            {
++                configuration = configurationProvider.load( configurationFile );
+             }
+ 
+-            this.customMotdEnabled = setIfUnexistant("custom-motd.enabled", this.customMotdEnabled, configuration);
+-            this.customMotdMotds = ChatColor.translateAlternateColorCodes(new ArrayList<>(setIfUnexistant("custom-motd.motds", this.customMotdMotds, configuration)));
++            this.customMotdEnabled = setIfUnexistant( "custom-motd.enabled", this.customMotdEnabled, configuration );
++            this.customMotdMotds = ChatColor.translateAlternateColorCodes( new ArrayList<>( setIfUnexistant( "custom-motd.motds", this.customMotdMotds, configuration ) ) );
+ 
+-            this.loggerInitialhandler = setIfUnexistant("logger.initialhandler", this.loggerInitialhandler, configuration);
+-            this.loggerExceptions = setIfUnexistant("logger.exceptions", this.loggerExceptions, configuration);
+-            this.loggerDump = setIfUnexistant("logger.dump", this.loggerDump, configuration);
+-            this.loggerHaProxy = setIfUnexistant("logger.haproxy", this.loggerHaProxy, configuration);            
++            this.loggerInitialhandler = setIfUnexistant( "logger.initialhandler", this.loggerInitialhandler, configuration );
++            this.loggerExceptions = setIfUnexistant( "logger.exceptions", this.loggerExceptions, configuration );
++            this.loggerDump = setIfUnexistant( "logger.dump", this.loggerDump, configuration );
++            this.loggerHaProxy = setIfUnexistant( "logger.haproxy", this.loggerHaProxy, configuration );
+ 
+-            this.firewallEnabled = setIfUnexistant("firewall.enabled", this.firewallEnabled, configuration);
+-            this.firewallNotify = setIfUnexistant("firewall.notify", this.firewallNotify, configuration);
+-            this.firewallSeconds = setIfUnexistant("firewall.seconds", this.firewallSeconds, configuration);
+-            this.firewallNames = setIfUnexistant("firewall.names", this.firewallNames, configuration);
++            this.firewallEnabled = setIfUnexistant( "firewall.enabled", this.firewallEnabled, configuration );
++            this.firewallNotify = setIfUnexistant( "firewall.notify", this.firewallNotify, configuration );
++            this.firewallSeconds = setIfUnexistant( "firewall.seconds", this.firewallSeconds, configuration );
++            this.firewallNames = setIfUnexistant( "firewall.names", this.firewallNames, configuration );
+ 
+-            this.lobbyEnabled = setIfUnexistant("lobby.enable", lobbyEnabled, configuration);
+-            this.lobbies = setIfUnexistant("lobby.servers", lobbies, configuration);
+-            this.minimumApiVersion = (String) setIfUnexistant("minimum-api-version", minimumApiVersion, configuration);
++            this.lobbyEnabled = setIfUnexistant( "lobby.enable", lobbyEnabled, configuration );
++            this.lobbies = setIfUnexistant( "lobby.servers", lobbies, configuration );
++            this.minimumApiVersion = (String) setIfUnexistant( "minimum-api-version", minimumApiVersion, configuration );
+ 
+-            if (!configurationExists) {
+-                configurationProvider.save(configuration, configurationFile);
++            if ( !configurationExists )
++            {
++                configurationProvider.save( configuration, configurationFile );
+             }
+-        } catch (final IOException e) {
++        } catch ( IOException e )
++        {
+             e.printStackTrace();
+         }
+     }
+ 
+-    private int setIfUnexistant(final String arg1, final int arg2, final Configuration configuration) {
+-        return (int) setIfUnexistant(arg1, (Object) arg2, configuration);
++    private int setIfUnexistant(final String arg1, final int arg2, final Configuration configuration)
++    {
++        return (int) setIfUnexistant( arg1, (Object) arg2, configuration );
+     }
+ 
+-    private boolean setIfUnexistant(final String arg1, final boolean arg2, final Configuration configuration) {
+-        return (boolean) setIfUnexistant(arg1, (Object) arg2, configuration);
++    private boolean setIfUnexistant(final String arg1, final boolean arg2, final Configuration configuration)
++    {
++        return (boolean) setIfUnexistant( arg1, (Object) arg2, configuration );
+     }
+ 
+-    private Object setIfUnexistant(final String arg1, final Object arg2, final Configuration configuration) {
+-        if (!configuration.contains(arg1)) {
+-            configuration.set(arg1, arg2);
++    private Object setIfUnexistant(final String arg1, final Object arg2, final Configuration configuration)
++    {
++        if ( !configuration.contains( arg1 ) )
++        {
++            configuration.set( arg1, arg2 );
+ 
+             return arg2;
+-        } else {
++        } else
++        {
+             return configuration.get(arg1);
+         }
+     }
+ 
+-    private Collection<String> setIfUnexistant(final String arg1, final Collection<String> arg2,
+-            final Configuration configuration) {
+-        if (!configuration.contains(arg1)) {
+-            configuration.set(arg1, new ArrayList<>(arg2));
++    private Collection<String> setIfUnexistant(final String arg1, final Collection<String> arg2, final Configuration configuration)
++    {
++        if ( !configuration.contains( arg1 ) )
++        {
++            configuration.set( arg1, new ArrayList<>( arg2 ) );
+ 
+             return arg2;
+-        } else {
+-            return new HashSet<>(configuration.getStringList(arg1));
++        } else
++        {
++            return new HashSet<>( configuration.getStringList( arg1 ) );
+         }
+     }
+ 
+diff --git a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java b/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
+index 242b88d2..db7c1f5e 100644
+--- a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
++++ b/flame/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
+@@ -11,23 +11,29 @@ import net.md_5.bungee.api.ChatColor;
+ import net.md_5.bungee.config.Configuration;
+ import net.md_5.bungee.config.ConfigurationProvider;
+ 
+-public class MessagesConfiguration {
++public class MessagesConfiguration
++{
++
+ 	private final Logger logger;
+ 	private final Map<String, String> messages = new HashMap<>();
+ 
+-	public MessagesConfiguration(final Logger logger, final ConfigurationProvider configurationProvider) {
++	public MessagesConfiguration(final Logger logger, final ConfigurationProvider configurationProvider)
++	{
+ 		this.logger = logger;
+ 
+-		try {
++		try
++		{
+ 			final String fileName = "./messages.yml";
+-			final File configurationFile = new File(fileName);
++			final File configurationFile = new File( fileName );
+ 			final Configuration configuration;
+ 			final boolean configurationExists = configurationFile.exists();
+ 
+-			if (!configurationExists) {
++			if ( !configurationExists )
++			{
+ 				configuration = new Configuration();
+-			} else {
+-				configuration = configurationProvider.load(configurationFile);
++			} else
++			{
++				configuration = configurationProvider.load( configurationFile );
+ 			}
+ 
+ 			// Commands
+@@ -116,34 +122,41 @@ public class MessagesConfiguration {
+ 			setIfUnexistant( "error_user_not_online", "&cДанный игрок не онлайн.", configuration );
+ 			setIfUnexistant( "error_username_needed", "&cПожалуйста укажите имя игрока.", configuration );
+ 
+-			if (!configurationExists) {
+-				configurationProvider.save(configuration, configurationFile);
++			if ( !configurationExists )
++			{
++				configurationProvider.save( configuration, configurationFile );
+ 			}
+ 
+-			for (final String key : configuration.getKeys()) {
+-				final Object value = configuration.get(key);
++			for ( final String key : configuration.getKeys() )
++			{
++				final Object value = configuration.get( key );
+ 
+-				if (value instanceof String) {
+-					this.messages.put(key, ChatColor.translateAlternateColorCodes('&', (String) value));
++				if ( value instanceof String )
++				{
++					this.messages.put( key, ChatColor.translateAlternateColorCodes('&', (String) value ) );
+ 				}
+ 			}
+-		} catch (final IOException e) {
++		} catch ( final IOException e )
++		{
+ 			e.printStackTrace();
+ 		}
+ 	}
+ 
+-	public String getTranslation(final String name, final Object... args) {
+-		if (!messages.containsKey(name)) {
+-			logger.warning("[Amethyst] Tried to get translation '" + name
+-					+ "' from messages.yml file but wasn't found. Please try resetting this file or report to a developer.");
++	public String getTranslation(final String name, final Object... args)
++	{
++		if ( !messages.containsKey( name ) )
++		{
++			logger.warning( "[Amethyst] Tried to get translation '" + name + "' from messages.yml file but wasn't found. Please try resetting this file or report to a developer." );
+ 		}
+ 
+-		return MessageFormat.format(messages.getOrDefault(name, "<translation '" + name + "' missing>"), args);
++		return MessageFormat.format( messages.getOrDefault( name, "<translation '" + name + "' missing>" ), args );
+ 	}
+ 
+-	private void setIfUnexistant(final String arg1, final Object arg2, final Configuration configuration) {
+-		if (!configuration.contains(arg1)) {
+-			configuration.set(arg1, arg2);
++	private void setIfUnexistant(final String arg1, final Object arg2, final Configuration configuration)
++	{
++		if ( !configuration.contains( arg1 ) )
++		{
++			configuration.set( arg1, arg2 );
+ 		}
+ 	}
+-}
+\ No newline at end of file
++}
+diff --git a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/ModulesConfiguration.java b/flame/src/main/java/dev/_2lstudios/flamecord/configuration/ModulesConfiguration.java
+index 7aed8dd8..f2b5400d 100644
+--- a/flame/src/main/java/dev/_2lstudios/flamecord/configuration/ModulesConfiguration.java
++++ b/flame/src/main/java/dev/_2lstudios/flamecord/configuration/ModulesConfiguration.java
+@@ -2,94 +2,103 @@ package dev._2lstudios.flamecord.configuration;
+ 
+ import java.io.File;
+ import java.io.IOException;
+-
+ import net.md_5.bungee.config.Configuration;
+ import net.md_5.bungee.config.ConfigurationProvider;
+ 
+-public class ModulesConfiguration {
+-        // Reconnect Module
+-        public boolean reconnectEnabled = false;
++public class ModulesConfiguration
++{
+ 
+-        // Alert Module
+-        public boolean alertEnabled = true;
++    // Reconnect Module
++    public boolean reconnectEnabled = false;
+ 
+-        // AlertRaw Module
+-        public boolean alertRawEnabled = true;
++    // Alert Module
++    public boolean alertEnabled = true;
+ 
+-        // Find Module
+-        public boolean findEnabled = true;
++    // AlertRaw Module
++    public boolean alertRawEnabled = true;
+ 
+-        // IP Module
+-        public boolean ipEnabled = true;
++    // Find Module
++    public boolean findEnabled = true;
+ 
+-        // List Module
+-        public boolean listEnabled = true;
++    // IP Module
++    public boolean ipEnabled = true;
+ 
+-        // Perms Module
+-        public boolean permsEnabled = true;
++    // List Module
++    public boolean listEnabled = true;
+ 
+-        // Reload Module
+-        public boolean reloadEnabled = true;
++    // Perms Module
++    public boolean permsEnabled = true;
+ 
+-        // Send Module
+-        public boolean sendEnabled = true;
++    // Reload Module
++    public boolean reloadEnabled = true;
+ 
+-        // Server
+-        public boolean serverEnabled = true;
++    // Send Module
++    public boolean sendEnabled = true;
+ 
+-        public ModulesConfiguration(final ConfigurationProvider configurationProvider) {
+-                try {
+-                        final String fileName = "./modules.yml";
+-                        final File configurationFile = new File(fileName);
+-                        final Configuration configuration;
+-                        final boolean configurationExists = configurationFile.exists();
++    // Server
++    public boolean serverEnabled = true;
+ 
+-                        if (!configurationExists) {
+-                                configuration = new Configuration();
+-                        } else {
+-                                configuration = configurationProvider.load(configurationFile);
+-                        }
++    public ModulesConfiguration(final ConfigurationProvider configurationProvider)
++    {
++        try
++        {
++            final String fileName = "./modules.yml";
++            final File configurationFile = new File( fileName );
++            final Configuration configuration;
++            final boolean configurationExists = configurationFile.exists();
+ 
+-                        this.alertEnabled = setIfUnexistant("alert.enabled", this.alertEnabled, configuration);
++            if ( !configurationExists )
++            {
++                configuration = new Configuration();
++            } else
++            {
++                configuration = configurationProvider.load( configurationFile );
++            }
+ 
+-                        this.alertRawEnabled = setIfUnexistant("alertraw.enabled", this.alertRawEnabled, configuration);
++            this.alertEnabled = setIfUnexistant( "alert.enabled", this.alertEnabled, configuration );
+ 
+-                        this.findEnabled = setIfUnexistant("find.enabled", this.findEnabled, configuration);
++            this.alertRawEnabled = setIfUnexistant( "alertraw.enabled", this.alertRawEnabled, configuration );
+ 
+-                        this.ipEnabled = setIfUnexistant("ip.enabled", this.ipEnabled, configuration);
++            this.findEnabled = setIfUnexistant( "find.enabled", this.findEnabled, configuration );
+ 
+-                        this.listEnabled = setIfUnexistant("list.enabled", this.listEnabled, configuration);
++            this.ipEnabled = setIfUnexistant( "ip.enabled", this.ipEnabled, configuration );
+ 
+-                        this.permsEnabled = setIfUnexistant("perms.enabled", this.permsEnabled, configuration);
++            this.listEnabled = setIfUnexistant( "list.enabled", this.listEnabled, configuration );
+ 
+-                        this.reloadEnabled = setIfUnexistant("reload.enabled", this.reloadEnabled, configuration);
++            this.permsEnabled = setIfUnexistant( "perms.enabled", this.permsEnabled, configuration );
+ 
+-                        this.sendEnabled = setIfUnexistant("send.enabled", this.sendEnabled, configuration);
++            this.reloadEnabled = setIfUnexistant( "reload.enabled", this.reloadEnabled, configuration );
+ 
+-                        this.serverEnabled = setIfUnexistant("server.enabled", this.serverEnabled, configuration);
++            this.sendEnabled = setIfUnexistant( "send.enabled", this.sendEnabled, configuration );
+ 
+-                        this.reconnectEnabled = setIfUnexistant("reconnect.enabled", this.reconnectEnabled,
+-                                        configuration);
++            this.serverEnabled = setIfUnexistant( "server.enabled", this.serverEnabled, configuration );
+ 
+-                        if (!configurationExists) {
+-                                configurationProvider.save(configuration, configurationFile);
+-                        }
+-                } catch (final IOException e) {
+-                        e.printStackTrace();
+-                }
+-        }
++            this.reconnectEnabled = setIfUnexistant( "reconnect.enabled", this.reconnectEnabled, configuration );
+ 
+-        private boolean setIfUnexistant(final String arg1, final boolean arg2, final Configuration configuration) {
+-                return (boolean) setIfUnexistant(arg1, (Object) arg2, configuration);
++            if ( !configurationExists )
++            {
++                configurationProvider.save( configuration, configurationFile );
++            }
++        } catch ( final IOException e )
++        {
++            e.printStackTrace();
+         }
+-
+-        private Object setIfUnexistant(final String arg1, final Object arg2, final Configuration configuration) {
+-                if (!configuration.contains(arg1)) {
+-                        configuration.set(arg1, arg2);
+-
+-                        return arg2;
+-                } else {
+-                        return configuration.get(arg1);
+-                }
++    }
++
++    private boolean setIfUnexistant(final String arg1, final boolean arg2, final Configuration configuration)
++    {
++        return (boolean) setIfUnexistant( arg1, (Object) arg2, configuration );
++    }
++
++    private Object setIfUnexistant(final String arg1, final Object arg2, final Configuration configuration)
++    {
++        if ( !configuration.contains( arg1 ) )
++        {
++            configuration.set( arg1, arg2 );
++
++            return arg2;
++        } else {
++            return configuration.get( arg1 );
+         }
++    }
+ }
+diff --git a/flame/src/main/java/dev/_2lstudios/flamecord/firewall/FirewallManager.java b/flame/src/main/java/dev/_2lstudios/flamecord/firewall/FirewallManager.java
+index 77f433e8..c6903602 100644
+--- a/flame/src/main/java/dev/_2lstudios/flamecord/firewall/FirewallManager.java
++++ b/flame/src/main/java/dev/_2lstudios/flamecord/firewall/FirewallManager.java
+@@ -10,7 +10,9 @@ import dev._2lstudios.flamecord.FlameCord;
+ import dev._2lstudios.flamecord.configuration.FlameCordConfiguration;
+ import lombok.Getter;
+ 
+-public class FirewallManager {
++public class FirewallManager
++{
++
+     private final Logger logger;
+     private final Collection<String> whitelistedAddresses;
+     private final Collection<String> firewalled;
+@@ -18,8 +20,8 @@ public class FirewallManager {
+     @Getter
+     private int seconds;
+ 
+-    public FirewallManager(final Logger logger, final Collection<String> whitelistedAddresses,
+-            final int defaultSeconds) {
++    public FirewallManager(final Logger logger, final Collection<String> whitelistedAddresses, final int defaultSeconds)
++    {
+         this.logger = logger;
+         this.whitelistedAddresses = whitelistedAddresses;
+         this.firewalled = new HashSet<>();
+@@ -27,11 +29,14 @@ public class FirewallManager {
+         this.seconds = defaultSeconds;
+     }
+ 
+-    public boolean isWhitelisted(final SocketAddress address) {
++    public boolean isWhitelisted(final SocketAddress address)
++    {
+         final String addressString = address.toString();
+ 
+-        for (final String whitelistedAddressString : whitelistedAddresses) {
+-            if (addressString.endsWith(whitelistedAddressString)) {
++        for ( final String whitelistedAddressString : whitelistedAddresses )
++        {
++            if ( addressString.endsWith( whitelistedAddressString ) )
++            {
+                 return true;
+             }
+         }
+@@ -39,18 +44,22 @@ public class FirewallManager {
+         return false;
+     }
+ 
+-    public void addFirewalled(final SocketAddress address) {
+-        if (address == null) {
++    public void addFirewalled(final SocketAddress address)
++    {
++        if ( address == null )
++        {
+             return;
+         }
+ 
+-        if (FlameCord.getInstance().getFlameCordConfiguration().isFirewallEnabled() && !isWhitelisted(address)) {
++        if ( FlameCord.getInstance().getFlameCordConfiguration().isFirewallEnabled() && !isWhitelisted( address ) )
++        {
+             final InetSocketAddress iNetSocketAddress = (InetSocketAddress) address;
+             final String hostString = iNetSocketAddress.getHostString();
+ 
+-            if (!this.firewalled.contains(hostString)) {
+-                this.firewalled.add(hostString);
+-                logAdded(address);
++            if ( !this.firewalled.contains( hostString ) )
++            {
++                this.firewalled.add( hostString );
++                logAdded( address );
+             }
+         }
+     }
+@@ -59,41 +68,49 @@ public class FirewallManager {
+         final FlameCord flameCord = FlameCord.getInstance();
+         final FlameCordConfiguration flameCordConfiguration = flameCord.getFlameCordConfiguration();
+ 
+-        if (flameCordConfiguration.isFirewallNotify()) {
++        if ( flameCordConfiguration.isFirewallNotify() )
++        {
+             final InetSocketAddress iNetSocketAddress = (InetSocketAddress) address;
+             final String hostString = iNetSocketAddress.getHostString();
+ 
+-            this.logger.info(flameCord.getMessagesConfiguration().getTranslation("info_firewall_added", hostString));
++            this.logger.info( flameCord.getMessagesConfiguration().getTranslation( "info_firewall_added", hostString ) );
+         }
+     }
+ 
+-    public void logBlocked(final SocketAddress address) {
++    public void logBlocked(final SocketAddress address)
++    {
+         final FlameCord flameCord = FlameCord.getInstance();
+         final FlameCordConfiguration flameCordConfiguration = flameCord.getFlameCordConfiguration();
+ 
+-        if (flameCordConfiguration.isFirewallNotify()) {
++        if ( flameCordConfiguration.isFirewallNotify() )
++        {
+             final InetSocketAddress iNetSocketAddress = (InetSocketAddress) address;
+             final String hostString = iNetSocketAddress.getHostString();
+ 
+-            this.logger.info(flameCord.getMessagesConfiguration().getTranslation("info_firewall_blocked", hostString));
++            this.logger.info( flameCord.getMessagesConfiguration().getTranslation( "info_firewall_blocked", hostString ) );
+         }
+     }
+ 
+-    public Collection<String> getFirewalled() {
++    public Collection<String> getFirewalled()
++    {
+         return this.firewalled;
+     }
+ 
+-    public boolean isFirewalled(final SocketAddress address) {
++    public boolean isFirewalled(final SocketAddress address)
++    {
+         final InetSocketAddress iNetSocketAddress = (InetSocketAddress) address;
+ 
+-        return this.firewalled.contains(iNetSocketAddress.getHostString());
++        return this.firewalled.contains( iNetSocketAddress.getHostString() );
+     }
+ 
+-    public boolean isFirewalled(final String name) {
++    public boolean isFirewalled(final String name)
++    {
+         final String nameLowerCase = name.toLowerCase();
+ 
+-        for (final String string : FlameCord.getInstance().getFlameCordConfiguration().getFirewallNames()) {
+-            if (nameLowerCase.contains(string)) {
++        for ( final String string : FlameCord.getInstance().getFlameCordConfiguration().getFirewallNames() )
++        {
++            if ( nameLowerCase.contains( string ) )
++            {
+                 return true;
+             }
+         }
+@@ -101,14 +118,18 @@ public class FirewallManager {
+         return false;
+     }
+ 
+-    public void tick() {
+-        if (--seconds <= 0) {
++    public void tick()
++    {
++        if ( --seconds <= 0 )
++        {
+             final FlameCord flameCord = FlameCord.getInstance();
+             final int size = this.firewalled.size();
+ 
+-            if (size > 0) {
+-                if (flameCord.getFlameCordConfiguration().isFirewallNotify()) {
+-                    this.logger.info(flameCord.getMessagesConfiguration().getTranslation("info_firewall_cleared", size));
++            if ( size > 0 )
++            {
++                if ( flameCord.getFlameCordConfiguration().isFirewallNotify() )
++                {
++                    this.logger.info( flameCord.getMessagesConfiguration().getTranslation( "info_firewall_cleared", size ) );
+                 }
+ 
+                 this.firewalled.clear();
+@@ -117,4 +138,4 @@ public class FirewallManager {
+             this.seconds = defaultSeconds;
+         }
+     }
+-}
+\ No newline at end of file
++}
+-- 
+2.29.2.windows.3
+

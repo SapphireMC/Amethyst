@@ -1,14 +1,14 @@
-From 43217d6605d07a1baada3c6c68a497309872dc19 Mon Sep 17 00:00:00 2001
+From c6a661b243e54a105a1d4ab23bccadd04bdf2d42 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Thu, 4 Nov 2021 21:13:10 +0500
 Subject: [PATCH] Add logging on startup
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 10009aea..cf7bf796 100644
+index 14ef5a26..760be981 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -197,6 +197,8 @@ public class BungeeCord extends ProxyServer
+@@ -191,6 +191,8 @@ public class BungeeCord extends ProxyServer
          registerChannel( "BungeeCord" );
      }
  
@@ -17,7 +17,7 @@ index 10009aea..cf7bf796 100644
      public static BungeeCord getInstance()
      {
          return (BungeeCord) ProxyServer.getInstance();
-@@ -246,6 +248,9 @@ public class BungeeCord extends ProxyServer
+@@ -240,6 +242,9 @@ public class BungeeCord extends ProxyServer
          logger = io.github.waterfallmc.waterfall.log4j.WaterfallLogger.create();
          // Waterfall end
  
@@ -27,7 +27,7 @@ index 10009aea..cf7bf796 100644
          pluginManager = new PluginManager( this );
          // FlameCord - We register commands in our new method
          //getPluginManager().registerCommand( null, new CommandReload() );
-@@ -350,6 +355,8 @@ public class BungeeCord extends ProxyServer
+@@ -344,6 +349,8 @@ public class BungeeCord extends ProxyServer
                  independentThreadStop( getTranslation( "info_restart" ), false );
              }
          } );

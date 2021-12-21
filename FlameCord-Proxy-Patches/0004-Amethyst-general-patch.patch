@@ -1,4 +1,4 @@
-From cad2048463cdc72e15e3bf494e5d3ecd184daeda Mon Sep 17 00:00:00 2001
+From d55b2bbfead2725d33e5b1858a908ba52a682f96 Mon Sep 17 00:00:00 2001
 From: Denary Planet <denaryplanet@gmail.com>
 Date: Sat, 10 Jul 2021 17:22:34 +0500
 Subject: [PATCH] Amethyst general patch
@@ -596,38 +596,48 @@ index 698b420f..00c7ea75 100644
              {
                  player.connect( server, ServerConnectEvent.Reason.COMMAND );
 diff --git a/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java b/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
-index fa0b59c2..a37ec1de 100644
+index fa0b59c2..19e31e9c 100644
 --- a/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
 +++ b/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
-@@ -16,7 +16,7 @@ public class FlameCordCommand extends Command {
- private final BungeeCord bungeeCord;
+@@ -12,60 +12,61 @@ import net.md_5.bungee.api.chat.TextComponent;
+ import net.md_5.bungee.api.config.ServerInfo;
+ import net.md_5.bungee.api.plugin.Command;
  
-     public FlameCordCommand(final BungeeCord bungeeCord) {
+-public class FlameCordCommand extends Command {
+-private final BungeeCord bungeeCord;
++public class FlameCordCommand extends Command
++{
+ 
+-    public FlameCordCommand(final BungeeCord bungeeCord) {
 -        super("flamecord");
-+        super("flamecord", "bungeecord.command.flamecord", "flame");
++    private final BungeeCord bungeeCord;
++
++    public FlameCordCommand(final BungeeCord bungeeCord)
++    {
++        super( "flamecord", "bungeecord.command.flamecord", "flame" );
  
          this.bungeeCord = bungeeCord;
      }
-@@ -26,46 +26,41 @@ private final BungeeCord bungeeCord;
+ 
+     @Override
+-    public void execute(final CommandSender sender, final String[] args) {
++    public void execute(final CommandSender sender, final String[] args)
++    {
          final FlameCord flameCord = FlameCord.getInstance();
          final MessagesConfiguration messagesConfiguration = flameCord.getMessagesConfiguration();
  
 -        if (sender.hasPermission("flamecord.usage")) {
 -            if (args.length > 0) {
 -                final String arg0 = args[0];
-+        if (args.length > 0) {
-+            final String arg0 = args[0];
- 
+-
 -                switch (arg0) {
 -                    case "firewall": {
 -                        final FirewallManager firewallManager = flameCord.getFirewallManager();
 -                        final int amount = firewallManager.getFirewalled().size(),
 -                                seconds = firewallManager.getSeconds();
-+            switch (arg0) {
-+                case "firewall": {
-+                    final FirewallManager firewallManager = flameCord.getFirewallManager();
-+                    final int amount = firewallManager.getFirewalled().size(),
-+                            seconds = firewallManager.getSeconds();
++        if (args.length > 0)
++        {
++            final String arg0 = args[0];
  
 -                        sender.sendMessage(TextComponent.fromLegacyText(
 -                                messagesConfiguration.getTranslation("firewall_info", amount, seconds)));
@@ -636,15 +646,21 @@ index fa0b59c2..a37ec1de 100644
 -                    case "reload": {
 -                        // FlameCord - Collect ips from servers
 -                        final Collection<String> whitelistedAddresses = new HashSet<>();
--
++            switch (arg0)
++            {
++                case "firewall":
++                {
++                    final FirewallManager firewallManager = flameCord.getFirewallManager();
++                    final int amount = firewallManager.getFirewalled().size(), seconds = firewallManager.getSeconds();
+ 
 -                        for (final ServerInfo serverInfo : bungeeCord.getServers().values()) {
 -                            whitelistedAddresses.add(serverInfo.getSocketAddress().toString());
 -                        }
-+                    sender.sendMessage(TextComponent.fromLegacyText(
-+                            messagesConfiguration.getTranslation("command_firewall_info", amount, seconds)));
++                    sender.sendMessage( TextComponent.fromLegacyText( messagesConfiguration.getTranslation( "command_firewall_info", amount, seconds ) ) );
 +                    break;
 +                }
-+                case "reload": {
++                case "reload":
++                {
 +                    // FlameCord - Collect ips from servers
 +                    final Collection<String> whitelistedAddresses = new HashSet<>();
  
@@ -657,18 +673,18 @@ index fa0b59c2..a37ec1de 100644
 -                        sender.sendMessage(TextComponent.fromLegacyText(
 -                                messagesConfiguration.getTranslation("flamecord_help", bungeeCord.getVersion())));
 -                        break;
-+                    for (final ServerInfo serverInfo : bungeeCord.getServers().values()) {
-+                        whitelistedAddresses.add(serverInfo.getSocketAddress().toString());
++                    for ( final ServerInfo serverInfo : bungeeCord.getServers().values() )
++                    {
++                        whitelistedAddresses.add( serverInfo.getSocketAddress().toString() );
                      }
 +
-+                    FlameCord.renew(bungeeCord.getLogger(), whitelistedAddresses);
-+                    sender.sendMessage(TextComponent
-+                            .fromLegacyText(messagesConfiguration.getTranslation("command_reload")));
++                    FlameCord.renew( bungeeCord.getLogger(), whitelistedAddresses );
++                    sender.sendMessage( TextComponent.fromLegacyText( messagesConfiguration.getTranslation( "command_reload" ) ) );
 +                    break;
 +                }
-+                default: {
-+                    sender.sendMessage(TextComponent.fromLegacyText(
-+                            messagesConfiguration.getTranslation("command_flamecord_help", bungeeCord.getVersion())));
++                default:
++                {
++                    sender.sendMessage( TextComponent.fromLegacyText( messagesConfiguration.getTranslation( "command_flamecord_help", bungeeCord.getVersion() ) ) );
 +                    break;
                  }
 -            } else {
@@ -678,18 +694,18 @@ index fa0b59c2..a37ec1de 100644
 -        } else {
 -            sender.sendMessage(TextComponent
 -                    .fromLegacyText(messagesConfiguration.getTranslation("flamecord_nopermission")));
-+            } else {
-+            sender.sendMessage(TextComponent.fromLegacyText(
-+                    messagesConfiguration.getTranslation("command_flamecord_help", bungeeCord.getVersion())));
++            } else
++            {
++            sender.sendMessage( TextComponent.fromLegacyText( messagesConfiguration.getTranslation( "command_flamecord_help", bungeeCord.getVersion() ) ) );
          }
      }
  }
 diff --git a/proxy/src/main/java/io/sapphiremc/amethyst/command/CommandLobby.java b/proxy/src/main/java/io/sapphiremc/amethyst/command/CommandLobby.java
 new file mode 100644
-index 00000000..1a3d4d4f
+index 00000000..d2d0193e
 --- /dev/null
 +++ b/proxy/src/main/java/io/sapphiremc/amethyst/command/CommandLobby.java
-@@ -0,0 +1,46 @@
+@@ -0,0 +1,53 @@
 +package io.sapphiremc.amethyst.command;
 +
 +import dev._2lstudios.flamecord.FlameCord;
@@ -702,33 +718,40 @@ index 00000000..1a3d4d4f
 +import java.util.Collection;
 +import java.util.List;
 +
-+public class CommandLobby extends Command {
++public class CommandLobby extends Command
++{
 +
-+    public CommandLobby() {
++    public CommandLobby()
++    {
 +        super( "lobby", "bungeecord.command.lobby", "hub" );
 +    }
 +
 +    @Override
-+    public void execute(CommandSender sender, String[] args) {
-+        if ( !( sender instanceof ProxiedPlayer player ) ) {
++    public void execute(CommandSender sender, String[] args)
++    {
++        if ( !( sender instanceof ProxiedPlayer player ) )
++        {
 +            sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "error_player_only" ) );
 +            return;
 +        }
 +
 +        Collection<String> lobbiesCollection = FlameCord.getInstance().getFlameCordConfiguration().getLobbies();
 +        List<String> lobbies = new ArrayList<>(lobbiesCollection);
-+        if (lobbies.isEmpty()) {
++        if (lobbies.isEmpty())
++        {
 +            player.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_lobby_not_found" ) );
 +            return;
 +        }
 +
-+        if ( lobbies.contains( player.getServer().getInfo().getName() ) ) {
++        if ( lobbies.contains( player.getServer().getInfo().getName() ) )
++        {
 +            player.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command_lobby_already_in" ) );
 +            return;
 +        }
 +
 +        String lobby = FlameCord.getInstance().getFlameCordConfiguration().getRandomLobby();
-+        if ( lobby == null ) {
++        if ( lobby == null )
++        {
 +            return;
 +        }
 +
@@ -737,7 +760,7 @@ index 00000000..1a3d4d4f
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 3f5012f6..287794ec 100644
+index 3f5012f6..cddf36a8 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -14,6 +14,7 @@ import dev._2lstudios.flamecord.FlameCord;
@@ -834,26 +857,108 @@ index 3f5012f6..287794ec 100644
      @Override
      @SuppressWarnings("unchecked")
      public Collection<ProxiedPlayer> getPlayers()
-@@ -882,7 +896,21 @@ public class BungeeCord extends ProxyServer
+@@ -838,51 +852,78 @@ public class BungeeCord extends ProxyServer
+     }
+ 
+     // FlameCord - Method to simplify module registering
+-    public void loadModules() {
++    public void loadModules()
++    {
+         final ModulesConfiguration modulesConfiguration = FlameCord.getInstance().getModulesConfiguration();
+ 
+         // Bungeecord Commands
+-        pluginManager.registerCommand(null, new CommandEnd());
+-        pluginManager.registerCommand(null, new CommandBungee());
++        pluginManager.registerCommand( null, new CommandEnd() );
++        pluginManager.registerCommand( null, new CommandBungee() );
+ 
+-        if (modulesConfiguration.reloadEnabled) {
+-            pluginManager.registerCommand(null, new CommandReload());
++        if ( modulesConfiguration.reloadEnabled)
++        {
++            pluginManager.registerCommand( null, new CommandReload() );
+         }
+-        if (modulesConfiguration.ipEnabled) {
+-            pluginManager.registerCommand(null, new CommandIP());
++        if ( modulesConfiguration.ipEnabled)
++        {
++            pluginManager.registerCommand( null, new CommandIP() );
+         }
+-        if (modulesConfiguration.permsEnabled) {
+-            pluginManager.registerCommand(null, new CommandPerms());
++        if ( modulesConfiguration.permsEnabled)
++        {
++            pluginManager.registerCommand( null, new CommandPerms() );
+         }
+ 
+         // Modules Commands
+-        if (modulesConfiguration.alertEnabled) {
+-            pluginManager.registerCommand(null, new CommandAlert());
+-            pluginManager.registerCommand(null, new CommandAlertRaw());
++        if ( modulesConfiguration.alertEnabled)
++        {
++            pluginManager.registerCommand( null, new CommandAlert() );
++            pluginManager.registerCommand( null, new CommandAlertRaw() );
+         }
+-        if (modulesConfiguration.findEnabled) {
+-            pluginManager.registerCommand(null, new CommandFind());
++        if ( modulesConfiguration.findEnabled)
++        {
++            pluginManager.registerCommand( null, new CommandFind() );
+         }
+-        if (modulesConfiguration.listEnabled) {
+-            pluginManager.registerCommand(null, new CommandList());
++        if ( modulesConfiguration.listEnabled)
++        {
++            pluginManager.registerCommand( null, new CommandList() );
+         }
+-        if (modulesConfiguration.sendEnabled) {
+-            pluginManager.registerCommand(null, new CommandSend());
++        if ( modulesConfiguration.sendEnabled)
++        {
++            pluginManager.registerCommand( null, new CommandSend() );
+         }
+-        if (modulesConfiguration.serverEnabled) {
+-            pluginManager.registerCommand(null, new CommandServer());
++        if ( modulesConfiguration.serverEnabled )
++        {
++            pluginManager.registerCommand( null, new CommandServer() );
+         }
+ 
+-        if (modulesConfiguration.reconnectEnabled) {
+-            for (ListenerInfo info : getConfig().getListeners()) {
+-                if (!info.isForceDefault() && getReconnectHandler() == null) {
+-                    setReconnectHandler(new YamlReconnectHandler());
++        if ( modulesConfiguration.reconnectEnabled )
++        {
++            for ( ListenerInfo info : getConfig().getListeners() )
++            {
++                if ( !info.isForceDefault() && getReconnectHandler() == null )
++                {
++                    setReconnectHandler( new YamlReconnectHandler() );
+                     break;
+                 }
              }
          }
  
 +        // Amethyst start - add lobby command
-+        if (getFlameCord().getFlameCordConfiguration().isLobbyEnabled()) {
-+            pluginManager.registerCommand(null, new CommandLobby());
++        if ( getFlameCord().getFlameCordConfiguration().isLobbyEnabled() )
++        {
++            pluginManager.registerCommand( null, new CommandLobby() );
 +        }
 +        // Amethyst end
 +
          // Flamecord - Commands (Had to make it like this because of maven limitations)
-         pluginManager.registerCommand(null, new FlameCordCommand(this));
-     }
+-        pluginManager.registerCommand(null, new FlameCordCommand(this));
++        pluginManager.registerCommand( null, new FlameCordCommand( this ) );
++    }
 +
 +    // Amethyst start - add method to get FlameCord's instance
 +    @Override
 +    public FlameCord getFlameCord()
 +    {
 +        return FlameCord.getInstance();
-+    }
+     }
 +    // Amethyst end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
