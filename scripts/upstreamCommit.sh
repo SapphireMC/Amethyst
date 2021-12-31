@@ -7,15 +7,15 @@ function changelog() {
     base=$(git ls-tree HEAD $1  | cut -d' ' -f3 | cut -f1)
     cd $1 && git log --oneline ${base}...HEAD
 }
-flamecord=$(changelog FlameCord)
+waterfall=$(changelog Waterfall)
 
 updated=""
 logsuffix=""
-if [ ! -z "$flamecord" ]; then
-    logsuffix="$logsuffix\n\nFlameCord Changes:\n$flamecord"
-    if [ -z "$updated" ]; then updated="FlameCord"; else updated="$updated/FlameCord"; fi
+if [ ! -z "$waterfall" ]; then
+    logsuffix="$logsuffix\n\nWaterfall Changes:\n$waterfall"
+    if [ -z "$updated" ]; then updated="Waterfall"; else updated="$updated/Waterfall"; fi
 fi
-disclaimer="Upstream has released updates that appears to apply and compile correctly.\nThis update has not been tested by SapphireMC and as with ANY update, please do your own testing"
+disclaimer="Upstream has released updates that appear to apply and compile correctly.\nThis update has not been tested by SapphireMC and as with ANY update, please do your own testing"
 
 if [ ! -z "$1" ]; then
     disclaimer="$@"

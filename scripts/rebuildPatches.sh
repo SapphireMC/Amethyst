@@ -57,5 +57,5 @@ function savePatches {
     echo "  Patches saved for $what to $what_name-Patches/"
 }
 
-savePatches "Flamecord/FlameCord-Proxy" "Amethyst-Proxy"
+savePatches "Waterfall/Waterfall-Proxy" "Amethyst-Proxy"
 )

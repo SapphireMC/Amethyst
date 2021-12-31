@@ -61,18 +61,13 @@ if [[ "$gpgsign" == "true" ]]; then
 fi
 
 # Apply waterfall patches
-basedir=$basedir/FlameCord/Waterfall
-pushd FlameCord/Waterfall
+basedir=$basedir/Waterfall
+pushd Waterfall
 applyPatch BungeeCord Waterfall-Proxy HEAD
 popd
 basedir=$(dirname "$basedir")
 
-# Apply flamecord patches
-pushd FlameCord
-applyPatch Waterfall/Waterfall-Proxy FlameCord-Proxy HEAD
-popd
-basedir=$(dirname "$basedir")
-
-applyPatch FlameCord/FlameCord-Proxy Amethyst-Proxy HEAD
+# Apply amethyst patches
+applyPatch Waterfall/Waterfall-Proxy Amethyst-Proxy HEAD
 
 enableCommitSigningIfNeeded
