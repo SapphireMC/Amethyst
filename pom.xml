@@ -4,7 +4,7 @@
 
     <groupId>io.sapphiremc.amethyst</groupId>
     <artifactId>amethyst-super</artifactId>
-    <version>1.18.1-R0.1-SNAPSHOT</version>
+    <version>dev-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Amethyst-Super</name>
