@@ -1,0 +1,199 @@
+From 466af39f4231f72b880e02945431735e0fadedc4 Mon Sep 17 00:00:00 2001
+From: DenaryDev <denaryplanet@gmail.com>
+Date: Wed, 5 Jan 2022 01:24:39 +0500
+Subject: [PATCH] Make min and max versions configurable
+
+
+diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
+index 4bf39352..dab49e2e 100644
+--- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
++++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
+@@ -69,6 +69,17 @@ public class AmethystConfig extends AbstractYamlConfig
+      */
+     public boolean reconnectEnabled = false;
+ 
++    /**
++     * Minimum supported version.
++     * Example: 1.12.2
++     */
++    public String minVersion = "1.8";
++    /**
++     * Maximum supported version.
++     * Example: 1.16.5
++     */
++    public String maxVersion = "1.18.1";
++
+     public AmethystConfig(ConfigurationProvider provider)
+     {
+         try
+@@ -97,5 +108,8 @@ public class AmethystConfig extends AbstractYamlConfig
+         sendEnabled = getBoolean( "modules.send", sendEnabled );
+         serverEnabled = getBoolean( "modules.server", serverEnabled );
+         reconnectEnabled = getBoolean( "modules.reconnect", reconnectEnabled );
++
++        minVersion = getString( "versions.min", minVersion );
++        maxVersion = getString( "versions.max", maxVersion );
+     }
+ }
+diff --git a/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java b/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java
+index 7793437a..554b2319 100644
+--- a/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java
++++ b/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java
+@@ -20,6 +20,7 @@ package io.sapphiremc.amethyst.api.protocol;
+ import com.google.common.collect.ImmutableList;
+ import com.google.common.collect.ImmutableMap;
+ import com.google.common.collect.Sets;
++import io.sapphiremc.amethyst.Amethyst;
+ import java.util.EnumSet;
+ import java.util.HashMap;
+ import java.util.List;
+@@ -81,18 +82,16 @@ public enum ProtocolVersion {
+     /**
+      * Represents the lowest supported version.
+      */
+-    public static final ProtocolVersion MINIMUM_VERSION = MINECRAFT_1_8;
++    public static ProtocolVersion MINIMUM_VERSION;
+     /**
+      * Represents the highest supported version.
+      */
+-    public static final ProtocolVersion MAXIMUM_VERSION = values()[values().length - 1];
++    public static ProtocolVersion MAXIMUM_VERSION;
+ 
+     /**
+      * The user-friendly representation of the lowest and highest supported versions.
+      */
+-    public static final String SUPPORTED_VERSION_STRING = String
+-            .format("%s-%s", MINIMUM_VERSION.getVersionIntroducedIn(),
+-                    MAXIMUM_VERSION.getMostRecentSupportedVersion());
++    public static String SUPPORTED_VERSION_STRING;
+ 
+     /**
+      * A map linking the protocol version number to its {@link ProtocolVersion} representation.
+@@ -114,6 +113,28 @@ public enum ProtocolVersion {
+         ID_TO_PROTOCOL_CONSTANT = ImmutableMap.copyOf(versions);
+     }
+ 
++    /**
++     * A map linking the minecraft version id to its {@link ProtocolVersion} representation.
++     */
++    public static ImmutableMap<String, ProtocolVersion> NAME_TO_PROTOCOL_CONSTANT;
++
++    public static void register() {
++        Map<String, ProtocolVersion> versions = new HashMap<>();
++        for (ProtocolVersion version : values()) {
++            for (String name : version.names) {
++                versions.putIfAbsent(name, version);
++            }
++        }
++
++        NAME_TO_PROTOCOL_CONSTANT = ImmutableMap.copyOf(versions);
++
++        MINIMUM_VERSION = getProtocolVersion(Amethyst.getInstance().getConfig().minVersion);
++        MAXIMUM_VERSION = getProtocolVersion(Amethyst.getInstance().getConfig().maxVersion);
++        SUPPORTED_VERSION_STRING = String
++                .format("%s-%s", MINIMUM_VERSION.getVersionIntroducedIn(),
++                        MAXIMUM_VERSION.getMostRecentSupportedVersion());
++    }
++
+     /**
+      * A set containing all the protocols that the proxy actually supports, excluding special-purpose
+      * "versions" like {@link #LEGACY} and {@link #UNKNOWN}.
+@@ -206,6 +227,16 @@ public enum ProtocolVersion {
+         return ID_TO_PROTOCOL_CONSTANT.getOrDefault(protocol, UNKNOWN);
+     }
+ 
++    /**
++     * Gets the {@link ProtocolVersion} for the given version id.
++     *
++     * @param name the version as a string
++     * @return the protocol version
++     */
++    public static ProtocolVersion getProtocolVersion(String name) {
++        return NAME_TO_PROTOCOL_CONSTANT.getOrDefault(name, UNKNOWN);
++    }
++
+     /**
+      * Returns whether the protocol is supported.
+      *
+diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
+index 7d3220f9..5e4ff7f4 100644
+--- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
++++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
+@@ -16,11 +16,14 @@ public class WaterfallConfiguration extends Configuration {
+      */
+     private boolean logInitialHandlerConnections = true;
+ 
++    // Amethyst start - we use own methods
++    /*
+     /**
+      * The supported versions displayed to the client
+      * <p>Default is a comma separated list of supported versions. For example 1.8.x, 1.9.x, 1.10.x</p>
+      */
+-    private String gameVersion;
++   // private String gameVersion;
++    // Amethyst end
+ 
+     /**
+      * Whether we use Netty's async DNS resolver for the HttpClient.
+@@ -69,7 +72,7 @@ public class WaterfallConfiguration extends Configuration {
+         config.load(false); // Load, but no permissions
+         logInitialHandlerConnections = config.getBoolean( "log_initial_handler_connections", logInitialHandlerConnections );
+         // Amethyst - Make the version look better
+-        gameVersion = config.getString("game_version", "").isEmpty() ? ProtocolVersion.SUPPORTED_VERSION_STRING : config.getString("game_version", "");
++       // gameVersion = config.getString("game_version", "").isEmpty() ? ProtocolVersion.SUPPORTED_VERSION_STRING : config.getString("game_version", ""); // Amethyst - we use own methods
+         useNettyDnsResolver = config.getBoolean("use_netty_dns_resolver", useNettyDnsResolver);
+         // Throttling options
+         tabThrottle = config.getInt("throttling.tab_complete", tabThrottle);
+@@ -87,7 +90,7 @@ public class WaterfallConfiguration extends Configuration {
+ 
+     @Override
+     public String getGameVersion() {
+-        return gameVersion;
++        return ProtocolVersion.SUPPORTED_VERSION_STRING; // Amethyst start - we use own methods
+     }
+ 
+     @Override
+diff --git a/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandReload.java b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandReload.java
+index d6ebe366..fb984ebb 100644
+--- a/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandReload.java
++++ b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandReload.java
+@@ -1,5 +1,6 @@
+ package io.sapphiremc.amethyst.module;
+ 
++import io.sapphiremc.amethyst.api.protocol.ProtocolVersion;
+ import net.md_5.bungee.BungeeCord;
+ import net.md_5.bungee.api.ChatColor;
+ import net.md_5.bungee.api.CommandSender;
+@@ -23,6 +24,8 @@ public class CommandReload extends Command
+         BungeeCord.getInstance().startListeners();
+         BungeeCord.getInstance().getPluginManager().callEvent( new ProxyReloadEvent( sender ) );
+ 
++        ProtocolVersion.register(); // Amethyst
++
+         sender.sendMessage( ChatColor.BOLD.toString() + ChatColor.RED.toString() + "Amethyst has been reloaded."
+                 + " This is NOT advisable and you will not be supported with any issues that arise! Please restart Amethyst ASAP." );
+     }
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index 297f9e13..de8ca151 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -220,7 +220,7 @@ public class BungeeCord extends ProxyServer
+         logger = io.github.waterfallmc.waterfall.log4j.WaterfallLogger.create();
+         // Waterfall end
+ 
+-        logger.info("Starting " + getName() + " version " + getVersion() + " (" + ProtocolVersion.SUPPORTED_VERSION_STRING + ")"); // Amethyst - add logging on startup
++        logger.info("Starting " + getName() + " version " + getVersion() + " (1.8-1.18.1)"); // Amethyst - add logging on startup
+         serverStartTime = System.nanoTime(); // Amethyst - add logging on startup
+ 
+         pluginManager = new PluginManager( this );
+@@ -283,6 +283,7 @@ public class BungeeCord extends ProxyServer
+ 
+         Amethyst.getInstance().load(); // Amethyst - load our configs
+         AmethystModulesManager.registerModules(this); // Amethyst - register modules
++        ProtocolVersion.register(); // Amethyst - configurable min and max versions
+ 
+         if ( config.isForgeSupport() )
+         {
+-- 
+2.34.1.windows.1
+

@@ -1,0 +1,49 @@
+From 0d892d402941011a21312bcb6a469450fc9e10c9 Mon Sep 17 00:00:00 2001
+From: DenaryDev <denaryplanet@gmail.com>
+Date: Sun, 2 Jan 2022 15:37:01 +0500
+Subject: [PATCH] Use bungeecord.yml instead of config.yml
+
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
+index 05f92ef3..2d4cd5db 100644
+--- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
++++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
+@@ -51,17 +51,34 @@ public class YamlConfig implements ConfigurationAdapter
+     private final File file;
+ 
+     public YamlConfig() {
+-        this(new File("config.yml"));
++        this(new File("bungeecord.yml")); // Amethyst - Use bungeecord.yml instead of config.yml
+     }
+ 
+     public YamlConfig(File file)
+     {
++        convertIfNeeded(file); // Amethyst - check if conversion from old config.yml is needed
+         this.file = file;
+         DumperOptions options = new DumperOptions();
+         options.setDefaultFlowStyle( DumperOptions.FlowStyle.BLOCK );
+         yaml = new Yaml( options );
+     }
+ 
++    // Amethyst start - method for converting old config.yml to new bungeecord.yml
++    private void convertIfNeeded(File file)
++    {
++        File oldFile = new File( "config.yml" );
++        if (oldFile.exists()) {
++            System.out.println("\u001B[0;33;1mDetected old BungeeCord's 'config.yml', converting it to new 'bungeecord.yml'...");
++            if (oldFile.renameTo(file)) {
++                System.out.println("Conversion was successful! Continuing loading ...");
++            } else {
++                System.err.println("Failed to convert old config.yml to new bungeecord.yml! Stopping loading ...");
++                System.exit(1);
++            }
++        }
++    }
++    // Amethyst end
++
+     @Override
+     public void load()
+     {
+-- 
+2.34.1.windows.1
+

@@ -1,0 +1,775 @@
+From a153df207c17d98b80c461535ef24225504195a7 Mon Sep 17 00:00:00 2001
+From: DenaryDev <denaryplanet@gmail.com>
+Date: Tue, 4 Jan 2022 20:41:35 +0500
+Subject: [PATCH] Amethyst modules system
+
+
+diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
+index 7f753317..4bf39352 100644
+--- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
++++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
+@@ -32,6 +32,43 @@ import net.md_5.bungee.config.ConfigurationProvider;
+  */
+ public class AmethystConfig extends AbstractYamlConfig
+ {
++    /**
++     * A module that provides the /alert and /alertraw commands.
++     */
++    public boolean alertEnabled = true;
++    /**
++     * A module that provides the /find command.
++     */
++    public boolean findEnabled = true;
++    /**
++     * A module that provides the /ip command.
++     */
++    public boolean ipEnabled = true;
++    /**
++     * A module that provides the /list command.
++     */
++    public boolean listEnabled = true;
++    /**
++     * A module that provides the /perms command.
++     */
++    public boolean permsEnabled = true;
++    /**
++     * A module that provides the /reload command.
++     */
++    public boolean reloadEnabled = true;
++    /**
++     * A module that provides the /send command.
++     */
++    public boolean sendEnabled = true;
++    /**
++     * A module that provides the /server command.
++     */
++    public boolean serverEnabled = true;
++    /**
++     * A module that contains reconnect location functionality in locations.yml.
++     */
++    public boolean reconnectEnabled = false;
++
+     public AmethystConfig(ConfigurationProvider provider)
+     {
+         try
+@@ -47,4 +84,18 @@ public class AmethystConfig extends AbstractYamlConfig
+             ex.printStackTrace();
+         }
+     }
++
++    @Override
++    public void loadContent()
++    {
++        alertEnabled = getBoolean( "modules.alert", alertEnabled );
++        findEnabled = getBoolean( "modules.find", findEnabled );
++        ipEnabled = getBoolean( "modules.ip", ipEnabled );
++        listEnabled = getBoolean( "modules.list", listEnabled );
++        permsEnabled = getBoolean( "modules.perms", permsEnabled );
++        reloadEnabled = getBoolean( "modules.reload", reloadEnabled );
++        sendEnabled = getBoolean( "modules.send", sendEnabled );
++        serverEnabled = getBoolean( "modules.server", serverEnabled );
++        reconnectEnabled = getBoolean( "modules.reconnect", reconnectEnabled );
++    }
+ }
+diff --git a/module/cmd-alert/pom.xml b/module/cmd-alert/pom.xml
+deleted file mode 100644
+index c0d9f7d5..00000000
+--- a/module/cmd-alert/pom.xml
++++ /dev/null
+@@ -1,19 +0,0 @@
+-
+-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+-    <modelVersion>4.0.0</modelVersion>
+-
+-    <parent>
+-        <groupId>io.sapphiremc.amethyst</groupId>
+-        <artifactId>amethyst-module</artifactId>
+-        <version>1.18-R0.1-SNAPSHOT</version>
+-        <relativePath>../pom.xml</relativePath>
+-    </parent>
+-
+-    <artifactId>amethyst-module-cmd-alert</artifactId>
+-    <version>1.18-R0.1-SNAPSHOT</version>
+-    <packaging>jar</packaging>
+-
+-    <name>cmd_alert</name>
+-    <description>Provides the alert and alertraw commands</description>
+-</project>
+diff --git a/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/PluginAlert.java b/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/PluginAlert.java
+deleted file mode 100644
+index b6f84865..00000000
+--- a/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/PluginAlert.java
++++ /dev/null
+@@ -1,14 +0,0 @@
+-package net.md_5.bungee.module.cmd.alert;
+-
+-import net.md_5.bungee.api.plugin.Plugin;
+-
+-public class PluginAlert extends Plugin
+-{
+-
+-    @Override
+-    public void onEnable()
+-    {
+-        getProxy().getPluginManager().registerCommand( this, new CommandAlert() );
+-        getProxy().getPluginManager().registerCommand( this, new CommandAlertRaw() );
+-    }
+-}
+diff --git a/module/cmd-alert/src/main/resources/bungee.yml b/module/cmd-alert/src/main/resources/bungee.yml
+deleted file mode 100644
+index 9dcf1704..00000000
+--- a/module/cmd-alert/src/main/resources/bungee.yml
++++ /dev/null
+@@ -1,5 +0,0 @@
+-name: ${project.name}
+-main: net.md_5.bungee.module.cmd.alert.PluginAlert
+-version: ${project.version}
+-description: ${project.description}
+-author: ${module.author}
+diff --git a/module/cmd-find/pom.xml b/module/cmd-find/pom.xml
+deleted file mode 100644
+index e8172a66..00000000
+--- a/module/cmd-find/pom.xml
++++ /dev/null
+@@ -1,19 +0,0 @@
+-
+-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+-    <modelVersion>4.0.0</modelVersion>
+-
+-    <parent>
+-        <groupId>io.sapphiremc.amethyst</groupId>
+-        <artifactId>amethyst-module</artifactId>
+-        <version>1.18-R0.1-SNAPSHOT</version>
+-        <relativePath>../pom.xml</relativePath>
+-    </parent>
+-
+-    <artifactId>amethyst-module-cmd-find</artifactId>
+-    <version>1.18-R0.1-SNAPSHOT</version>
+-    <packaging>jar</packaging>
+-
+-    <name>cmd_find</name>
+-    <description>Provides the find command</description>
+-</project>
+diff --git a/module/cmd-find/src/main/java/net/md_5/bungee/module/cmd/find/PluginFind.java b/module/cmd-find/src/main/java/net/md_5/bungee/module/cmd/find/PluginFind.java
+deleted file mode 100644
+index 63757214..00000000
+--- a/module/cmd-find/src/main/java/net/md_5/bungee/module/cmd/find/PluginFind.java
++++ /dev/null
+@@ -1,13 +0,0 @@
+-package net.md_5.bungee.module.cmd.find;
+-
+-import net.md_5.bungee.api.plugin.Plugin;
+-
+-public class PluginFind extends Plugin
+-{
+-
+-    @Override
+-    public void onEnable()
+-    {
+-        getProxy().getPluginManager().registerCommand( this, new CommandFind() );
+-    }
+-}
+diff --git a/module/cmd-find/src/main/resources/bungee.yml b/module/cmd-find/src/main/resources/bungee.yml
+deleted file mode 100644
+index 34efb98d..00000000
+--- a/module/cmd-find/src/main/resources/bungee.yml
++++ /dev/null
+@@ -1,5 +0,0 @@
+-name: ${project.name}
+-main: net.md_5.bungee.module.cmd.find.PluginFind
+-version: ${project.version}
+-description: ${project.description}
+-author: ${module.author}
+diff --git a/module/cmd-list/pom.xml b/module/cmd-list/pom.xml
+deleted file mode 100644
+index a222f913..00000000
+--- a/module/cmd-list/pom.xml
++++ /dev/null
+@@ -1,19 +0,0 @@
+-
+-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+-    <modelVersion>4.0.0</modelVersion>
+-
+-    <parent>
+-        <groupId>io.sapphiremc.amethyst</groupId>
+-        <artifactId>amethyst-module</artifactId>
+-        <version>1.18-R0.1-SNAPSHOT</version>
+-        <relativePath>../pom.xml</relativePath>
+-    </parent>
+-
+-    <artifactId>amethyst-module-cmd-list</artifactId>
+-    <version>1.18-R0.1-SNAPSHOT</version>
+-    <packaging>jar</packaging>
+-
+-    <name>cmd_list</name>
+-    <description>Provides the glist command</description>
+-</project>
+diff --git a/module/cmd-list/src/main/java/net/md_5/bungee/module/cmd/list/PluginList.java b/module/cmd-list/src/main/java/net/md_5/bungee/module/cmd/list/PluginList.java
+deleted file mode 100644
+index e2a196c1..00000000
+--- a/module/cmd-list/src/main/java/net/md_5/bungee/module/cmd/list/PluginList.java
++++ /dev/null
+@@ -1,13 +0,0 @@
+-package net.md_5.bungee.module.cmd.list;
+-
+-import net.md_5.bungee.api.plugin.Plugin;
+-
+-public class PluginList extends Plugin
+-{
+-
+-    @Override
+-    public void onEnable()
+-    {
+-        getProxy().getPluginManager().registerCommand( this, new CommandList() );
+-    }
+-}
+diff --git a/module/cmd-list/src/main/resources/bungee.yml b/module/cmd-list/src/main/resources/bungee.yml
+deleted file mode 100644
+index c5999f77..00000000
+--- a/module/cmd-list/src/main/resources/bungee.yml
++++ /dev/null
+@@ -1,5 +0,0 @@
+-name: ${project.name}
+-main: net.md_5.bungee.module.cmd.list.PluginList
+-version: ${project.version}
+-description: ${project.description}
+-author: ${module.author}
+diff --git a/module/cmd-send/pom.xml b/module/cmd-send/pom.xml
+deleted file mode 100644
+index 6e864859..00000000
+--- a/module/cmd-send/pom.xml
++++ /dev/null
+@@ -1,19 +0,0 @@
+-
+-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+-    <modelVersion>4.0.0</modelVersion>
+-
+-    <parent>
+-        <groupId>io.sapphiremc.amethyst</groupId>
+-        <artifactId>amethyst-module</artifactId>
+-        <version>1.18-R0.1-SNAPSHOT</version>
+-        <relativePath>../pom.xml</relativePath>
+-    </parent>
+-
+-    <artifactId>amethyst-module-cmd-send</artifactId>
+-    <version>1.18-R0.1-SNAPSHOT</version>
+-    <packaging>jar</packaging>
+-
+-    <name>cmd_send</name>
+-    <description>Provides the gsend command</description>
+-</project>
+diff --git a/module/cmd-send/src/main/java/net/md_5/bungee/module/cmd/send/PluginSend.java b/module/cmd-send/src/main/java/net/md_5/bungee/module/cmd/send/PluginSend.java
+deleted file mode 100644
+index 4d4cf822..00000000
+--- a/module/cmd-send/src/main/java/net/md_5/bungee/module/cmd/send/PluginSend.java
++++ /dev/null
+@@ -1,13 +0,0 @@
+-package net.md_5.bungee.module.cmd.send;
+-
+-import net.md_5.bungee.api.plugin.Plugin;
+-
+-public class PluginSend extends Plugin
+-{
+-
+-    @Override
+-    public void onEnable()
+-    {
+-        getProxy().getPluginManager().registerCommand( this, new CommandSend() );
+-    }
+-}
+diff --git a/module/cmd-send/src/main/resources/bungee.yml b/module/cmd-send/src/main/resources/bungee.yml
+deleted file mode 100644
+index 8f0d0edd..00000000
+--- a/module/cmd-send/src/main/resources/bungee.yml
++++ /dev/null
+@@ -1,5 +0,0 @@
+-name: ${project.name}
+-main: net.md_5.bungee.module.cmd.send.PluginSend
+-version: ${project.version}
+-description: ${project.description}
+-author: ${module.author}
+diff --git a/module/cmd-server/pom.xml b/module/cmd-server/pom.xml
+deleted file mode 100644
+index b0d3bff1..00000000
+--- a/module/cmd-server/pom.xml
++++ /dev/null
+@@ -1,19 +0,0 @@
+-
+-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+-    <modelVersion>4.0.0</modelVersion>
+-
+-    <parent>
+-        <groupId>io.sapphiremc.amethyst</groupId>
+-        <artifactId>amethyst-module</artifactId>
+-        <version>1.18-R0.1-SNAPSHOT</version>
+-        <relativePath>../pom.xml</relativePath>
+-    </parent>
+-
+-    <artifactId>amethyst-module-cmd-server</artifactId>
+-    <version>1.18-R0.1-SNAPSHOT</version>
+-    <packaging>jar</packaging>
+-
+-    <name>cmd_server</name>
+-    <description>Provides the server command</description>
+-</project>
+diff --git a/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/PluginServer.java b/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/PluginServer.java
+deleted file mode 100644
+index 4aaae7ec..00000000
+--- a/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/PluginServer.java
++++ /dev/null
+@@ -1,13 +0,0 @@
+-package net.md_5.bungee.module.cmd.server;
+-
+-import net.md_5.bungee.api.plugin.Plugin;
+-
+-public class PluginServer extends Plugin
+-{
+-
+-    @Override
+-    public void onEnable()
+-    {
+-        getProxy().getPluginManager().registerCommand( this, new CommandServer() );
+-    }
+-}
+diff --git a/module/cmd-server/src/main/resources/bungee.yml b/module/cmd-server/src/main/resources/bungee.yml
+deleted file mode 100644
+index b0b87841..00000000
+--- a/module/cmd-server/src/main/resources/bungee.yml
++++ /dev/null
+@@ -1,5 +0,0 @@
+-name: ${project.name}
+-main: net.md_5.bungee.module.cmd.server.PluginServer
+-version: ${project.version}
+-description: ${project.description}
+-author: ${module.author}
+diff --git a/module/pom.xml b/module/pom.xml
+deleted file mode 100644
+index 9117dc2b..00000000
+--- a/module/pom.xml
++++ /dev/null
+@@ -1,53 +0,0 @@
+-
+-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+-    <modelVersion>4.0.0</modelVersion>
+-
+-    <parent>
+-        <groupId>io.sapphiremc.amethyst</groupId>
+-        <artifactId>amethyst-parent</artifactId>
+-        <version>1.18-R0.1-SNAPSHOT</version>
+-        <relativePath>../pom.xml</relativePath>
+-    </parent>
+-
+-    <artifactId>amethyst-module</artifactId>
+-    <version>1.18-R0.1-SNAPSHOT</version>
+-    <packaging>pom</packaging>
+-
+-    <name>Amethyst Modules</name>
+-    <description>Parent project for all Amethyst modules.</description>
+-
+-    <modules>
+-        <module>cmd-alert</module>
+-        <module>cmd-find</module>
+-        <module>cmd-list</module>
+-        <module>cmd-send</module>
+-        <module>cmd-server</module>
+-        <module>reconnect-yaml</module>
+-    </modules>
+-
+-    <properties>
+-        <module.author>SapphireMC</module.author>
+-        <maven.deploy.skip>true</maven.deploy.skip>
+-        <maven.javadoc.skip>true</maven.javadoc.skip>
+-    </properties>
+-
+-    <dependencies>
+-        <dependency>
+-            <groupId>${project.groupId}</groupId>
+-            <artifactId>amethyst-api</artifactId>
+-            <version>${project.version}</version>
+-            <scope>compile</scope>
+-        </dependency>
+-    </dependencies>
+-
+-    <build>
+-        <finalName>${project.name}</finalName>
+-        <resources>
+-            <resource>
+-                <filtering>true</filtering>
+-                <directory>${basedir}/src/main/resources</directory>
+-            </resource>
+-        </resources>
+-    </build>
+-</project>
+diff --git a/module/reconnect-yaml/pom.xml b/module/reconnect-yaml/pom.xml
+deleted file mode 100644
+index 0b36aad2..00000000
+--- a/module/reconnect-yaml/pom.xml
++++ /dev/null
+@@ -1,19 +0,0 @@
+-
+-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+-    <modelVersion>4.0.0</modelVersion>
+-
+-    <parent>
+-        <groupId>io.sapphiremc.amethyst</groupId>
+-        <artifactId>amethyst-module</artifactId>
+-        <version>1.18-R0.1-SNAPSHOT</version>
+-        <relativePath>../pom.xml</relativePath>
+-    </parent>
+-
+-    <artifactId>amethyst-module-reconnect-yaml</artifactId>
+-    <version>1.18-R0.1-SNAPSHOT</version>
+-    <packaging>jar</packaging>
+-
+-    <name>reconnect_yaml</name>
+-    <description>Provides reconnect location functionality in locations.yml</description>
+-</project>
+diff --git a/module/reconnect-yaml/src/main/java/net/md_5/bungee/module/reconnect/yaml/PluginYaml.java b/module/reconnect-yaml/src/main/java/net/md_5/bungee/module/reconnect/yaml/PluginYaml.java
+deleted file mode 100644
+index 0d77ce2a..00000000
+--- a/module/reconnect-yaml/src/main/java/net/md_5/bungee/module/reconnect/yaml/PluginYaml.java
++++ /dev/null
+@@ -1,22 +0,0 @@
+-package net.md_5.bungee.module.reconnect.yaml;
+-
+-import net.md_5.bungee.api.config.ListenerInfo;
+-import net.md_5.bungee.api.plugin.Plugin;
+-
+-public class PluginYaml extends Plugin
+-{
+-
+-    @Override
+-    public void onEnable()
+-    {
+-        // TODO: Abstract this for other reconnect modules
+-        for ( ListenerInfo info : getProxy().getConfig().getListeners() )
+-        {
+-            if ( !info.isForceDefault() && getProxy().getReconnectHandler() == null )
+-            {
+-                getProxy().setReconnectHandler( new YamlReconnectHandler() );
+-                break;
+-            }
+-        }
+-    }
+-}
+diff --git a/module/reconnect-yaml/src/main/resources/bungee.yml b/module/reconnect-yaml/src/main/resources/bungee.yml
+deleted file mode 100644
+index 9757ba83..00000000
+--- a/module/reconnect-yaml/src/main/resources/bungee.yml
++++ /dev/null
+@@ -1,5 +0,0 @@
+-name: ${project.name}
+-main: net.md_5.bungee.module.reconnect.yaml.PluginYaml
+-version: ${project.version}
+-description: ${project.description}
+-author: ${module.author}
+diff --git a/pom.xml b/pom.xml
+index 653c2415..e0fc0333 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -45,7 +45,7 @@
+         <module>event</module>
+         <module>log</module>
+         <module>log4j</module>
+-        <module>module</module>
++       <!-- <module>module</module> Amethyst - we use new ModuleManager -->
+         <module>protocol</module>
+         <module>proxy</module>
+         <module>query</module>
+diff --git a/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java b/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java
+new file mode 100644
+index 00000000..87154a3a
+--- /dev/null
++++ b/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java
+@@ -0,0 +1,69 @@
++/*
++ * Copyright (c) 2022 DenaryDev
++ *
++ * This program is free software: you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation, either version 3 of the
++ * License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public
++ * License along with this program.  If not, see
++ * <http://www.gnu.org/licenses/gpl-3.0.html>.
++ */
++package io.sapphiremc.amethyst;
++
++import io.sapphiremc.amethyst.conf.AmethystConfig;
++import io.sapphiremc.amethyst.module.CommandAlert;
++import io.sapphiremc.amethyst.module.CommandAlertRaw;
++import io.sapphiremc.amethyst.module.CommandFind;
++import io.sapphiremc.amethyst.module.CommandList;
++import io.sapphiremc.amethyst.module.CommandSend;
++import io.sapphiremc.amethyst.module.CommandServer;
++import io.sapphiremc.amethyst.module.YamlReconnectHandler;
++import net.md_5.bungee.api.ProxyServer;
++import net.md_5.bungee.api.config.ListenerInfo;
++import net.md_5.bungee.api.plugin.PluginManager;
++import io.sapphiremc.amethyst.module.CommandIP;
++import io.sapphiremc.amethyst.module.CommandPerms;
++import io.sapphiremc.amethyst.module.CommandReload;
++
++/**
++ * Created 04.01.2022
++ *
++ * @author DenaryDev
++ */
++public class AmethystModulesManager {
++    public static void registerModules(ProxyServer proxy) {
++        AmethystConfig config = proxy.getAmethyst().getConfig();
++        PluginManager manager = proxy.getPluginManager();
++        manager.unregisterCommands(null);
++
++        // Command modules
++        if (config.alertEnabled) {
++            manager.registerCommand(null, new CommandAlert());
++            manager.registerCommand(null, new CommandAlertRaw());
++        }
++        if (config.findEnabled) manager.registerCommand(null, new CommandFind());
++        if (config.ipEnabled) manager.registerCommand(null, new CommandIP());
++        if (config.listEnabled) manager.registerCommand(null, new CommandList());
++        if (config.permsEnabled) manager.registerCommand(null, new CommandPerms());
++        if (config.reloadEnabled) manager.registerCommand(null, new CommandReload());
++        if (config.sendEnabled) manager.registerCommand(null, new CommandSend());
++        if (config.serverEnabled) manager.registerCommand(null, new CommandServer());
++
++        // Reconnect module
++        if (config.reconnectEnabled) {
++            for (ListenerInfo info : proxy.getConfig().getListeners()) {
++                if (!info.isForceDefault() && proxy.getReconnectHandler() == null) {
++                    proxy.setReconnectHandler(new YamlReconnectHandler());
++                    break;
++                }
++            }
++        }
++    }
++}
+diff --git a/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlert.java b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandAlert.java
+similarity index 96%
+rename from module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlert.java
+rename to proxy/src/main/java/io/sapphiremc/amethyst/module/CommandAlert.java
+index 55d2f7b8..7d8d2d90 100644
+--- a/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlert.java
++++ b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandAlert.java
+@@ -1,4 +1,4 @@
+-package net.md_5.bungee.module.cmd.alert;
++package io.sapphiremc.amethyst.module;
+ 
+ import net.md_5.bungee.api.ChatColor;
+ import net.md_5.bungee.api.CommandSender;
+diff --git a/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlertRaw.java b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandAlertRaw.java
+similarity index 97%
+rename from module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlertRaw.java
+rename to proxy/src/main/java/io/sapphiremc/amethyst/module/CommandAlertRaw.java
+index 7292899d..18f0989f 100644
+--- a/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlertRaw.java
++++ b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandAlertRaw.java
+@@ -1,4 +1,4 @@
+-package net.md_5.bungee.module.cmd.alert;
++package io.sapphiremc.amethyst.module;
+ 
+ import com.google.common.base.Joiner;
+ import net.md_5.bungee.api.ChatColor;
+diff --git a/module/cmd-find/src/main/java/net/md_5/bungee/module/cmd/find/CommandFind.java b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandFind.java
+similarity index 96%
+rename from module/cmd-find/src/main/java/net/md_5/bungee/module/cmd/find/CommandFind.java
+rename to proxy/src/main/java/io/sapphiremc/amethyst/module/CommandFind.java
+index 7ea239ac..19b1dfa9 100644
+--- a/module/cmd-find/src/main/java/net/md_5/bungee/module/cmd/find/CommandFind.java
++++ b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandFind.java
+@@ -1,4 +1,4 @@
+-package net.md_5.bungee.module.cmd.find;
++package io.sapphiremc.amethyst.module;
+ 
+ import net.md_5.bungee.api.CommandSender;
+ import net.md_5.bungee.api.ProxyServer;
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandIP.java b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandIP.java
+similarity index 91%
+rename from proxy/src/main/java/net/md_5/bungee/command/CommandIP.java
+rename to proxy/src/main/java/io/sapphiremc/amethyst/module/CommandIP.java
+index 1fd5a546..efa15009 100644
+--- a/proxy/src/main/java/net/md_5/bungee/command/CommandIP.java
++++ b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandIP.java
+@@ -1,8 +1,9 @@
+-package net.md_5.bungee.command;
++package io.sapphiremc.amethyst.module;
+ 
+ import net.md_5.bungee.api.CommandSender;
+ import net.md_5.bungee.api.ProxyServer;
+ import net.md_5.bungee.api.connection.ProxiedPlayer;
++import net.md_5.bungee.command.PlayerCommand;
+ 
+ public class CommandIP extends PlayerCommand
+ {
+diff --git a/module/cmd-list/src/main/java/net/md_5/bungee/module/cmd/list/CommandList.java b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandList.java
+similarity index 97%
+rename from module/cmd-list/src/main/java/net/md_5/bungee/module/cmd/list/CommandList.java
+rename to proxy/src/main/java/io/sapphiremc/amethyst/module/CommandList.java
+index c2227110..78915c9e 100644
+--- a/module/cmd-list/src/main/java/net/md_5/bungee/module/cmd/list/CommandList.java
++++ b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandList.java
+@@ -1,4 +1,4 @@
+-package net.md_5.bungee.module.cmd.list;
++package io.sapphiremc.amethyst.module;
+ 
+ import java.util.ArrayList;
+ import java.util.Collections;
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandPerms.java b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandPerms.java
+similarity index 96%
+rename from proxy/src/main/java/net/md_5/bungee/command/CommandPerms.java
+rename to proxy/src/main/java/io/sapphiremc/amethyst/module/CommandPerms.java
+index 18422669..4073450a 100644
+--- a/proxy/src/main/java/net/md_5/bungee/command/CommandPerms.java
++++ b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandPerms.java
+@@ -1,4 +1,4 @@
+-package net.md_5.bungee.command;
++package io.sapphiremc.amethyst.module;
+ 
+ import java.util.HashSet;
+ import java.util.Set;
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandReload.java
+similarity index 96%
+rename from proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
+rename to proxy/src/main/java/io/sapphiremc/amethyst/module/CommandReload.java
+index 4eba24fa..d6ebe366 100644
+--- a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
++++ b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandReload.java
+@@ -1,4 +1,4 @@
+-package net.md_5.bungee.command;
++package io.sapphiremc.amethyst.module;
+ 
+ import net.md_5.bungee.BungeeCord;
+ import net.md_5.bungee.api.ChatColor;
+diff --git a/module/cmd-send/src/main/java/net/md_5/bungee/module/cmd/send/CommandSend.java b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandSend.java
+similarity index 99%
+rename from module/cmd-send/src/main/java/net/md_5/bungee/module/cmd/send/CommandSend.java
+rename to proxy/src/main/java/io/sapphiremc/amethyst/module/CommandSend.java
+index f59f9457..0a1b74ef 100644
+--- a/module/cmd-send/src/main/java/net/md_5/bungee/module/cmd/send/CommandSend.java
++++ b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandSend.java
+@@ -1,4 +1,4 @@
+-package net.md_5.bungee.module.cmd.send;
++package io.sapphiremc.amethyst.module;
+ 
+ import com.google.common.base.Joiner;
+ import com.google.common.collect.ImmutableSet;
+diff --git a/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandServer.java
+similarity index 98%
+rename from module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
+rename to proxy/src/main/java/io/sapphiremc/amethyst/module/CommandServer.java
+index 698b420f..2117c4bf 100644
+--- a/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
++++ b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandServer.java
+@@ -1,4 +1,4 @@
+-package net.md_5.bungee.module.cmd.server;
++package io.sapphiremc.amethyst.module;
+ 
+ import com.google.common.base.Function;
+ import com.google.common.base.Predicate;
+diff --git a/module/reconnect-yaml/src/main/java/net/md_5/bungee/module/reconnect/yaml/YamlReconnectHandler.java b/proxy/src/main/java/io/sapphiremc/amethyst/module/YamlReconnectHandler.java
+similarity index 98%
+rename from module/reconnect-yaml/src/main/java/net/md_5/bungee/module/reconnect/yaml/YamlReconnectHandler.java
+rename to proxy/src/main/java/io/sapphiremc/amethyst/module/YamlReconnectHandler.java
+index 3a514a76..a703665b 100644
+--- a/module/reconnect-yaml/src/main/java/net/md_5/bungee/module/reconnect/yaml/YamlReconnectHandler.java
++++ b/proxy/src/main/java/io/sapphiremc/amethyst/module/YamlReconnectHandler.java
+@@ -1,4 +1,4 @@
+-package net.md_5.bungee.module.reconnect.yaml;
++package io.sapphiremc.amethyst.module;
+ 
+ import java.io.File;
+ import java.io.FileReader;
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index d664976e..297f9e13 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -22,11 +22,11 @@ import io.netty.channel.ChannelOption;
+ import io.netty.channel.EventLoopGroup;
+ import io.netty.util.ResourceLeakDetector;
+ import io.sapphiremc.amethyst.Amethyst;
++import io.sapphiremc.amethyst.AmethystModulesManager;
+ import io.sapphiremc.amethyst.api.protocol.ProtocolVersion;
+ import java.io.File;
+ import java.io.FileReader;
+ import java.io.IOException;
+-import java.io.PrintStream;
+ import java.net.InetSocketAddress;
+ import java.net.SocketAddress;
+ import java.text.MessageFormat;
+@@ -77,17 +77,11 @@ import net.md_5.bungee.chat.ScoreComponentSerializer;
+ import net.md_5.bungee.chat.SelectorComponentSerializer;
+ import net.md_5.bungee.chat.TextComponentSerializer;
+ import net.md_5.bungee.chat.TranslatableComponentSerializer;
+-import net.md_5.bungee.command.CommandBungee;
+-import net.md_5.bungee.command.CommandEnd;
+-import net.md_5.bungee.command.CommandIP;
+-import net.md_5.bungee.command.CommandPerms;
+-import net.md_5.bungee.command.CommandReload;
+ import net.md_5.bungee.command.ConsoleCommandSender;
+ import net.md_5.bungee.compress.CompressFactory;
+ import net.md_5.bungee.conf.Configuration;
+ import net.md_5.bungee.conf.YamlConfig;
+ import net.md_5.bungee.forge.ForgeConstants;
+-import net.md_5.bungee.module.ModuleManager;
+ import net.md_5.bungee.netty.PipelineUtils;
+ import net.md_5.bungee.protocol.DefinedPacket;
+ import net.md_5.bungee.protocol.packet.PluginMessage;
+@@ -173,7 +167,7 @@ public class BungeeCord extends ProxyServer
+             .registerTypeAdapter( Favicon.class, Favicon.getFaviconTypeAdapter() ).create();
+     @Getter
+     private ConnectionThrottle connectionThrottle;
+-    private final ModuleManager moduleManager = new ModuleManager();
++   // private final ModuleManager moduleManager = new ModuleManager(); Amethyst - we use our new module manager
+     private final long serverStartTime; // Amethyst - add logging on startup
+ 
+     {
+@@ -230,11 +224,15 @@ public class BungeeCord extends ProxyServer
+         serverStartTime = System.nanoTime(); // Amethyst - add logging on startup
+ 
+         pluginManager = new PluginManager( this );
++        // Amethyst start - We register modules in our new manager
++        /*
+         getPluginManager().registerCommand( null, new CommandReload() );
+         getPluginManager().registerCommand( null, new CommandEnd() );
+         getPluginManager().registerCommand( null, new CommandIP() );
+         getPluginManager().registerCommand( null, new CommandBungee() );
+         getPluginManager().registerCommand( null, new CommandPerms() );
++        */
++        // Amethyst end
+ 
+         if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
+         {
+@@ -274,7 +272,7 @@ public class BungeeCord extends ProxyServer
+         workerEventLoopGroup = PipelineUtils.newEventLoopGroup( 0, new ThreadFactoryBuilder().setNameFormat( "Netty Worker IO Thread #%1$d" ).build() );
+ 
+         File moduleDirectory = new File( "modules" );
+-        moduleManager.load( this, moduleDirectory );
++       // moduleManager.load( this, moduleDirectory ); // Amethyst - we use our modules manager
+         pluginManager.detectPlugins( moduleDirectory );
+ 
+         pluginsFolder.mkdir();
+@@ -284,6 +282,7 @@ public class BungeeCord extends ProxyServer
+         config.load();
+ 
+         Amethyst.getInstance().load(); // Amethyst - load our configs
++        AmethystModulesManager.registerModules(this); // Amethyst - register modules
+ 
+         if ( config.isForgeSupport() )
+         {
+-- 
+2.34.1.windows.1
+

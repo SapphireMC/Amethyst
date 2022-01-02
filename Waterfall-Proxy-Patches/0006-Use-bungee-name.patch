@@ -1,0 +1,52 @@
+From daede9808565132dfc4185ffef72419e5e2068a5 Mon Sep 17 00:00:00 2001
+From: DenaryDev <denaryplanet@gmail.com>
+Date: Sun, 2 Jan 2022 15:05:36 +0500
+Subject: [PATCH] Use bungee name
+
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
+index fdbfa262..85291b58 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
+@@ -67,7 +67,7 @@ public class BungeeCordLauncher
+ 
+         BungeeCord bungee = new BungeeCord();
+         ProxyServer.setInstance( bungee );
+-        bungee.getLogger().info( "Enabled Waterfall version " + bungee.getVersion() );
++        bungee.getLogger().info( "Enabled " + bungee.getName() + " version " + bungee.getVersion() ); // Amethyst - use bungee name
+         bungee.start();
+ 
+         if ( !options.has( "noconsole" ) )
+diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
+index 8a54afd6..05f92ef3 100644
+--- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
++++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
+@@ -22,6 +22,7 @@ import java.util.Locale;
+ import java.util.Map;
+ import java.util.logging.Level;
+ import lombok.RequiredArgsConstructor;
++import net.md_5.bungee.BungeeCord;
+ import net.md_5.bungee.Util;
+ import net.md_5.bungee.api.ChatColor;
+ import net.md_5.bungee.api.ProxyServer;
+@@ -227,7 +228,7 @@ public class YamlConfig implements ConfigurationAdapter
+             Map<String, Object> val = entry.getValue();
+             String name = entry.getKey();
+             String addr = get( "address", "localhost:25565", val );
+-            String motd = ChatColor.translateAlternateColorCodes( '&', get( "motd", "&1Just another Amethyst - Forced Host", val ) );
++            String motd = ChatColor.translateAlternateColorCodes( '&', get( "motd", "&1Just another " + BungeeCord.getInstance().getName() + " - Forced Host", val ) ); // Amethyst - use bungee name
+             boolean restricted = get( "restricted", false, val );
+             SocketAddress address = Util.getAddr( addr );
+             ServerInfo info = ProxyServer.getInstance().constructServerInfo( name, address, motd, restricted );
+@@ -253,7 +254,7 @@ public class YamlConfig implements ConfigurationAdapter
+ 
+         for ( Map<String, Object> val : base )
+         {
+-            String motd = get( "motd", "&1Another Amethyst server", val );
++            String motd = get( "motd", "&1Another " + BungeeCord.getInstance().getName() + " server", val ); // Amethyst - use bungee name
+             motd = ChatColor.translateAlternateColorCodes( '&', motd );
+ 
+             int maxPlayers = get( "max_players", 1, val );
+-- 
+2.34.1.windows.1
+

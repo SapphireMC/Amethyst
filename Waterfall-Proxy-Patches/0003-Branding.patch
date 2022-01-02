@@ -1,0 +1,119 @@
+From 7d7b72413f0224b7b96295099639daba4440388a Mon Sep 17 00:00:00 2001
+From: DenaryDev <denaryplanet@gmail.com>
+Date: Sun, 2 Jan 2022 14:55:19 +0500
+Subject: [PATCH] Branding
+
+
+diff --git a/bootstrap/src/main/java/net/md_5/bungee/Bootstrap.java b/bootstrap/src/main/java/net/md_5/bungee/Bootstrap.java
+index a4516ed9..73006e0c 100644
+--- a/bootstrap/src/main/java/net/md_5/bungee/Bootstrap.java
++++ b/bootstrap/src/main/java/net/md_5/bungee/Bootstrap.java
+@@ -7,7 +7,7 @@ public class Bootstrap
+     {
+         if ( Float.parseFloat( System.getProperty( "java.class.version" ) ) < 52.0 )
+         {
+-            System.err.println( "*** ERROR *** Waterfall requires Java 8 or above to function! Please download and install it!" );
++            System.err.println( "*** ERROR *** Amethyst requires Java 8 or above to function! Please download and install it!" );
+             System.out.println( "You can check your Java version with the command: java -version" );
+             return;
+         }
+diff --git a/log/src/main/java/net/md_5/bungee/log/LogDispatcher.java b/log/src/main/java/net/md_5/bungee/log/LogDispatcher.java
+index d703d6d2..3ca6ef74 100644
+--- a/log/src/main/java/net/md_5/bungee/log/LogDispatcher.java
++++ b/log/src/main/java/net/md_5/bungee/log/LogDispatcher.java
+@@ -12,7 +12,7 @@ public class LogDispatcher extends Thread
+ 
+     public LogDispatcher(BungeeLogger logger)
+     {
+-        super( "Waterfall Logger Thread" );
++        super( "Amethyst Logger Thread" );
+         this.logger = logger;
+     }
+ 
+diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
+index e31fb00a..32be5c3c 100644
+--- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
++++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
+@@ -68,7 +68,8 @@ public class WaterfallConfiguration extends Configuration {
+         YamlConfig config = new YamlConfig(new File("waterfall.yml"));
+         config.load(false); // Load, but no permissions
+         logInitialHandlerConnections = config.getBoolean( "log_initial_handler_connections", logInitialHandlerConnections );
+-        gameVersion = config.getString("game_version", "").isEmpty() ? Joiner.on(", ").join(ProtocolConstants.SUPPORTED_VERSIONS) : config.getString("game_version", "");
++        // Amethyst - Make the version look better
++        gameVersion = config.getString("game_version", "").isEmpty() ? ProtocolConstants.SUPPORTED_VERSIONS.get(0) + "-" + ProtocolConstants.SUPPORTED_VERSIONS.get(ProtocolConstants.SUPPORTED_VERSIONS.size() - 1) : config.getString("game_version", "");
+         useNettyDnsResolver = config.getBoolean("use_netty_dns_resolver", useNettyDnsResolver);
+         // Throttling options
+         tabThrottle = config.getInt("throttling.tab_complete", tabThrottle);
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index 07d74c67..7ee4020e 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -188,7 +188,7 @@ public class BungeeCord extends ProxyServer
+     public BungeeCord() throws IOException
+     {
+         // Java uses ! to indicate a resource inside of a jar/zip/other container. Running Bungee from within a directory that has a ! will cause this to muck up.
+-        Preconditions.checkState( new File( "." ).getAbsolutePath().indexOf( '!' ) == -1, "Cannot use Waterfall in directory with ! in path." );
++        Preconditions.checkState( new File( "." ).getAbsolutePath().indexOf( '!' ) == -1, "Cannot use Amethyst in directory with ! in path." );
+ 
+         try
+         {
+@@ -539,7 +539,7 @@ public class BungeeCord extends ProxyServer
+     @Override
+     public String getName()
+     {
+-        return "Waterfall";
++        return "Amethyst";
+     }
+ 
+     @Override
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
+index b26035cf..a9e217a2 100644
+--- a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
++++ b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
+@@ -16,6 +16,6 @@ public class CommandBungee extends Command
+     @Override
+     public void execute(CommandSender sender, String[] args)
+     {
+-        sender.sendMessage( ChatColor.BLUE + "This server is running Waterfall version " + ProxyServer.getInstance().getVersion() + " by md_5" );
++        sender.sendMessage( ChatColor.BLUE + "This server is running " + ProxyServer.getInstance().getName() + " version " + ProxyServer.getInstance().getVersion() + " by md_5, DenaryDev" ); // Amethyst
+     }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
+index 720d0c3b..4eba24fa 100644
+--- a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
++++ b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
+@@ -23,7 +23,7 @@ public class CommandReload extends Command
+         BungeeCord.getInstance().startListeners();
+         BungeeCord.getInstance().getPluginManager().callEvent( new ProxyReloadEvent( sender ) );
+ 
+-        sender.sendMessage( ChatColor.BOLD.toString() + ChatColor.RED.toString() + "Waterfall has been reloaded."
+-                + " This is NOT advisable and you will not be supported with any issues that arise! Please restart Waterfall ASAP." );
++        sender.sendMessage( ChatColor.BOLD.toString() + ChatColor.RED.toString() + "Amethyst has been reloaded."
++                + " This is NOT advisable and you will not be supported with any issues that arise! Please restart Amethyst ASAP." );
+     }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
+index 0644b8cd..8a54afd6 100644
+--- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
++++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
+@@ -227,7 +227,7 @@ public class YamlConfig implements ConfigurationAdapter
+             Map<String, Object> val = entry.getValue();
+             String name = entry.getKey();
+             String addr = get( "address", "localhost:25565", val );
+-            String motd = ChatColor.translateAlternateColorCodes( '&', get( "motd", "&1Just another Waterfall - Forced Host", val ) );
++            String motd = ChatColor.translateAlternateColorCodes( '&', get( "motd", "&1Just another Amethyst - Forced Host", val ) );
+             boolean restricted = get( "restricted", false, val );
+             SocketAddress address = Util.getAddr( addr );
+             ServerInfo info = ProxyServer.getInstance().constructServerInfo( name, address, motd, restricted );
+@@ -253,7 +253,7 @@ public class YamlConfig implements ConfigurationAdapter
+ 
+         for ( Map<String, Object> val : base )
+         {
+-            String motd = get( "motd", "&1Another Bungee server", val );
++            String motd = get( "motd", "&1Another Amethyst server", val );
+             motd = ChatColor.translateAlternateColorCodes( '&', motd );
+ 
+             int maxPlayers = get( "max_players", 1, val );
+-- 
+2.34.1.windows.1
+

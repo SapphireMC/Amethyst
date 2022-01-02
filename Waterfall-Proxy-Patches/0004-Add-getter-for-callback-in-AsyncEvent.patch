@@ -1,0 +1,21 @@
+From eb8b9438e5fef6051989a62ca77bda584e71503b Mon Sep 17 00:00:00 2001
+From: DenaryDev <denaryplanet@gmail.com>
+Date: Sun, 2 Jan 2022 14:58:45 +0500
+Subject: [PATCH] Add getter for callback in AsyncEvent
+
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/event/AsyncEvent.java b/api/src/main/java/net/md_5/bungee/api/event/AsyncEvent.java
+index cf85ca06..0f7cde26 100644
+--- a/api/src/main/java/net/md_5/bungee/api/event/AsyncEvent.java
++++ b/api/src/main/java/net/md_5/bungee/api/event/AsyncEvent.java
+@@ -26,6 +26,7 @@ import net.md_5.bungee.api.plugin.Plugin;
+ public class AsyncEvent<T> extends Event
+ {
+ 
++    @Getter // Amethyst - Add getter for the callback
+     private final Callback<T> done;
+     private final Map<Plugin, AtomicInteger> intents = new ConcurrentHashMap<>();
+     private final AtomicBoolean fired = new AtomicBoolean();
+-- 
+2.34.1.windows.1
+

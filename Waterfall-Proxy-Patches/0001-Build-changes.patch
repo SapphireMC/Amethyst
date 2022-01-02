@@ -1,0 +1,862 @@
+From 2a5588112c8666dc9f915d975ea1dbceb20a74f3 Mon Sep 17 00:00:00 2001
+From: DenaryDev <denaryplanet@gmail.com>
+Date: Fri, 31 Dec 2021 13:46:52 +0500
+Subject: [PATCH] Build changes
+
+
+diff --git a/api/pom.xml b/api/pom.xml
+index 379b6023..d60d248d 100644
+--- a/api/pom.xml
++++ b/api/pom.xml
+@@ -4,42 +4,41 @@
+     <modelVersion>4.0.0</modelVersion>
+ 
+     <parent>
+-        <groupId>io.github.waterfallmc</groupId>
+-        <artifactId>waterfall-parent</artifactId>
++        <groupId>io.sapphiremc.amethyst</groupId>
++        <artifactId>amethyst-parent</artifactId>
+         <version>1.18-R0.1-SNAPSHOT</version>
+         <relativePath>../pom.xml</relativePath>
+     </parent>
+ 
+-    <groupId>io.github.waterfallmc</groupId>
+-    <artifactId>waterfall-api</artifactId>
++    <artifactId>amethyst-api</artifactId>
+     <version>1.18-R0.1-SNAPSHOT</version>
+     <packaging>jar</packaging>
+ 
+-    <name>Waterfall-API</name>
++    <name>Amethyst-API</name>
+     <description>API implemented by the Elastic Portal Suite</description>
+ 
+     <dependencies>
+         <dependency>
+-            <groupId>io.github.waterfallmc</groupId>
+-            <artifactId>waterfall-chat</artifactId>
++            <groupId>io.sapphiremc.amethyst</groupId>
++            <artifactId>amethyst-chat</artifactId>
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
+         <dependency>
+-            <groupId>io.github.waterfallmc</groupId>
+-            <artifactId>waterfall-config</artifactId>
++            <groupId>io.sapphiremc.amethyst</groupId>
++            <artifactId>amethyst-config</artifactId>
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
+         <dependency>
+-            <groupId>io.github.waterfallmc</groupId>
+-            <artifactId>waterfall-event</artifactId>
++            <groupId>io.sapphiremc.amethyst</groupId>
++            <artifactId>amethyst-event</artifactId>
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
+         <dependency>
+-            <groupId>io.github.waterfallmc</groupId>
+-            <artifactId>waterfall-protocol</artifactId>
++            <groupId>io.sapphiremc.amethyst</groupId>
++            <artifactId>amethyst-protocol</artifactId>
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
+diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
+index 00ce099c..fb5d009f 100644
+--- a/bootstrap/pom.xml
++++ b/bootstrap/pom.xml
+@@ -4,19 +4,18 @@
+     <modelVersion>4.0.0</modelVersion>
+ 
+     <parent>
+-        <groupId>io.github.waterfallmc</groupId>
+-        <artifactId>waterfall-parent</artifactId>
++        <groupId>io.sapphiremc.amethyst</groupId>
++        <artifactId>amethyst-parent</artifactId>
+         <version>1.18-R0.1-SNAPSHOT</version>
+         <relativePath>../pom.xml</relativePath>
+     </parent>
+ 
+-    <groupId>io.github.waterfallmc</groupId>
+-    <artifactId>waterfall-bootstrap</artifactId>
++    <artifactId>amethyst-bootstrap</artifactId>
+     <version>1.18-R0.1-SNAPSHOT</version>
+     <packaging>jar</packaging>
+ 
+-    <name>Waterfall-Bootstrap</name>
+-    <description>Java 1.6 loader for Waterfall</description>
++    <name>Amethyst-Bootstrap</name>
++    <description>Java 1.8 loader for Amethyst</description>
+ 
+     <properties>
+         <maven.deploy.skip>true</maven.deploy.skip>
+@@ -29,15 +28,15 @@
+ 
+     <dependencies>
+         <dependency>
+-            <groupId>io.github.waterfallmc</groupId>
+-            <artifactId>waterfall-proxy</artifactId>
++            <groupId>${project.groupId}</groupId>
++            <artifactId>amethyst-proxy</artifactId>
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
+     </dependencies>
+ 
+     <build>
+-        <finalName>Waterfall</finalName>
++        <finalName>Amethyst-${project.version}</finalName>
+         <plugins>
+             <plugin>
+                 <groupId>org.apache.maven.plugins</groupId>
+@@ -94,6 +93,7 @@
+         </plugins>
+     </build>
+ 
++    <!-- Amethyst
+     <profiles>
+         <profile>
+             <id>jdk-9-release</id>
+@@ -114,4 +114,5 @@
+             </properties>
+         </profile>
+     </profiles>
++    -->
+ </project>
+diff --git a/chat/pom.xml b/chat/pom.xml
+index 0ad5dd16..94edee5f 100644
+--- a/chat/pom.xml
++++ b/chat/pom.xml
+@@ -4,19 +4,18 @@
+     <modelVersion>4.0.0</modelVersion>
+ 
+     <parent>
+-        <groupId>io.github.waterfallmc</groupId>
+-        <artifactId>waterfall-parent</artifactId>
++        <groupId>io.sapphiremc.amethyst</groupId>
++        <artifactId>amethyst-parent</artifactId>
+         <version>1.18-R0.1-SNAPSHOT</version>
+         <relativePath>../pom.xml</relativePath>
+     </parent>
+ 
+-    <groupId>io.github.waterfallmc</groupId>
+-    <artifactId>waterfall-chat</artifactId>
++    <artifactId>amethyst-chat</artifactId>
+     <version>1.18-R0.1-SNAPSHOT</version>
+     <packaging>jar</packaging>
+ 
+-    <name>Waterfall-Chat</name>
+-    <description>Minecraft JSON chat API intended for use with Waterfall</description>
++    <name>Amethyst-Chat</name>
++    <description>Minecraft JSON chat API intended for use with Amethyst</description>
+ 
+     <dependencies>
+         <dependency>
+diff --git a/config/pom.xml b/config/pom.xml
+index 7d32ea69..af7c04df 100644
+--- a/config/pom.xml
++++ b/config/pom.xml
+@@ -4,19 +4,18 @@
+     <modelVersion>4.0.0</modelVersion>
+ 
+     <parent>
+-        <groupId>io.github.waterfallmc</groupId>
+-        <artifactId>waterfall-parent</artifactId>
++        <groupId>io.sapphiremc.amethyst</groupId>
++        <artifactId>amethyst-parent</artifactId>
+         <version>1.18-R0.1-SNAPSHOT</version>
+         <relativePath>../pom.xml</relativePath>
+     </parent>
+ 
+-    <groupId>io.github.waterfallmc</groupId>
+-    <artifactId>waterfall-config</artifactId>
++    <artifactId>amethyst-config</artifactId>
+     <version>1.18-R0.1-SNAPSHOT</version>
+     <packaging>jar</packaging>
+ 
+-    <name>Waterfall-Config</name>
+-    <description>Generic java configuration API intended for use with Waterfall</description>
++    <name>Amethyst-Config</name>
++    <description>Generic java configuration API intended for use with Amethyst</description>
+ 
+     <dependencies>
+         <dependency>
+diff --git a/event/pom.xml b/event/pom.xml
+index e2432463..27eaf7f7 100644
+--- a/event/pom.xml
++++ b/event/pom.xml
+@@ -4,17 +4,16 @@
+     <modelVersion>4.0.0</modelVersion>
+ 
+     <parent>
+-        <groupId>io.github.waterfallmc</groupId>
+-        <artifactId>waterfall-parent</artifactId>
++        <groupId>io.sapphiremc.amethyst</groupId>
++        <artifactId>amethyst-parent</artifactId>
+         <version>1.18-R0.1-SNAPSHOT</version>
+         <relativePath>../pom.xml</relativePath>
+     </parent>
+ 
+-    <groupId>io.github.waterfallmc</groupId>
+-    <artifactId>waterfall-event</artifactId>
++    <artifactId>amethyst-event</artifactId>
+     <version>1.18-R0.1-SNAPSHOT</version>
+     <packaging>jar</packaging>
+ 
+-    <name>Waterfall-Event</name>
+-    <description>Generic java event dispatching API intended for use with Waterfall.</description>
++    <name>Amethyst-Event</name>
++    <description>Generic java event dispatching API intended for use with Amethyst.</description>
+ </project>
+diff --git a/log/pom.xml b/log/pom.xml
+index 465ebbf2..f1c4b181 100644
+--- a/log/pom.xml
++++ b/log/pom.xml
+@@ -4,19 +4,18 @@
+     <modelVersion>4.0.0</modelVersion>
+ 
+     <parent>
+-        <groupId>io.github.waterfallmc</groupId>
+-        <artifactId>waterfall-parent</artifactId>
++        <groupId>io.sapphiremc.amethyst</groupId>
++        <artifactId>amethyst-parent</artifactId>
+         <version>1.18-R0.1-SNAPSHOT</version>
+         <relativePath>../pom.xml</relativePath>
+     </parent>
+ 
+-    <groupId>io.github.waterfallmc</groupId>
+-    <artifactId>waterfall-log</artifactId>
++    <artifactId>amethyst-log</artifactId>
+     <version>1.18-R0.1-SNAPSHOT</version>
+     <packaging>jar</packaging>
+ 
+-    <name>Waterfall-Log</name>
+-    <description>Simplistic and performant java.util.Logger based logger and console API designed for use with Waterfall and Minecraft related applications.</description>
++    <name>Amethyst-Log</name>
++    <description>Simplistic and performant java.util.Logger based logger and console API designed for use with Amethyst and Minecraft related applications.</description>
+ 
+     <dependencies>
+         <dependency>
+@@ -26,8 +25,8 @@
+             <scope>compile</scope>
+         </dependency>
+         <dependency>
+-            <groupId>io.github.waterfallmc</groupId>
+-            <artifactId>waterfall-chat</artifactId>
++            <groupId>${project.groupId}</groupId>
++            <artifactId>amethyst-chat</artifactId>
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
+diff --git a/log4j/pom.xml b/log4j/pom.xml
+index 127d0c14..be68201a 100644
+--- a/log4j/pom.xml
++++ b/log4j/pom.xml
+@@ -3,19 +3,18 @@
+     <modelVersion>4.0.0</modelVersion>
+ 
+     <parent>
+-        <groupId>io.github.waterfallmc</groupId>
+-        <artifactId>waterfall-parent</artifactId>
++        <groupId>io.sapphiremc.amethyst</groupId>
++        <artifactId>amethyst-parent</artifactId>
+         <version>1.18-R0.1-SNAPSHOT</version>
+         <relativePath>../pom.xml</relativePath>
+     </parent>
+ 
+-    <groupId>io.github.waterfallmc</groupId>
+-    <artifactId>waterfall-log4j</artifactId>
++    <artifactId>amethyst-log4j</artifactId>
+     <version>1.18-R0.1-SNAPSHOT</version>
+     <packaging>jar</packaging>
+ 
+-    <name>Waterfall-Log</name>
+-    <description>Simplistic and performant Log4j2 based logger and console API designed for use with Waterfall and Minecraft related applications.</description>
++    <name>Amethyst-Log</name>
++    <description>Simplistic and performant Log4j2 based logger and console API designed for use with Amethyst and Minecraft related applications.</description>
+ 
+     <properties>
+         <log4j2.version>2.17.1</log4j2.version>
+diff --git a/module/cmd-alert/pom.xml b/module/cmd-alert/pom.xml
+index b41791f1..c0d9f7d5 100644
+--- a/module/cmd-alert/pom.xml
++++ b/module/cmd-alert/pom.xml
+@@ -4,14 +4,13 @@
+     <modelVersion>4.0.0</modelVersion>
+ 
+     <parent>
+-        <groupId>io.github.waterfallmc</groupId>
+-        <artifactId>waterfall-module</artifactId>
++        <groupId>io.sapphiremc.amethyst</groupId>
++        <artifactId>amethyst-module</artifactId>
+         <version>1.18-R0.1-SNAPSHOT</version>
+         <relativePath>../pom.xml</relativePath>
+     </parent>
+ 
+-    <groupId>io.github.waterfallmc</groupId>
+-    <artifactId>waterfall-module-cmd-alert</artifactId>
++    <artifactId>amethyst-module-cmd-alert</artifactId>
+     <version>1.18-R0.1-SNAPSHOT</version>
+     <packaging>jar</packaging>
+ 
+diff --git a/module/cmd-alert/src/main/resources/plugin.yml b/module/cmd-alert/src/main/resources/bungee.yml
+similarity index 82%
+rename from module/cmd-alert/src/main/resources/plugin.yml
+rename to module/cmd-alert/src/main/resources/bungee.yml
+index 8ed58084..9dcf1704 100644
+--- a/module/cmd-alert/src/main/resources/plugin.yml
++++ b/module/cmd-alert/src/main/resources/bungee.yml
+@@ -1,5 +1,5 @@
+ name: ${project.name}
+ main: net.md_5.bungee.module.cmd.alert.PluginAlert
+-version: ${describe}
++version: ${project.version}
+ description: ${project.description}
+ author: ${module.author}
+diff --git a/module/cmd-find/pom.xml b/module/cmd-find/pom.xml
+index a17080ab..e8172a66 100644
+--- a/module/cmd-find/pom.xml
++++ b/module/cmd-find/pom.xml
+@@ -4,14 +4,13 @@
+     <modelVersion>4.0.0</modelVersion>
+ 
+     <parent>
+-        <groupId>io.github.waterfallmc</groupId>
+-        <artifactId>waterfall-module</artifactId>
++        <groupId>io.sapphiremc.amethyst</groupId>
++        <artifactId>amethyst-module</artifactId>
+         <version>1.18-R0.1-SNAPSHOT</version>
+         <relativePath>../pom.xml</relativePath>
+     </parent>
+ 
+-    <groupId>io.github.waterfallmc</groupId>
+-    <artifactId>waterfall-module-cmd-find</artifactId>
++    <artifactId>amethyst-module-cmd-find</artifactId>
+     <version>1.18-R0.1-SNAPSHOT</version>
+     <packaging>jar</packaging>
+ 
+diff --git a/module/cmd-find/src/main/resources/plugin.yml b/module/cmd-find/src/main/resources/bungee.yml
+similarity index 82%
+rename from module/cmd-find/src/main/resources/plugin.yml
+rename to module/cmd-find/src/main/resources/bungee.yml
+index e0f346f9..34efb98d 100644
+--- a/module/cmd-find/src/main/resources/plugin.yml
++++ b/module/cmd-find/src/main/resources/bungee.yml
+@@ -1,5 +1,5 @@
+ name: ${project.name}
+ main: net.md_5.bungee.module.cmd.find.PluginFind
+-version: ${describe}
++version: ${project.version}
+ description: ${project.description}
+ author: ${module.author}
+diff --git a/module/cmd-list/pom.xml b/module/cmd-list/pom.xml
+index 16003086..a222f913 100644
+--- a/module/cmd-list/pom.xml
++++ b/module/cmd-list/pom.xml
+@@ -4,14 +4,13 @@
+     <modelVersion>4.0.0</modelVersion>
+ 
+     <parent>
+-        <groupId>io.github.waterfallmc</groupId>
+-        <artifactId>waterfall-module</artifactId>
++        <groupId>io.sapphiremc.amethyst</groupId>
++        <artifactId>amethyst-module</artifactId>
+         <version>1.18-R0.1-SNAPSHOT</version>
+         <relativePath>../pom.xml</relativePath>
+     </parent>
+ 
+-    <groupId>io.github.waterfallmc</groupId>
+-    <artifactId>waterfall-module-cmd-list</artifactId>
++    <artifactId>amethyst-module-cmd-list</artifactId>
+     <version>1.18-R0.1-SNAPSHOT</version>
+     <packaging>jar</packaging>
+ 
+diff --git a/module/cmd-list/src/main/resources/plugin.yml b/module/cmd-list/src/main/resources/bungee.yml
+similarity index 82%
+rename from module/cmd-list/src/main/resources/plugin.yml
+rename to module/cmd-list/src/main/resources/bungee.yml
+index 272e64eb..c5999f77 100644
+--- a/module/cmd-list/src/main/resources/plugin.yml
++++ b/module/cmd-list/src/main/resources/bungee.yml
+@@ -1,5 +1,5 @@
+ name: ${project.name}
+ main: net.md_5.bungee.module.cmd.list.PluginList
+-version: ${describe}
++version: ${project.version}
+ description: ${project.description}
+ author: ${module.author}
+diff --git a/module/cmd-send/pom.xml b/module/cmd-send/pom.xml
+index ba084281..6e864859 100644
+--- a/module/cmd-send/pom.xml
++++ b/module/cmd-send/pom.xml
+@@ -4,14 +4,13 @@
+     <modelVersion>4.0.0</modelVersion>
+ 
+     <parent>
+-        <groupId>io.github.waterfallmc</groupId>
+-        <artifactId>waterfall-module</artifactId>
++        <groupId>io.sapphiremc.amethyst</groupId>
++        <artifactId>amethyst-module</artifactId>
+         <version>1.18-R0.1-SNAPSHOT</version>
+         <relativePath>../pom.xml</relativePath>
+     </parent>
+ 
+-    <groupId>io.github.waterfallmc</groupId>
+-    <artifactId>waterfall-module-cmd-send</artifactId>
++    <artifactId>amethyst-module-cmd-send</artifactId>
+     <version>1.18-R0.1-SNAPSHOT</version>
+     <packaging>jar</packaging>
+ 
+diff --git a/module/cmd-send/src/main/resources/plugin.yml b/module/cmd-send/src/main/resources/bungee.yml
+similarity index 82%
+rename from module/cmd-send/src/main/resources/plugin.yml
+rename to module/cmd-send/src/main/resources/bungee.yml
+index a613e78b..8f0d0edd 100644
+--- a/module/cmd-send/src/main/resources/plugin.yml
++++ b/module/cmd-send/src/main/resources/bungee.yml
+@@ -1,5 +1,5 @@
+ name: ${project.name}
+ main: net.md_5.bungee.module.cmd.send.PluginSend
+-version: ${describe}
++version: ${project.version}
+ description: ${project.description}
+ author: ${module.author}
+diff --git a/module/cmd-server/pom.xml b/module/cmd-server/pom.xml
+index cb4d2932..b0d3bff1 100644
+--- a/module/cmd-server/pom.xml
++++ b/module/cmd-server/pom.xml
+@@ -4,14 +4,13 @@
+     <modelVersion>4.0.0</modelVersion>
+ 
+     <parent>
+-        <groupId>io.github.waterfallmc</groupId>
+-        <artifactId>waterfall-module</artifactId>
++        <groupId>io.sapphiremc.amethyst</groupId>
++        <artifactId>amethyst-module</artifactId>
+         <version>1.18-R0.1-SNAPSHOT</version>
+         <relativePath>../pom.xml</relativePath>
+     </parent>
+ 
+-    <groupId>io.github.waterfallmc</groupId>
+-    <artifactId>waterfall-module-cmd-server</artifactId>
++    <artifactId>amethyst-module-cmd-server</artifactId>
+     <version>1.18-R0.1-SNAPSHOT</version>
+     <packaging>jar</packaging>
+ 
+diff --git a/module/cmd-server/src/main/resources/plugin.yml b/module/cmd-server/src/main/resources/bungee.yml
+similarity index 82%
+rename from module/cmd-server/src/main/resources/plugin.yml
+rename to module/cmd-server/src/main/resources/bungee.yml
+index 006f3e3f..b0b87841 100644
+--- a/module/cmd-server/src/main/resources/plugin.yml
++++ b/module/cmd-server/src/main/resources/bungee.yml
+@@ -1,5 +1,5 @@
+ name: ${project.name}
+ main: net.md_5.bungee.module.cmd.server.PluginServer
+-version: ${describe}
++version: ${project.version}
+ description: ${project.description}
+ author: ${module.author}
+diff --git a/module/pom.xml b/module/pom.xml
+index 350a49b8..9117dc2b 100644
+--- a/module/pom.xml
++++ b/module/pom.xml
+@@ -4,19 +4,18 @@
+     <modelVersion>4.0.0</modelVersion>
+ 
+     <parent>
+-        <groupId>io.github.waterfallmc</groupId>
+-        <artifactId>waterfall-parent</artifactId>
++        <groupId>io.sapphiremc.amethyst</groupId>
++        <artifactId>amethyst-parent</artifactId>
+         <version>1.18-R0.1-SNAPSHOT</version>
+         <relativePath>../pom.xml</relativePath>
+     </parent>
+ 
+-    <groupId>io.github.waterfallmc</groupId>
+-    <artifactId>waterfall-module</artifactId>
++    <artifactId>amethyst-module</artifactId>
+     <version>1.18-R0.1-SNAPSHOT</version>
+     <packaging>pom</packaging>
+ 
+-    <name>Waterfall Modules</name>
+-    <description>Parent project for all Waterfall modules.</description>
++    <name>Amethyst Modules</name>
++    <description>Parent project for all Amethyst modules.</description>
+ 
+     <modules>
+         <module>cmd-alert</module>
+@@ -28,15 +27,15 @@
+     </modules>
+ 
+     <properties>
+-        <module.author>WaterfallMC</module.author>
++        <module.author>SapphireMC</module.author>
+         <maven.deploy.skip>true</maven.deploy.skip>
+         <maven.javadoc.skip>true</maven.javadoc.skip>
+     </properties>
+ 
+     <dependencies>
+         <dependency>
+-            <groupId>io.github.waterfallmc</groupId>
+-            <artifactId>waterfall-api</artifactId>
++            <groupId>${project.groupId}</groupId>
++            <artifactId>amethyst-api</artifactId>
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
+diff --git a/module/reconnect-yaml/pom.xml b/module/reconnect-yaml/pom.xml
+index d3476fc5..0b36aad2 100644
+--- a/module/reconnect-yaml/pom.xml
++++ b/module/reconnect-yaml/pom.xml
+@@ -4,14 +4,13 @@
+     <modelVersion>4.0.0</modelVersion>
+ 
+     <parent>
+-        <groupId>io.github.waterfallmc</groupId>
+-        <artifactId>waterfall-module</artifactId>
++        <groupId>io.sapphiremc.amethyst</groupId>
++        <artifactId>amethyst-module</artifactId>
+         <version>1.18-R0.1-SNAPSHOT</version>
+         <relativePath>../pom.xml</relativePath>
+     </parent>
+ 
+-    <groupId>net.md-5</groupId>
+-    <artifactId>bungeecord-module-reconnect-yaml</artifactId>
++    <artifactId>amethyst-module-reconnect-yaml</artifactId>
+     <version>1.18-R0.1-SNAPSHOT</version>
+     <packaging>jar</packaging>
+ 
+diff --git a/module/reconnect-yaml/src/main/resources/plugin.yml b/module/reconnect-yaml/src/main/resources/bungee.yml
+similarity index 83%
+rename from module/reconnect-yaml/src/main/resources/plugin.yml
+rename to module/reconnect-yaml/src/main/resources/bungee.yml
+index 451e3c61..9757ba83 100644
+--- a/module/reconnect-yaml/src/main/resources/plugin.yml
++++ b/module/reconnect-yaml/src/main/resources/bungee.yml
+@@ -1,5 +1,5 @@
+ name: ${project.name}
+ main: net.md_5.bungee.module.reconnect.yaml.PluginYaml
+-version: ${describe}
++version: ${project.version}
+ description: ${project.description}
+ author: ${module.author}
+diff --git a/native/pom.xml b/native/pom.xml
+index 1eff2c93..8a7c62ab 100644
+--- a/native/pom.xml
++++ b/native/pom.xml
+@@ -4,19 +4,18 @@
+     <modelVersion>4.0.0</modelVersion>
+ 
+     <parent>
+-        <groupId>io.github.waterfallmc</groupId>
+-        <artifactId>waterfall-parent</artifactId>
++        <groupId>io.sapphiremc.amethyst</groupId>
++        <artifactId>amethyst-parent</artifactId>
+         <version>1.18-R0.1-SNAPSHOT</version>
+         <relativePath>../pom.xml</relativePath>
+     </parent>
+ 
+-    <groupId>io.github.waterfallmc</groupId>
+-    <artifactId>waterfall-native</artifactId>
++    <artifactId>amethyst-native</artifactId>
+     <version>1.18-R0.1-SNAPSHOT</version>
+     <packaging>jar</packaging>
+ 
+-    <name>Waterfall-Native</name>
+-    <description>Optional native code to speed up and enhance Waterfall functionality.</description>
++    <name>Amethyst-Native</name>
++    <description>Optional native code to speed up and enhance Amethyst functionality.</description>
+ 
+     <dependencies>
+         <dependency>
+diff --git a/pom.xml b/pom.xml
+index 505d1d14..aff287f7 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -4,24 +4,23 @@
+     <modelVersion>4.0.0</modelVersion>
+ 
+     <parent>
+-        <groupId>io.github.waterfallmc</groupId>
+-        <artifactId>waterfall-super</artifactId>
++        <groupId>io.sapphiremc.amethyst</groupId>
++        <artifactId>amethyst-super</artifactId>
+         <version>dev-SNAPSHOT</version>
+         <relativePath>../pom.xml</relativePath>
+     </parent>
+ 
+-    <groupId>io.github.waterfallmc</groupId>
+-    <artifactId>waterfall-parent</artifactId>
++    <artifactId>amethyst-parent</artifactId>
+     <version>1.18-R0.1-SNAPSHOT</version>
+     <packaging>pom</packaging>
+ 
+-    <name>Waterfall-Parent</name>
+-    <description>Parent project for all Waterfall modules.</description>
+-    <url>https://github.com/WaterfallMC/Waterfall</url>
+-    <inceptionYear>2015</inceptionYear>
++    <name>Amethyst-Parent</name>
++    <description>Parent project for all Amethyst modules.</description>
++    <url>https://github.com/SapphireMC/Amethyst</url>
++    <inceptionYear>2021</inceptionYear>
+     <organization>
+-        <name>WaterfallMC</name>
+-        <url>https://github.com/WaterfallMC</url>
++        <name>SapphireMC</name>
++        <url>https://github.com/SapphireMC</url>
+     </organization>
+     <licenses>
+         <license>
+@@ -33,19 +32,8 @@
+ 
+     <developers>
+         <developer>
+-            <id>Tux</id>
+-        </developer>
+-        <developer>
+-            <id>Techcable</id>
+-        </developer>
+-        <developer>
+-            <id>kashike</id>
+-        </developer>
+-        <developer>
+-            <id>jamierocks</id>
+-        </developer>
+-        <developer>
+-            <id>fuzzybot</id>
++            <id>DenaryDev</id>
++            <url>https://github.com/DenaryDev</url>
+         </developer>
+     </developers>
+ 
+@@ -66,23 +54,23 @@
+     </modules>
+ 
+     <scm>
+-        <connection>scm:git:git@github.com:com:WaterfallMC/Waterfall.git</connection>
+-        <developerConnection>scm:git:git@github.com:WaterfallMC/Waterfall.git</developerConnection>
+-        <url>git@github.com:WaterfallMC/Waterfall.git</url>
++        <connection>scm:git:git@github.com:com:SapphireMC/Amethyst.git</connection>
++        <developerConnection>scm:git:git@github.com:SapphireMC/Amethyst.git</developerConnection>
++        <url>git@github.com:SapphireMC/Amethyst.git</url>
+     </scm>
+     <issueManagement>
+         <system>GitHub</system>
+-        <url>https://github.com/PaperMC/Waterfall/issues</url>
++        <url>https://github.com/SapphireMC/Amethyst/issues</url>
+     </issueManagement>
+ 
+     <distributionManagement>
+         <repository>
+-            <id>papermc-releases</id>
+-            <url>https://papermc.io/repo/repository/maven-releases/</url>
++            <id>sapphiremc-releases</id>
++            <url>http://repo.denaryworld.ru/releases/</url>
+         </repository>
+         <snapshotRepository>
+-            <id>papermc-snapshots</id>
+-            <url>https://papermc.io/repo/repository/maven-snapshots/</url>
++            <id>sapphiremc-snapshots</id>
++            <url>http://repo.denaryworld.ru/snapshots/</url>
+         </snapshotRepository>
+     </distributionManagement>
+ 
+@@ -124,6 +112,7 @@
+ 
+     <build>
+         <plugins>
++            <!-- Amethyst
+             <plugin>
+                 <groupId>net.md-5</groupId>
+                 <artifactId>scriptus</artifactId>
+@@ -139,7 +128,7 @@
+                         </goals>
+                     </execution>
+                 </executions>
+-            </plugin>
++            </plugin> -->
+             <!-- Use latest version of the javadoc plugin, fixes some issues with the javadoc tool on recent JDK builds on macOS at least -->
+             <plugin>
+                 <groupId>org.apache.maven.plugins</groupId>
+@@ -397,8 +386,8 @@
+                                 </goals>
+                                 <inherited>false</inherited>
+                                 <configuration>
+-                                    <doctitle>Waterfall ${project.version} API</doctitle>
+-                                    <windowtitle>Waterfall ${project.version} API</windowtitle>
++                                    <doctitle>Amethyst ${project.version} API</doctitle>
++                                    <windowtitle>Amethyst ${project.version} API</windowtitle>
+                                     <sourcepath>
+                                         api/target/generated-sources/delombok;
+                                         chat/target/generated-sources/delombok
+diff --git a/protocol/pom.xml b/protocol/pom.xml
+index a783d9b0..fa8f6511 100644
+--- a/protocol/pom.xml
++++ b/protocol/pom.xml
+@@ -4,19 +4,18 @@
+     <modelVersion>4.0.0</modelVersion>
+ 
+     <parent>
+-        <groupId>io.github.waterfallmc</groupId>
+-        <artifactId>waterfall-parent</artifactId>
++        <groupId>io.sapphiremc.amethyst</groupId>
++        <artifactId>amethyst-parent</artifactId>
+         <version>1.18-R0.1-SNAPSHOT</version>
+         <relativePath>../pom.xml</relativePath>
+     </parent>
+ 
+-    <groupId>io.github.waterfallmc</groupId>
+-    <artifactId>waterfall-protocol</artifactId>
++    <artifactId>amethyst-protocol</artifactId>
+     <version>1.18-R0.1-SNAPSHOT</version>
+     <packaging>jar</packaging>
+ 
+-    <name>Waterfall-Protocol</name>
+-    <description>Minimal implementation of the Minecraft protocol for use in Waterfall</description>
++    <name>Amethyst-Protocol</name>
++    <description>Minimal implementation of the Minecraft protocol for use in Amethyst</description>
+ 
+     <!-- We really shouldn't depend on external repositories, but at least this is the Central staging one -->
+     <repositories>
+@@ -41,8 +40,8 @@
+             <scope>compile</scope>
+         </dependency>
+         <dependency>
+-            <groupId>io.github.waterfallmc</groupId>
+-            <artifactId>waterfall-chat</artifactId>
++            <groupId>${project.groupId}</groupId>
++            <artifactId>amethyst-chat</artifactId>
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
+diff --git a/proxy/pom.xml b/proxy/pom.xml
+index cca0ef95..14c00fc4 100644
+--- a/proxy/pom.xml
++++ b/proxy/pom.xml
+@@ -4,18 +4,17 @@
+     <modelVersion>4.0.0</modelVersion>
+ 
+     <parent>
+-        <groupId>io.github.waterfallmc</groupId>
+-        <artifactId>waterfall-parent</artifactId>
++        <groupId>io.sapphiremc.amethyst</groupId>
++        <artifactId>amethyst-parent</artifactId>
+         <version>1.18-R0.1-SNAPSHOT</version>
+         <relativePath>../pom.xml</relativePath>
+     </parent>
+ 
+-    <groupId>io.github.waterfallmc</groupId>
+-    <artifactId>waterfall-proxy</artifactId>
++    <artifactId>amethyst-proxy</artifactId>
+     <version>1.18-R0.1-SNAPSHOT</version>
+     <packaging>jar</packaging>
+ 
+-    <name>Waterfall-Proxy</name>
++    <name>Amethyst-Proxy</name>
+     <description>Proxy component of the Elastic Portal Suite</description>
+ 
+     <properties>
+@@ -64,32 +63,32 @@
+             <scope>compile</scope>
+         </dependency>
+         <dependency>
+-            <groupId>io.github.waterfallmc</groupId>
+-            <artifactId>waterfall-api</artifactId>
++            <groupId>${project.groupId}</groupId>
++            <artifactId>amethyst-api</artifactId>
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
+         <dependency>
+-            <groupId>io.github.waterfallmc</groupId>
+-            <artifactId>waterfall-log4j</artifactId>
++            <groupId>${project.groupId}</groupId>
++            <artifactId>amethyst-log4j</artifactId>
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
+         <dependency>
+-            <groupId>io.github.waterfallmc</groupId>
+-            <artifactId>waterfall-native</artifactId>
++            <groupId>${project.groupId}</groupId>
++            <artifactId>amethyst-native</artifactId>
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
+         <dependency>
+-            <groupId>io.github.waterfallmc</groupId>
+-            <artifactId>waterfall-protocol</artifactId>
++            <groupId>${project.groupId}</groupId>
++            <artifactId>amethyst-protocol</artifactId>
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
+         <dependency>
+-            <groupId>io.github.waterfallmc</groupId>
+-            <artifactId>waterfall-query</artifactId>
++            <groupId>${project.groupId}</groupId>
++            <artifactId>amethyst-query</artifactId>
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
+diff --git a/proxy/src/main/java/net/md_5/bungee/module/ModuleManager.java b/proxy/src/main/java/net/md_5/bungee/module/ModuleManager.java
+index d3abee44..3992ecc7 100644
+--- a/proxy/src/main/java/net/md_5/bungee/module/ModuleManager.java
++++ b/proxy/src/main/java/net/md_5/bungee/module/ModuleManager.java
+@@ -137,8 +137,8 @@ public class ModuleManager
+     {
+         try ( JarFile jar = new JarFile( file ) )
+         {
+-            JarEntry pdf = jar.getJarEntry( "plugin.yml" );
+-            Preconditions.checkNotNull( pdf, "Plugin must have a plugin.yml" );
++            JarEntry pdf = jar.getJarEntry( "bungee.yml" );
++            Preconditions.checkNotNull( pdf, "Module must have a bungee.yml" );
+ 
+             try ( InputStream in = jar.getInputStream( pdf ) )
+             {
+diff --git a/query/pom.xml b/query/pom.xml
+index 081bff62..c4b6ed73 100644
+--- a/query/pom.xml
++++ b/query/pom.xml
+@@ -4,19 +4,18 @@
+     <modelVersion>4.0.0</modelVersion>
+ 
+     <parent>
+-        <groupId>io.github.waterfallmc</groupId>
+-        <artifactId>waterfall-parent</artifactId>
++        <groupId>io.sapphiremc.amethyst</groupId>
++        <artifactId>amethyst-parent</artifactId>
+         <version>1.18-R0.1-SNAPSHOT</version>
+         <relativePath>../pom.xml</relativePath>
+     </parent>
+ 
+-    <groupId>io.github.waterfallmc</groupId>
+-    <artifactId>waterfall-query</artifactId>
++    <artifactId>amethyst-query</artifactId>
+     <version>1.18-R0.1-SNAPSHOT</version>
+     <packaging>jar</packaging>
+ 
+-    <name>Waterfall-Query</name>
+-    <description>Minecraft query implementation based on the Waterfall API.</description>
++    <name>Amethyst-Query</name>
++    <description>Minecraft query implementation based on the Amethyst API.</description>
+ 
+     <dependencies>
+         <dependency>
+@@ -26,8 +25,8 @@
+             <scope>compile</scope>
+         </dependency>
+         <dependency>
+-            <groupId>io.github.waterfallmc</groupId>
+-            <artifactId>waterfall-api</artifactId>
++            <groupId>${project.groupId}</groupId>
++            <artifactId>amethyst-api</artifactId>
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
+-- 
+2.34.1.windows.1
+

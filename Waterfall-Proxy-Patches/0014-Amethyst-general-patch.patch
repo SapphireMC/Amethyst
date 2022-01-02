@@ -1,0 +1,565 @@
+From 35b3e2ff2810cd8af3f87cfe9595edfbe5035668 Mon Sep 17 00:00:00 2001
+From: DenaryDev <denaryplanet@gmail.com>
+Date: Mon, 3 Jan 2022 01:19:36 +0500
+Subject: [PATCH] Amethyst general patch
+
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
+index a4011335..66e87dfb 100644
+--- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
++++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
+@@ -1,6 +1,7 @@
+ package net.md_5.bungee.api;
+ 
+ import com.google.common.base.Preconditions;
++import io.sapphiremc.amethyst.Amethyst;
+ import java.io.File;
+ import java.net.InetSocketAddress;
+ import java.net.SocketAddress;
+@@ -327,4 +328,14 @@ public abstract class ProxyServer
+      */
+     public abstract Title createTitle();
+ 
++    // Amethyst start - add method to get Amethyst's instance
++    /**
++     * Returns an instance of an amethyst, with which you can get
++     * its configuration.
++     *
++     * @return Amethyst instance
++     * @see Amethyst
++     */
++    public abstract Amethyst getAmethyst();
++    // Amethyst end
+ }
+diff --git a/flame/pom.xml b/flame/pom.xml
+new file mode 100644
+index 00000000..e689d482
+--- /dev/null
++++ b/flame/pom.xml
+@@ -0,0 +1,35 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project xmlns="http://maven.apache.org/POM/4.0.0"
++         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
++         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
++    <modelVersion>4.0.0</modelVersion>
++
++    <parent>
++        <groupId>io.sapphiremc.amethyst</groupId>
++        <artifactId>amethyst-parent</artifactId>
++        <version>1.18-R0.1-SNAPSHOT</version>
++        <relativePath>../pom.xml</relativePath>
++    </parent>
++
++    <artifactId>amethyst-flame</artifactId>
++    <version>1.18-R0.1-SNAPSHOT</version>
++    <packaging>jar</packaging>
++
++    <name>Amethyst-Flame</name>
++    <description>Amethyst adds security essentials, new commands and new configuration options</description>
++
++    <dependencies>
++        <dependency>
++            <groupId>io.sapphiremc.amethyst</groupId>
++            <artifactId>amethyst-config</artifactId>
++            <version>${project.version}</version>
++            <scope>compile</scope>
++        </dependency>
++        <dependency>
++            <groupId>io.sapphiremc.amethyst</groupId>
++            <artifactId>amethyst-chat</artifactId>
++            <version>${project.version}</version>
++            <scope>compile</scope>
++        </dependency>
++    </dependencies>
++</project>
+\ No newline at end of file
+diff --git a/flame/src/main/java/io/sapphiremc/amethyst/Amethyst.java b/flame/src/main/java/io/sapphiremc/amethyst/Amethyst.java
+new file mode 100644
+index 00000000..373778e7
+--- /dev/null
++++ b/flame/src/main/java/io/sapphiremc/amethyst/Amethyst.java
+@@ -0,0 +1,69 @@
++/*
++ * Copyright (c) 2022 DenaryDev
++ *
++ * This program is free software: you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation, either version 3 of the
++ * License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public
++ * License along with this program.  If not, see
++ * <http://www.gnu.org/licenses/gpl-3.0.html>.
++ */
++package io.sapphiremc.amethyst;
++
++import io.sapphiremc.amethyst.conf.AmethystConfig;
++import java.util.Collection;
++import java.util.logging.Logger;
++import lombok.Getter;
++import net.md_5.bungee.config.ConfigurationProvider;
++import net.md_5.bungee.config.YamlConfiguration;
++
++/**
++ * Amethyst main class
++ * Use this only to get parameter values!
++ *
++ * Created 02.01.2022
++ *
++ * @author DenaryDev
++ */
++public class Amethyst
++{
++    private static Amethyst instance;
++    /**
++     * Instance of this class.
++     * @see Amethyst
++     */
++    public static Amethyst getInstance()
++    {
++        if ( instance == null ) instance = new Amethyst();
++        return instance;
++    }
++
++    /**
++     * Configuration provider for our configs.
++     * @see YamlConfiguration
++     */
++    @Getter
++    private final ConfigurationProvider provider = ConfigurationProvider.getProvider(YamlConfiguration.class);
++    /**
++     * Amethyst main config.
++     * @see AmethystConfig
++     */
++    @Getter
++    private AmethystConfig config;
++
++    /**
++     * This method is used by the proxy to initialize this
++     * Doesn't use this if you don't know what you are doing
++     */
++    public void load()
++    {
++        this.config = new AmethystConfig(provider);
++    }
++}
+diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AbstractYamlConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AbstractYamlConfig.java
+new file mode 100644
+index 00000000..1852c5c4
+--- /dev/null
++++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AbstractYamlConfig.java
+@@ -0,0 +1,139 @@
++/*
++ * Copyright (c) 2022 DenaryDev
++ *
++ * This program is free software: you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation, either version 3 of the
++ * License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public
++ * License along with this program.  If not, see
++ * <http://www.gnu.org/licenses/gpl-3.0.html>.
++ */
++package io.sapphiremc.amethyst.conf;
++
++import java.util.List;
++import lombok.Getter;
++import net.md_5.bungee.config.Configuration;
++
++/**
++ * Abstract class for our configurations.
++ *
++ * Created 03.01.2022
++ *
++ * @author DenaryDev
++ */
++public abstract class AbstractYamlConfig
++{
++    /**
++     * Yaml configuration instance of this config.
++     */
++    @Getter
++    protected Configuration config;
++
++    /**
++     * This method is used to load the content of this config.
++     * Doesn't use this if you don't know what you are doing.
++     */
++    protected void loadContent()
++    {
++        throw new UnsupportedOperationException( "Not supported yet!" );
++    }
++
++    /**
++     * Gets a {@link Boolean} from this config
++     * or writes a default value to it.
++     *
++     * @param key key
++     * @param def default value
++     * @return value from config or default value
++     */
++    protected boolean getBoolean(String key, boolean def)
++    {
++        return (boolean) get( key, def );
++    }
++
++    /**
++     * Gets a {@link Integer} from this config
++     * or writes a default value to it.
++     *
++     * @param key key
++     * @param def default value
++     * @return value from config or default value
++     */
++    protected int getInt(String key, int def)
++    {
++        return (int) get( key, def );
++    }
++
++    /**
++     * Gets a {@link Double} from this config
++     * or writes a default value to it.
++     *
++     * @param key key
++     * @param def default value
++     * @return value from config or default value
++     */
++    protected double getDouble(String key, double def)
++    {
++        return (double) get( key, def );
++    }
++
++    /**
++     * Gets a {@link String} from this config
++     * or writes a default value to it.
++     *
++     * @param key key
++     * @param def default value
++     * @return value from config or default value
++     */
++    protected String getString(String key, String def)
++    {
++        return (String) get( key, def );
++    }
++
++    /**
++     * Gets a {@link List<>} of stings from this config
++     * or writes a default value to it.
++     *
++     * @param key key
++     * @param def default value
++     * @return value from config or default value
++     */
++    protected List<String> getStringList(String key, List<String> def)
++    {
++        if ( !config.contains( key ) )
++        {
++            config.set( key, def );
++            return def;
++        } else
++        {
++            return config.getStringList( key );
++        }
++    }
++
++    /**
++     * Gets an {@link Object} from this config
++     * or writes a default value to it.
++     *
++     * @param key key
++     * @param def default value
++     * @return value from config or default value
++     */
++    protected Object get(String key, Object def)
++    {
++        if ( !config.contains( key ) )
++        {
++            config.set( key, def );
++            return def;
++        } else
++        {
++            return config.get( key, def );
++        }
++    }
++}
+diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
+new file mode 100644
+index 00000000..7f753317
+--- /dev/null
++++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
+@@ -0,0 +1,50 @@
++/*
++ * Copyright (c) 2022 DenaryDev
++ *
++ * This program is free software: you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation, either version 3 of the
++ * License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public
++ * License along with this program.  If not, see
++ * <http://www.gnu.org/licenses/gpl-3.0.html>.
++ */
++package io.sapphiremc.amethyst.conf;
++
++import java.io.File;
++import java.io.IOException;
++import net.md_5.bungee.config.Configuration;
++import net.md_5.bungee.config.ConfigurationProvider;
++
++/**
++ * Amethyst main configuration class
++ * Use this only to get parameter values!
++ *
++ * Created 02.01.2022
++ *
++ * @author DenaryDev
++ */
++public class AmethystConfig extends AbstractYamlConfig
++{
++    public AmethystConfig(ConfigurationProvider provider)
++    {
++        try
++        {
++            File file = new File( "./amethyst.yml" );
++            boolean exists = file.exists();
++            config = !exists ? new Configuration() : provider.load( file );
++
++            loadContent();
++            if ( !exists ) provider.save( config, file );
++        } catch ( IOException ex )
++        {
++            ex.printStackTrace();
++        }
++    }
++}
+diff --git a/pom.xml b/pom.xml
+index aff287f7..653c2415 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -51,6 +51,8 @@
+         <module>query</module>
+         <!--<module>slf4j</module>-->
+         <module>native</module>
++        <!-- Amethyst - add our module -->
++        <module>flame</module>
+     </modules>
+ 
+     <scm>
+diff --git a/protocol/pom.xml b/protocol/pom.xml
+index fa8f6511..5c908a10 100644
+--- a/protocol/pom.xml
++++ b/protocol/pom.xml
+@@ -63,5 +63,12 @@
+             <version>1.3.0</version>
+             <scope>compile</scope>
+         </dependency>
++        <!-- Amethyst - add our dependencies -->
++        <dependency>
++            <groupId>${project.groupId}</groupId>
++            <artifactId>amethyst-flame</artifactId>
++            <version>${project.version}</version>
++            <scope>compile</scope>
++        </dependency>
+     </dependencies>
+ </project>
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
+index 0768e3b7..eef72175 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
+@@ -6,7 +6,7 @@ import java.util.List;
+ public class ProtocolConstants
+ {
+ 
+-    private static final boolean SNAPSHOT_SUPPORT = Boolean.getBoolean( "net.md_5.bungee.protocol.snapshot" );
++   // private static final boolean SNAPSHOT_SUPPORT = Boolean.getBoolean( "net.md_5.bungee.protocol.snapshot" ); // Amethyst - remove this because its no longer needed
+     public static final int MINECRAFT_1_8 = 47;
+     public static final int MINECRAFT_1_9 = 107;
+     public static final int MINECRAFT_1_9_1 = 108;
+@@ -88,22 +88,26 @@ public class ProtocolConstants
+                 ProtocolConstants.MINECRAFT_1_18
+         );
+ 
++        // Amethyst start - remove this because its no longer needed
++        /*
+         if ( SNAPSHOT_SUPPORT )
+         {
+-            // supportedVersions.add( "1.18.x" );
+-            // supportedVersionIds.add( ProtocolConstants.MINECRAFT_1_18 );
++             supportedVersions.add( "1.18.x" );
++             supportedVersionIds.add( ProtocolConstants.MINECRAFT_1_18 );
+         }
++        */
++        // Amethyst end
+ 
+         SUPPORTED_VERSIONS = supportedVersions.build();
+         SUPPORTED_VERSION_IDS = supportedVersionIds.build();
+     }
+ 
+-    public static final boolean isBeforeOrEq(int before, int other)
++    public static boolean isBeforeOrEq(int before, int other) // Amethyst - remove final modifier
+     {
+             return before <= other;
+     }
+ 
+-    public static final boolean isAfterOrEq(int after, int other)
++    public static boolean isAfterOrEq(int after, int other) // Amethyst - remove final modifier
+     {
+             return after >= other;
+     }
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index 7ee4020e..23079da6 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -21,6 +21,7 @@ import io.netty.channel.ChannelFutureListener;
+ import io.netty.channel.ChannelOption;
+ import io.netty.channel.EventLoopGroup;
+ import io.netty.util.ResourceLeakDetector;
++import io.sapphiremc.amethyst.Amethyst;
+ import java.io.File;
+ import java.io.FileReader;
+ import java.io.IOException;
+@@ -173,6 +174,7 @@ public class BungeeCord extends ProxyServer
+     @Getter
+     private ConnectionThrottle connectionThrottle;
+     private final ModuleManager moduleManager = new ModuleManager();
++    private final long serverStartTime; // Amethyst - add logging on startup
+ 
+     {
+         // TODO: Proper fallback when we interface the manager
+@@ -224,6 +226,9 @@ public class BungeeCord extends ProxyServer
+         logger = io.github.waterfallmc.waterfall.log4j.WaterfallLogger.create();
+         // Waterfall end
+ 
++        logger.info("Starting " + getName() + " version " + getVersion() + " (MC:1.8 - 1.18.1)"); // Amethyst - add logging on startup
++        serverStartTime = System.nanoTime(); // Amethyst - add logging on startup
++
+         pluginManager = new PluginManager( this );
+         getPluginManager().registerCommand( null, new CommandReload() );
+         getPluginManager().registerCommand( null, new CommandEnd() );
+@@ -278,6 +283,8 @@ public class BungeeCord extends ProxyServer
+         pluginManager.loadPlugins();
+         config.load();
+ 
++        Amethyst.getInstance().load(); // Amethyst - load our configs
++
+         if ( config.isForgeSupport() )
+         {
+             registerChannel( ForgeConstants.FML_TAG );
+@@ -316,6 +323,9 @@ public class BungeeCord extends ProxyServer
+                 independentThreadStop( getTranslation( "restart" ), false );
+             }
+         } );
++
++        String done = String.format(Locale.ROOT, "%.3fs", (double) (System.nanoTime() - serverStartTime) / 1.0E9D); // Amethyst - add logging on startup
++        logger.info("Done (" + done + ")!"); // Amethyst - add logging on startup
+     }
+ 
+     public void startListeners()
+@@ -813,4 +823,10 @@ public class BungeeCord extends ProxyServer
+     {
+         return new BungeeTitle();
+     }
++
++    @Override
++    public Amethyst getAmethyst()
++    {
++        return Amethyst.getInstance();
++    }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+index 9e74d158..e1c7879d 100644
+--- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
++++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+@@ -164,7 +164,7 @@ public class ServerConnector extends PacketHandler
+     {
+         if ( packet.packet == null )
+         {
+-            throw new QuietException( "Unexpected packet received during server login process!\n" + BufUtil.dump( packet.buf, 16 ) );
++            throw new QuietException( "Unexpected packet received during server connector process!\n" + BufUtil.dump( packet.buf, 16 ) ); // Amethyst
+         }
+     }
+ 
+diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+index 4a768f36..59f47685 100644
+--- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
++++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+@@ -36,6 +36,7 @@ import net.md_5.bungee.api.SkinConfiguration;
+ import net.md_5.bungee.api.Title;
+ import net.md_5.bungee.api.chat.BaseComponent;
+ import net.md_5.bungee.api.chat.TextComponent;
++import net.md_5.bungee.api.config.ListenerInfo;
+ import net.md_5.bungee.api.config.ServerInfo;
+ import net.md_5.bungee.api.connection.ProxiedPlayer;
+ import net.md_5.bungee.api.event.PermissionCheckEvent;
+@@ -389,9 +390,10 @@ public final class UserConnection implements ProxiedPlayer
+                 .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, request.getConnectTimeout() )
+                 .remoteAddress( target.getAddress() );
+         // Windows is bugged, multi homed users will just have to live with random connecting IPs
+-        if ( getPendingConnection().getListener().isSetLocalAddress() && !PlatformDependent.isWindows() && getPendingConnection().getListener().getSocketAddress() instanceof InetSocketAddress )
++        final ListenerInfo listenerInfo = getPendingConnection().getListener(); // Amethyst - use local variable
++        if ( listenerInfo.isSetLocalAddress() && !PlatformDependent.isWindows() && listenerInfo.getSocketAddress() instanceof InetSocketAddress ) // Amethyst
+         {
+-            b.localAddress( getPendingConnection().getListener().getHost().getHostString(), 0 );
++            b.localAddress( listenerInfo.getHost().getHostString(), 0 ); // Amethyst
+         }
+         b.connect().addListener( listener );
+     }
+diff --git a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
+index 85d2197a..5d8b4edf 100644
+--- a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
++++ b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
+@@ -69,7 +69,7 @@ public abstract class Configuration implements ProxyConfig
+     private Favicon favicon;
+     private int compressionThreshold = 256;
+     private boolean preventProxyConnections;
+-    private boolean forgeSupport = true; // Waterfall: default to enabled
++    private boolean forgeSupport = false; // Amethyst - default to disabled -> Waterfall - default to enabled
+ 
+     @Synchronized("serversLock") // Waterfall
+     public void load()
+diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
+index 2d4cd5db..f34eb7f9 100644
+--- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
++++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
+@@ -131,7 +131,7 @@ public class YamlConfig implements ConfigurationAdapter
+         Map<String, Object> groups = get( "groups", null );
+         if ( groups == null )
+         {
+-            set( "groups.md_5", Collections.singletonList( "admin" ) );
++            set( "groups.md_5", Collections.singletonList( "default" ) ); // Amethyst - set this to default, fix security issue
+         }
+     }
+ 
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index f8081506..0babc2a5 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -154,7 +154,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     {
+         if ( packet.packet == null )
+         {
+-            throw new QuietException( "Unexpected packet received during login process! " + BufUtil.dump( packet.buf, 16 ) );
++            throw new QuietException( "Unexpected packet received during server login process! " + BufUtil.dump( packet.buf, 16 ) ); // Amethyst
+         }
+     }
+ 
+-- 
+2.34.1.windows.1
+

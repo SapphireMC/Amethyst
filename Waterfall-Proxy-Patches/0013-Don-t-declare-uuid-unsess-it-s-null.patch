@@ -1,0 +1,28 @@
+From 6be4c2f9fddb122018e7da602b79241a3628c712 Mon Sep 17 00:00:00 2001
+From: DenaryDev <denaryplanet@gmail.com>
+Date: Sun, 2 Jan 2022 16:26:25 +0500
+Subject: [PATCH] Don't declare uuid unsess it's null
+
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index 4ba8111d..f8081506 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -482,7 +482,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+                     {
+                         loginProfile = obj;
+                         name = obj.getName();
+-                        uniqueId = Util.getUUID( obj.getId() );
++                        // Amethyst start - Don't declare uuid unless it's null
++                       // uniqueId = Util.getUUID( obj.getId() );
++                        if (uniqueId == null)
++                        {
++                            uniqueId = Util.getUUID( obj.getId() );
++                        }
++                        // Amethyst end
+                         finish();
+                         return;
+                     }
+-- 
+2.34.1.windows.1
+

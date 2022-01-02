@@ -1,0 +1,189 @@
+From 4e7e1f8c7c96a8130d3ea1b4b15c8f510c322045 Mon Sep 17 00:00:00 2001
+From: DenaryDev <denaryplanet@gmail.com>
+Date: Sun, 2 Jan 2022 16:02:46 +0500
+Subject: [PATCH] Close connections & Don't flush if not necessary
+
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index 4afab05d..3c7adbcf 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -192,6 +192,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+                 }
+ 
+                 ServerPing legacy = result.getResponse();
++                // Amethyst start - Close and return if legacy == null
++                if (legacy == null)
++                {
++                    ch.close();
++                    return;
++                }
++                // Amethyst end
+                 String kickMessage;
+ 
+                 if ( v1_5 )
+@@ -257,6 +264,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+                     @Override
+                     public void done(ProxyPingEvent pingResult, Throwable error)
+                     {
++                        // Amethyst start - Close if response is null
++                        if (pingResult.getResponse() == null)
++                        {
++                            ch.close();
++                            return;
++                        }
++                        // Amethyst end
++                        if (ch.isClosed()) return; // Amethyst - Return if connection is closed
+                         Gson gson = BungeeCord.getInstance().gson;
+                         unsafe.sendPacket( new StatusResponse( gson.toJson( pingResult.getResponse() ) ) );
+                         if ( bungee.getConnectionThrottle() != null )
+@@ -281,16 +296,19 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+         thisState = State.PING;
+     }
+ 
+-    private static final boolean ACCEPT_INVALID_PACKETS = Boolean.parseBoolean(System.getProperty("waterfall.acceptInvalidPackets", "false"));
++   // private static final boolean ACCEPT_INVALID_PACKETS = Boolean.parseBoolean(System.getProperty("waterfall.acceptInvalidPackets", "false")); // Amethyst - Never accept invalid packets
+ 
+     @Override
+     public void handle(PingPacket ping) throws Exception
+     {
+-        if (!ACCEPT_INVALID_PACKETS) {
++       // if (!ACCEPT_INVALID_PACKETS) { // Amethyst - Never accept invalid packets
+             Preconditions.checkState(thisState == State.PING, "Not expecting PING");
+-        }
++       // }
+         unsafe.sendPacket( ping );
+-        disconnect( "" );
++        // Amethyst start - Close instead of disconnect
++       // disconnect( "" );
++        ch.close();
++        // Amethyst end
+     }
+ 
+     @Override
+@@ -595,7 +613,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     {
+         if ( canSendKickMessage() )
+         {
+-            ch.delayedClose( new Kick( ComponentSerializer.toString( reason ) ) );
++            // Amethyst start - Change delayed close to close
++           // ch.delayedClose( new Kick( ComponentSerializer.toString( reason ) ) );
++            ch.close( new Kick( ComponentSerializer.toString( reason ) ) );
++            // Amethyst end
+         } else
+         {
+             ch.close();
+diff --git a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
+index 6dc5633f..c3b69cef 100644
+--- a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
++++ b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
+@@ -80,17 +80,23 @@ public class ChannelWrapper
+ 
+             if ( packet != null && ch.isActive() )
+             {
+-                ch.writeAndFlush( packet ).addListeners( ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE, ChannelFutureListener.CLOSE );
++                // Amethyst start - Remove the firing of exceptions on failure
++               // ch.writeAndFlush( packet ).addListeners( ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE, ChannelFutureListener.CLOSE );
++                ch.writeAndFlush( packet ).addListeners( ChannelFutureListener.CLOSE );
++                // Amethyst end
+             } else
+             {
+-                ch.flush();
++               // ch.flush(); // Amethyst - Don't flush, just close
+                 ch.close();
+             }
+         }
+     }
+ 
++    // Amethyst start - Deprecate and "disable" delayedClose because it doesn't have a reason to exist
++    @Deprecated
+     public void delayedClose(final Kick kick)
+     {
++        /*
+         if ( !closing )
+         {
+             closing = true;
+@@ -108,12 +114,15 @@ public class ChannelWrapper
+                 }
+             }, 250, TimeUnit.MILLISECONDS );
+         }
++        */
++        close( kick );
+     }
++    // Amethyst end
+ 
+     public void addBefore(String baseName, String name, ChannelHandler handler)
+     {
+         Preconditions.checkState( ch.eventLoop().inEventLoop(), "cannot add handler outside of event loop" );
+-        ch.pipeline().flush();
++       // ch.pipeline().flush(); // Amethyst - Don't flush if not necessary
+         ch.pipeline().addBefore( baseName, name, handler );
+     }
+ 
+diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
+index 96704d5e..3d08e38a 100644
+--- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
++++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
+@@ -5,6 +5,7 @@ import io.github.waterfallmc.waterfall.event.ConnectionInitEvent;
+ import io.netty.buffer.PooledByteBufAllocator;
+ import io.netty.channel.Channel;
+ import io.netty.channel.ChannelException;
++import io.netty.channel.ChannelHandlerContext;
+ import io.netty.channel.ChannelInitializer;
+ import io.netty.channel.ChannelOption;
+ import io.netty.channel.EventLoopGroup;
+@@ -102,6 +103,15 @@ public class PipelineUtils
+ 
+             BungeeCord.getInstance().getPluginManager().callEvent(connectionInitEvent);
+         }
++
++        // Amethyst start - close on exception caught
++        @Override
++        public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) throws Exception
++        {
++            cause.printStackTrace();
++            ctx.close();
++        }
++        // Amethyst end
+     };
+     public static final Base BASE = new Base();
+     private static final KickStringWriter legacyKicker = new KickStringWriter();
+@@ -196,5 +206,14 @@ public class PipelineUtils
+ 
+             ch.pipeline().addLast( BOSS_HANDLER, new HandlerBoss() );
+         }
++
++        // Amethyst start - close on exception caught
++        @Override
++        public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) throws Exception
++        {
++            cause.printStackTrace();
++            ctx.close();
++        }
++        // Amethyst end
+     }
+ }
+diff --git a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
+index 0c1ecfb8..a0b7a4ec 100644
+--- a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
++++ b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
+@@ -71,6 +71,7 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
+         if ( in.readUnsignedByte() != 0xFE || in.readUnsignedByte() != 0xFD )
+         {
+             bungee.getLogger().log( Level.WARNING, "Query - Incorrect magic!: {0}", msg.sender() );
++            ctx.close(); // Amethyst - Close on incorrect magic
+             return;
+         }
+ 
+@@ -103,7 +104,7 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
+             // Waterfall start
+             List<String> players = bungee.getPlayers().stream().map(ProxiedPlayer::getName).collect(Collectors.toList());
+ 
+-            ProxyQueryEvent event = new ProxyQueryEvent(listener, new QueryResult(listener.getMotd(), "SMP", "Waterfall_Proxy",
++            ProxyQueryEvent event = new ProxyQueryEvent(listener, new QueryResult(listener.getMotd(), "SMP", "Amethyst_Proxy", // Amethyst - Amethyst_Proxy
+                     bungee.getOnlineCount(), listener.getMaxPlayers(), listener.getHost().getPort(),
+                     listener.getHost().getHostString(), "MINECRAFT",  players, bungee.getGameVersion()));
+             QueryResult result = bungee.getPluginManager().callEvent(event).getResult();
+-- 
+2.34.1.windows.1
+
