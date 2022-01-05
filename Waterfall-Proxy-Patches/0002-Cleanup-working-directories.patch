@@ -1,4 +1,4 @@
-From 4c811cdc4cda2358bec7da5adcb6319b85c438fc Mon Sep 17 00:00:00 2001
+From aa2889d010a48344f6353acfc27f754344976ae8 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Fri, 31 Dec 2021 13:57:07 +0500
 Subject: [PATCH] Cleanup working directories
@@ -34,7 +34,7 @@ index c835bbcd..00000000
 -    - run: mvn --activate-profiles dist --no-transfer-progress package
 diff --git a/README.md b/README.md
 deleted file mode 100644
-index 3e64158e..00000000
+index 77864e52..00000000
 --- a/README.md
 +++ /dev/null
 @@ -1,26 +0,0 @@
@@ -63,7 +63,7 @@ index 3e64158e..00000000
 ---------
 -Precompiled binaries are available for end users on [Jenkins](https://www.spigotmc.org/go/bungeecord-dl).
 -
--(c) 2012-2021 SpigotMC Pty. Ltd.
+-(c) 2012-2022 SpigotMC Pty. Ltd.
 diff --git a/api/nb-configuration.xml b/api/nb-configuration.xml
 deleted file mode 100644
 index 7e465924..00000000
