@@ -1,14 +1,14 @@
-From daede9808565132dfc4185ffef72419e5e2068a5 Mon Sep 17 00:00:00 2001
+From ea8527ae6561808a7dac08056dd004d5c987b60b Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Sun, 2 Jan 2022 15:05:36 +0500
 Subject: [PATCH] Use bungee name
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-index fdbfa262..85291b58 100644
+index 0db3d76a..632ff922 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-@@ -67,7 +67,7 @@ public class BungeeCordLauncher
+@@ -63,7 +63,7 @@ public class BungeeCordLauncher
  
          BungeeCord bungee = new BungeeCord();
          ProxyServer.setInstance( bungee );

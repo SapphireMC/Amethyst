@@ -1,0 +1,459 @@
+From 78be7bcb34a75819f558bcee2fd69c91c7a86230 Mon Sep 17 00:00:00 2001
+From: DenaryDev <denaryplanet@gmail.com>
+Date: Sun, 2 Jan 2022 16:15:48 +0500
+Subject: [PATCH] Use local variables to reduce method calls
+
+
+diff --git a/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlert.java b/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlert.java
+index 55d2f7b8..423fe5bd 100644
+--- a/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlert.java
++++ b/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlert.java
+@@ -17,9 +17,10 @@ public class CommandAlert extends Command
+     @Override
+     public void execute(CommandSender sender, String[] args)
+     {
++        ProxyServer proxy = ProxyServer.getInstance();
+         if ( args.length == 0 )
+         {
+-            sender.sendMessage( ProxyServer.getInstance().getTranslation( "message_needed" ) );
++            sender.sendMessage( proxy.getTranslation( "message_needed" ) );
+         } else
+         {
+             StringBuilder builder = new StringBuilder();
+@@ -29,7 +30,7 @@ public class CommandAlert extends Command
+                 args[0] = args[0].substring( 2, args[0].length() );
+             } else
+             {
+-                builder.append( ProxyServer.getInstance().getTranslation( "alert" ) );
++                builder.append( proxy.getTranslation( "alert" ) );
+             }
+ 
+             for ( String s : args )
+@@ -40,7 +41,7 @@ public class CommandAlert extends Command
+ 
+             String message = builder.substring( 0, builder.length() - 1 );
+ 
+-            ProxyServer.getInstance().broadcast( TextComponent.fromLegacyText( message ) );
++            proxy.broadcast( TextComponent.fromLegacyText( message ) );
+         }
+     }
+ }
+diff --git a/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlertRaw.java b/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlertRaw.java
+index 7292899d..4b405b19 100644
+--- a/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlertRaw.java
++++ b/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlertRaw.java
+@@ -21,16 +21,17 @@ public class CommandAlertRaw extends Command
+     @Override
+     public void execute(CommandSender sender, String[] args)
+     {
++        ProxyServer proxy = ProxyServer.getInstance();
+         if ( args.length == 0 )
+         {
+-            sender.sendMessage( ProxyServer.getInstance().getTranslation( "message_needed" ) );
++            sender.sendMessage( proxy.getTranslation( "message_needed" ) );
+         } else
+         {
+             String message = Joiner.on( ' ' ).join( args );
+ 
+             try
+             {
+-                ProxyServer.getInstance().broadcast( ComponentSerializer.parse( message ) );
++                proxy.broadcast( ComponentSerializer.parse( message ) );
+             } catch ( Exception e )
+             {
+                 Throwable error = e;
+@@ -40,7 +41,7 @@ public class CommandAlertRaw extends Command
+                 }
+                 if ( sender instanceof ProxiedPlayer )
+                 {
+-                    sender.sendMessage( new ComponentBuilder( ProxyServer.getInstance().getTranslation( "error_occurred_player" ) )
++                    sender.sendMessage( new ComponentBuilder( proxy.getTranslation( "error_occurred_player" ) )
+                             .event( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder( error.getMessage() )
+                                     .color( ChatColor.RED )
+                                     .create() ) )
+@@ -48,7 +49,7 @@ public class CommandAlertRaw extends Command
+                     );
+                 } else
+                 {
+-                    sender.sendMessage( ProxyServer.getInstance().getTranslation( "error_occurred_console", error.getMessage() ) );
++                    sender.sendMessage( proxy.getTranslation( "error_occurred_console", error.getMessage() ) );
+                 }
+             }
+         }
+diff --git a/module/cmd-find/src/main/java/net/md_5/bungee/module/cmd/find/CommandFind.java b/module/cmd-find/src/main/java/net/md_5/bungee/module/cmd/find/CommandFind.java
+index 7ea239ac..c51caf1f 100644
+--- a/module/cmd-find/src/main/java/net/md_5/bungee/module/cmd/find/CommandFind.java
++++ b/module/cmd-find/src/main/java/net/md_5/bungee/module/cmd/find/CommandFind.java
+@@ -16,18 +16,19 @@ public class CommandFind extends PlayerCommand
+     @Override
+     public void execute(CommandSender sender, String[] args)
+     {
++        ProxyServer proxy = ProxyServer.getInstance();
+         if ( args.length != 1 )
+         {
+-            sender.sendMessage( ProxyServer.getInstance().getTranslation( "username_needed" ) );
++            sender.sendMessage( proxy.getTranslation( "username_needed" ) );
+         } else
+         {
+-            ProxiedPlayer player = ProxyServer.getInstance().getPlayer( args[0] );
++            ProxiedPlayer player = proxy.getPlayer( args[0] );
+             if ( player == null || player.getServer() == null )
+             {
+-                sender.sendMessage( ProxyServer.getInstance().getTranslation( "user_not_online" ) );
++                sender.sendMessage( proxy.getTranslation( "user_not_online" ) );
+             } else
+             {
+-                sender.sendMessage( ProxyServer.getInstance().getTranslation( "user_online_at", player.getName(), player.getServer().getInfo().getName() ) );
++                sender.sendMessage( proxy.getTranslation( "user_online_at", player.getName(), player.getServer().getInfo().getName() ) );
+             }
+         }
+     }
+diff --git a/module/cmd-list/src/main/java/net/md_5/bungee/module/cmd/list/CommandList.java b/module/cmd-list/src/main/java/net/md_5/bungee/module/cmd/list/CommandList.java
+index c2227110..331ca78e 100644
+--- a/module/cmd-list/src/main/java/net/md_5/bungee/module/cmd/list/CommandList.java
++++ b/module/cmd-list/src/main/java/net/md_5/bungee/module/cmd/list/CommandList.java
+@@ -25,7 +25,8 @@ public class CommandList extends Command
+     @Override
+     public void execute(CommandSender sender, String[] args)
+     {
+-        for ( ServerInfo server : ProxyServer.getInstance().getServers().values() )
++        ProxyServer proxy = ProxyServer.getInstance();
++        for ( ServerInfo server : proxy.getServers().values() )
+         {
+             if ( !server.canAccess( sender ) )
+             {
+@@ -39,9 +40,9 @@ public class CommandList extends Command
+             }
+             Collections.sort( players, String.CASE_INSENSITIVE_ORDER );
+ 
+-            sender.sendMessage( ProxyServer.getInstance().getTranslation( "command_list", server.getName(), server.getPlayers().size(), Util.format( players, ChatColor.RESET + ", " ) ) );
++            sender.sendMessage( proxy.getTranslation( "command_list", server.getName(), server.getPlayers().size(), Util.format( players, ChatColor.RESET + ", " ) ) );
+         }
+ 
+-        sender.sendMessage( ProxyServer.getInstance().getTranslation( "total_players", ProxyServer.getInstance().getOnlineCount() ) );
++        sender.sendMessage( proxy.getTranslation( "total_players", proxy.getOnlineCount() ) );
+     }
+ }
+diff --git a/module/cmd-send/src/main/java/net/md_5/bungee/module/cmd/send/CommandSend.java b/module/cmd-send/src/main/java/net/md_5/bungee/module/cmd/send/CommandSend.java
+index f59f9457..dbcfeb09 100644
+--- a/module/cmd-send/src/main/java/net/md_5/bungee/module/cmd/send/CommandSend.java
++++ b/module/cmd-send/src/main/java/net/md_5/bungee/module/cmd/send/CommandSend.java
+@@ -25,6 +25,7 @@ import net.md_5.bungee.api.plugin.TabExecutor;
+ 
+ public class CommandSend extends Command implements TabExecutor
+ {
++    private static ProxyServer proxy;
+ 
+     protected static class SendCallback
+     {
+@@ -80,7 +81,7 @@ public class CommandSend extends Command implements TabExecutor
+                 callback.results.get( result ).add( player.getName() );
+                 if ( result == ServerConnectRequest.Result.SUCCESS )
+                 {
+-                    player.sendMessage( ProxyServer.getInstance().getTranslation( "you_got_summoned", target.getName(), callback.sender.getName() ) );
++                    player.sendMessage( proxy.getTranslation( "you_got_summoned", target.getName(), callback.sender.getName() ) );
+                 }
+ 
+                 if ( --callback.count == 0 )
+@@ -99,27 +100,28 @@ public class CommandSend extends Command implements TabExecutor
+     @Override
+     public void execute(CommandSender sender, String[] args)
+     {
++        proxy = ProxyServer.getInstance();
+         if ( args.length != 2 )
+         {
+-            sender.sendMessage( ProxyServer.getInstance().getTranslation( "send_cmd_usage" ) );
++            sender.sendMessage( proxy.getTranslation( "send_cmd_usage" ) );
+             return;
+         }
+-        ServerInfo server = ProxyServer.getInstance().getServerInfo( args[1] );
++        ServerInfo server = proxy.getServerInfo( args[1] );
+         if ( server == null )
+         {
+-            sender.sendMessage( ProxyServer.getInstance().getTranslation( "no_server" ) );
++            sender.sendMessage( proxy.getTranslation( "no_server" ) );
+             return;
+         }
+ 
+         List<ProxiedPlayer> targets;
+         if ( args[0].equalsIgnoreCase( "all" ) )
+         {
+-            targets = new ArrayList<>( ProxyServer.getInstance().getPlayers() );
++            targets = new ArrayList<>( proxy.getPlayers() );
+         } else if ( args[0].equalsIgnoreCase( "current" ) )
+         {
+             if ( !( sender instanceof ProxiedPlayer ) )
+             {
+-                sender.sendMessage( ProxyServer.getInstance().getTranslation( "player_only" ) );
++                sender.sendMessage( proxy.getTranslation( "player_only" ) );
+                 return;
+             }
+             ProxiedPlayer player = (ProxiedPlayer) sender;
+@@ -127,16 +129,16 @@ public class CommandSend extends Command implements TabExecutor
+         } else
+         {
+             // If we use a server name, send the entire server. This takes priority over players.
+-            ServerInfo serverTarget = ProxyServer.getInstance().getServerInfo( args[0] );
++            ServerInfo serverTarget = proxy.getServerInfo( args[0] );
+             if ( serverTarget != null )
+             {
+                 targets = new ArrayList<>( serverTarget.getPlayers() );
+             } else
+             {
+-                ProxiedPlayer player = ProxyServer.getInstance().getPlayer( args[0] );
++                ProxiedPlayer player = proxy.getPlayer( args[0] );
+                 if ( player == null )
+                 {
+-                    sender.sendMessage( ProxyServer.getInstance().getTranslation( "user_not_online" ) );
++                    sender.sendMessage( proxy.getTranslation( "user_not_online" ) );
+                     return;
+                 }
+                 targets = Collections.singletonList( player );
+@@ -169,7 +171,7 @@ public class CommandSend extends Command implements TabExecutor
+         if ( args.length == 1 )
+         {
+             String search = args[0].toLowerCase( Locale.ROOT );
+-            for ( ProxiedPlayer player : ProxyServer.getInstance().getPlayers() )
++            for ( ProxiedPlayer player : proxy.getPlayers() )
+             {
+                 if ( player.getName().toLowerCase( Locale.ROOT ).startsWith( search ) )
+                 {
+@@ -187,7 +189,7 @@ public class CommandSend extends Command implements TabExecutor
+         } else
+         {
+             String search = args[1].toLowerCase( Locale.ROOT );
+-            for ( String server : ProxyServer.getInstance().getServers().keySet() )
++            for ( String server : proxy.getServers().keySet() )
+             {
+                 if ( server.toLowerCase( Locale.ROOT ).startsWith( search ) )
+                 {
+diff --git a/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java b/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
+index 698b420f..d81de590 100644
+--- a/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
++++ b/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
+@@ -32,15 +32,16 @@ public class CommandServer extends Command implements TabExecutor
+     @Override
+     public void execute(CommandSender sender, String[] args)
+     {
+-        Map<String, ServerInfo> servers = ProxyServer.getInstance().getServers();
++        ProxyServer proxy = ProxyServer.getInstance();
++        Map<String, ServerInfo> servers = proxy.getServers();
+         if ( args.length == 0 )
+         {
+             if ( sender instanceof ProxiedPlayer )
+             {
+-                sender.sendMessage( ProxyServer.getInstance().getTranslation( "current_server", ( (ProxiedPlayer) sender ).getServer().getInfo().getName() ) );
++                sender.sendMessage( proxy.getTranslation( "current_server", ( (ProxiedPlayer) sender ).getServer().getInfo().getName() ) );
+             }
+ 
+-            ComponentBuilder serverList = new ComponentBuilder().appendLegacy( ProxyServer.getInstance().getTranslation( "server_list" ) );
++            ComponentBuilder serverList = new ComponentBuilder().appendLegacy( proxy.getTranslation( "server_list" ) );
+             boolean first = true;
+             for ( ServerInfo server : servers.values() )
+             {
+@@ -50,7 +51,7 @@ public class CommandServer extends Command implements TabExecutor
+                     int count = server.getPlayers().size();
+                     serverTextComponent.setHoverEvent( new HoverEvent(
+                             HoverEvent.Action.SHOW_TEXT,
+-                            new ComponentBuilder( count + ( count == 1 ? " player" : " players" ) + "\n" ).appendLegacy( ProxyServer.getInstance().getTranslation( "click_to_connect" ) ).create() )
++                            new ComponentBuilder( count + ( count == 1 ? " player" : " players" ) + "\n" ).appendLegacy( proxy.getTranslation( "click_to_connect" ) ).create() )
+                     );
+                     serverTextComponent.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/server " + server.getName() ) );
+                     serverList.append( serverTextComponent );
+@@ -69,10 +70,10 @@ public class CommandServer extends Command implements TabExecutor
+             ServerInfo server = servers.get( args[0] );
+             if ( server == null )
+             {
+-                player.sendMessage( ProxyServer.getInstance().getTranslation( "no_server" ) );
++                player.sendMessage( proxy.getTranslation( "no_server" ) );
+             } else if ( !server.canAccess( player ) )
+             {
+-                player.sendMessage( ProxyServer.getInstance().getTranslation( "no_server_permission" ) );
++                player.sendMessage( proxy.getTranslation( "no_server_permission" ) );
+             } else
+             {
+                 player.connect( server, ServerConnectEvent.Reason.COMMAND );
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
+index a9e217a2..88486f5b 100644
+--- a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
++++ b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
+@@ -16,6 +16,7 @@ public class CommandBungee extends Command
+     @Override
+     public void execute(CommandSender sender, String[] args)
+     {
+-        sender.sendMessage( ChatColor.BLUE + "This server is running " + ProxyServer.getInstance().getName() + " version " + ProxyServer.getInstance().getVersion() + " by md_5, DenaryDev" ); // Amethyst
++        ProxyServer proxy = ProxyServer.getInstance();
++        sender.sendMessage( ChatColor.BLUE + "This server is running " + proxy.getName() + " version " + proxy.getVersion() + " by md_5, DenaryDev" ); // Amethyst
+     }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandEnd.java b/proxy/src/main/java/net/md_5/bungee/command/CommandEnd.java
+index 03feeb39..94fdc852 100644
+--- a/proxy/src/main/java/net/md_5/bungee/command/CommandEnd.java
++++ b/proxy/src/main/java/net/md_5/bungee/command/CommandEnd.java
+@@ -21,12 +21,13 @@ public class CommandEnd extends Command
+     @Override
+     public void execute(CommandSender sender, String[] args)
+     {
++        BungeeCord proxy = BungeeCord.getInstance();
+         if ( args.length == 0 )
+         {
+-            BungeeCord.getInstance().stop();
++            proxy.stop();
+         } else
+         {
+-            BungeeCord.getInstance().stop( ChatColor.translateAlternateColorCodes( '&', Joiner.on( ' ' ).join( args ) ) );
++            proxy.stop( ChatColor.translateAlternateColorCodes( '&', Joiner.on( ' ' ).join( args ) ) );
+         }
+     }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandIP.java b/proxy/src/main/java/net/md_5/bungee/command/CommandIP.java
+index 1fd5a546..9b405a0b 100644
+--- a/proxy/src/main/java/net/md_5/bungee/command/CommandIP.java
++++ b/proxy/src/main/java/net/md_5/bungee/command/CommandIP.java
+@@ -15,18 +15,19 @@ public class CommandIP extends PlayerCommand
+     @Override
+     public void execute(CommandSender sender, String[] args)
+     {
++        ProxyServer proxy = ProxyServer.getInstance();
+         if ( args.length < 1 )
+         {
+-            sender.sendMessage( ProxyServer.getInstance().getTranslation( "username_needed" ) );
++            sender.sendMessage( proxy.getTranslation( "username_needed" ) );
+             return;
+         }
+-        ProxiedPlayer user = ProxyServer.getInstance().getPlayer( args[0] );
++        ProxiedPlayer user = proxy.getPlayer( args[0] );
+         if ( user == null )
+         {
+-            sender.sendMessage( ProxyServer.getInstance().getTranslation( "user_not_online" ) );
++            sender.sendMessage( proxy.getTranslation( "user_not_online" ) );
+         } else
+         {
+-            sender.sendMessage( ProxyServer.getInstance().getTranslation( "command_ip", args[0], user.getSocketAddress() ) );
++            sender.sendMessage( proxy.getTranslation( "command_ip", args[0], user.getSocketAddress() ) );
+         }
+     }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandPerms.java b/proxy/src/main/java/net/md_5/bungee/command/CommandPerms.java
+index 18422669..d52407c1 100644
+--- a/proxy/src/main/java/net/md_5/bungee/command/CommandPerms.java
++++ b/proxy/src/main/java/net/md_5/bungee/command/CommandPerms.java
+@@ -18,16 +18,17 @@ public class CommandPerms extends Command
+     @Override
+     public void execute(CommandSender sender, String[] args)
+     {
++        ProxyServer proxy = ProxyServer.getInstance();
+         Set<String> permissions = new HashSet<>();
+         for ( String group : sender.getGroups() )
+         {
+-            permissions.addAll( ProxyServer.getInstance().getConfigurationAdapter().getPermissions( group ) );
++            permissions.addAll( proxy.getConfigurationAdapter().getPermissions( group ) );
+         }
+-        sender.sendMessage( ProxyServer.getInstance().getTranslation( "command_perms_groups", Util.csv( sender.getGroups() ) ) );
++        sender.sendMessage( proxy.getTranslation( "command_perms_groups", Util.csv( sender.getGroups() ) ) );
+ 
+         for ( String permission : permissions )
+         {
+-            sender.sendMessage( ProxyServer.getInstance().getTranslation( "command_perms_permission", permission ) );
++            sender.sendMessage( proxy.getTranslation( "command_perms_permission", permission ) );
+         }
+     }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
+index 4eba24fa..d97c640f 100644
+--- a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
++++ b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
+@@ -17,11 +17,12 @@ public class CommandReload extends Command
+     @Override
+     public void execute(CommandSender sender, String[] args)
+     {
+-        BungeeCord.getInstance().config.load();
+-        BungeeCord.getInstance().reloadMessages();
+-        BungeeCord.getInstance().stopListeners();
+-        BungeeCord.getInstance().startListeners();
+-        BungeeCord.getInstance().getPluginManager().callEvent( new ProxyReloadEvent( sender ) );
++        BungeeCord proxy = BungeeCord.getInstance();
++        proxy.config.load();
++        proxy.reloadMessages();
++        proxy.stopListeners();
++        proxy.startListeners();
++        proxy.getPluginManager().callEvent( new ProxyReloadEvent( sender ) );
+ 
+         sender.sendMessage( ChatColor.BOLD.toString() + ChatColor.RED.toString() + "Amethyst has been reloaded."
+                 + " This is NOT advisable and you will not be supported with any issues that arise! Please restart Amethyst ASAP." );
+diff --git a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
+index c3b69cef..2832cf62 100644
+--- a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
++++ b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
+@@ -5,6 +5,7 @@ import io.netty.channel.Channel;
+ import io.netty.channel.ChannelFutureListener;
+ import io.netty.channel.ChannelHandler;
+ import io.netty.channel.ChannelHandlerContext;
++import io.netty.channel.ChannelPipeline;
+ import java.net.SocketAddress;
+ import java.util.concurrent.TimeUnit;
+ import lombok.Getter;
+@@ -37,14 +38,28 @@ public class ChannelWrapper
+ 
+     public void setProtocol(Protocol protocol)
+     {
++        // Amethyst start - Use local variable pipeline to reduce redundancy
++        /*
+         ch.pipeline().get( MinecraftDecoder.class ).setProtocol( protocol );
+         ch.pipeline().get( MinecraftEncoder.class ).setProtocol( protocol );
++        */
++        final ChannelPipeline pipeline = ch.pipeline();
++        pipeline.get( MinecraftDecoder.class ).setProtocol( protocol );
++        pipeline.get( MinecraftEncoder.class ).setProtocol( protocol );
++        // Amethyst end
+     }
+ 
+     public void setVersion(int protocol)
+     {
++        // Amethyst start - Use local variable pipeline to reduce redundancy
++        /*
+         ch.pipeline().get( MinecraftDecoder.class ).setProtocolVersion( protocol );
+         ch.pipeline().get( MinecraftEncoder.class ).setProtocolVersion( protocol );
++        */
++        final ChannelPipeline pipeline = ch.pipeline();
++        pipeline.get( MinecraftDecoder.class ).setProtocolVersion( protocol );
++        pipeline.get( MinecraftEncoder.class ).setProtocolVersion( protocol );
++        // Amethyst end
+     }
+ 
+     public void write(Object packet)
+@@ -133,25 +148,26 @@ public class ChannelWrapper
+ 
+     public void setCompressionThreshold(int compressionThreshold)
+     {
+-        if ( ch.pipeline().get( PacketCompressor.class ) == null && compressionThreshold != -1 )
++        final ChannelPipeline pipeline = ch.pipeline(); // Amethyst - use local variable to reduce redundancy
++        if ( pipeline.get( PacketCompressor.class ) == null && compressionThreshold != -1 ) // Amethyst
+         {
+             addBefore( PipelineUtils.PACKET_ENCODER, "compress", new PacketCompressor() );
+         }
+         if ( compressionThreshold != -1 )
+         {
+-            ch.pipeline().get( PacketCompressor.class ).setThreshold( compressionThreshold );
++            pipeline.get( PacketCompressor.class ).setThreshold( compressionThreshold ); // Amethyst
+         } else
+         {
+-            ch.pipeline().remove( "compress" );
++            pipeline.remove( "compress" ); // Amethyst
+         }
+ 
+-        if ( ch.pipeline().get( PacketDecompressor.class ) == null && compressionThreshold != -1 )
++        if ( pipeline.get( PacketDecompressor.class ) == null && compressionThreshold != -1 ) // Amethyst
+         {
+             addBefore( PipelineUtils.PACKET_DECODER, "decompress", new PacketDecompressor(compressionThreshold) );
+         }
+         if ( compressionThreshold == -1 )
+         {
+-            ch.pipeline().remove( "decompress" );
++            pipeline.remove( "decompress" ); // Amethyst
+         }
+     }
+ }
+-- 
+2.34.1.windows.1
+

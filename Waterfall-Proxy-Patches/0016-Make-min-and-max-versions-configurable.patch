@@ -1,14 +1,14 @@
-From 466af39f4231f72b880e02945431735e0fadedc4 Mon Sep 17 00:00:00 2001
+From ed9e4e89c0294ad1ad8967e74d0f1308b13ca762 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Wed, 5 Jan 2022 01:24:39 +0500
 Subject: [PATCH] Make min and max versions configurable
 
 
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-index 4bf39352..dab49e2e 100644
+index 51d2a3e4..70b0f0e1 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-@@ -69,6 +69,17 @@ public class AmethystConfig extends AbstractYamlConfig
+@@ -61,6 +61,17 @@ public class AmethystConfig extends AbstractYamlConfig {
       */
      public boolean reconnectEnabled = false;
  
@@ -23,10 +23,10 @@ index 4bf39352..dab49e2e 100644
 +     */
 +    public String maxVersion = "1.18.1";
 +
-     public AmethystConfig(ConfigurationProvider provider)
-     {
-         try
-@@ -97,5 +108,8 @@ public class AmethystConfig extends AbstractYamlConfig
+     public AmethystConfig(ConfigurationProvider provider) {
+         super(provider, "amethyst.yml");
+         init();
+@@ -79,5 +90,8 @@ public class AmethystConfig extends AbstractYamlConfig {
          sendEnabled = getBoolean( "modules.send", sendEnabled );
          serverEnabled = getBoolean( "modules.server", serverEnabled );
          reconnectEnabled = getBoolean( "modules.reconnect", reconnectEnabled );
@@ -35,8 +35,31 @@ index 4bf39352..dab49e2e 100644
 +        maxVersion = getString( "versions.max", maxVersion );
      }
  }
+diff --git a/flame/src/main/resources/amethyst.yml b/flame/src/main/resources/amethyst.yml
+index e8da947f..90126376 100644
+--- a/flame/src/main/resources/amethyst.yml
++++ b/flame/src/main/resources/amethyst.yml
+@@ -42,3 +42,18 @@ modules:
+   # Provides reconnect location functionality in locations.yml
+   # Default: false
+   reconnect: false
++
++# Versions configuration
++# In this section, you can configure the minimum and maximum supported versions
++versions:
++  # Minimum supported version
++  # Players with a version below than this will not be able to log into the server
++  # Examples: 1.9, 1.12, 1.15.2
++  # Default: 1.8
++  min: 1.8
++
++  # Maximum supported version
++  # Players with a version above than this will not be able to log into the server
++  # Examples: 1.9, 1.12, 1.15.2
++  # Default: 1.18.1
++  max: 1.18.1
 diff --git a/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java b/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java
-index 7793437a..554b2319 100644
+index 7793437a..ed13979a 100644
 --- a/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java
 +++ b/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java
 @@ -20,6 +20,7 @@ package io.sapphiremc.amethyst.api.protocol;
@@ -90,9 +113,9 @@ index 7793437a..554b2319 100644
 +
 +        MINIMUM_VERSION = getProtocolVersion(Amethyst.getInstance().getConfig().minVersion);
 +        MAXIMUM_VERSION = getProtocolVersion(Amethyst.getInstance().getConfig().maxVersion);
-+        SUPPORTED_VERSION_STRING = String
-+                .format("%s-%s", MINIMUM_VERSION.getVersionIntroducedIn(),
-+                        MAXIMUM_VERSION.getMostRecentSupportedVersion());
++        SUPPORTED_VERSION_STRING = MINIMUM_VERSION.getVersionsSupportedBy().equals(MAXIMUM_VERSION.getVersionsSupportedBy()) ?
++                MINIMUM_VERSION.getVersionIntroducedIn() :
++                String.format("%s-%s", MINIMUM_VERSION.getVersionIntroducedIn(), MAXIMUM_VERSION.getMostRecentSupportedVersion());
 +    }
 +
      /**
@@ -153,47 +176,57 @@ index 7d3220f9..5e4ff7f4 100644
      }
  
      @Override
-diff --git a/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandReload.java b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandReload.java
-index d6ebe366..fb984ebb 100644
---- a/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandReload.java
-+++ b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandReload.java
-@@ -1,5 +1,6 @@
- package io.sapphiremc.amethyst.module;
- 
-+import io.sapphiremc.amethyst.api.protocol.ProtocolVersion;
- import net.md_5.bungee.BungeeCord;
- import net.md_5.bungee.api.ChatColor;
- import net.md_5.bungee.api.CommandSender;
-@@ -23,6 +24,8 @@ public class CommandReload extends Command
-         BungeeCord.getInstance().startListeners();
-         BungeeCord.getInstance().getPluginManager().callEvent( new ProxyReloadEvent( sender ) );
- 
-+        ProtocolVersion.register(); // Amethyst
-+
-         sender.sendMessage( ChatColor.BOLD.toString() + ChatColor.RED.toString() + "Amethyst has been reloaded."
-                 + " This is NOT advisable and you will not be supported with any issues that arise! Please restart Amethyst ASAP." );
-     }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 297f9e13..de8ca151 100644
+index 654ac87f..1f73d365 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -220,7 +220,7 @@ public class BungeeCord extends ProxyServer
-         logger = io.github.waterfallmc.waterfall.log4j.WaterfallLogger.create();
-         // Waterfall end
+@@ -291,6 +291,7 @@ public class BungeeCord extends ProxyServer
  
--        logger.info("Starting " + getName() + " version " + getVersion() + " (" + ProtocolVersion.SUPPORTED_VERSION_STRING + ")"); // Amethyst - add logging on startup
-+        logger.info("Starting " + getName() + " version " + getVersion() + " (1.8-1.18.1)"); // Amethyst - add logging on startup
-         serverStartTime = System.nanoTime(); // Amethyst - add logging on startup
- 
-         pluginManager = new PluginManager( this );
-@@ -283,6 +283,7 @@ public class BungeeCord extends ProxyServer
- 
-         Amethyst.getInstance().load(); // Amethyst - load our configs
+         Amethyst.getInstance().load(logger); // Amethyst - load our configs
          AmethystModulesManager.registerModules(this); // Amethyst - register modules
 +        ProtocolVersion.register(); // Amethyst - configurable min and max versions
  
          if ( config.isForgeSupport() )
          {
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
+index 431f268a..c78a37a1 100644
+--- a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
++++ b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
+@@ -2,9 +2,12 @@ package net.md_5.bungee.command;
+ 
+ import io.sapphiremc.amethyst.Amethyst;
+ import io.sapphiremc.amethyst.AmethystModulesManager;
++import io.sapphiremc.amethyst.api.protocol.ProtocolVersion;
+ import net.md_5.bungee.BungeeCord;
+ import net.md_5.bungee.api.ChatColor;
+ import net.md_5.bungee.api.CommandSender;
++import net.md_5.bungee.api.connection.PendingConnection;
++import net.md_5.bungee.api.connection.ProxiedPlayer;
+ import net.md_5.bungee.api.event.ProxyReloadEvent;
+ import net.md_5.bungee.api.plugin.Command;
+ 
+@@ -28,6 +31,21 @@ public class CommandReload extends Command
+ 
+         Amethyst.getInstance().load( BungeeCord.getInstance().getLogger() ); // Amethyst - load our configs
+         AmethystModulesManager.registerModules( BungeeCord.getInstance() ); // Amethyst - register modules
++        ProtocolVersion.register(); // Amethyst - register min and max supported versions
++
++        // Amethyst start - check players for outdated
++        for (ProxiedPlayer player : BungeeCord.getInstance().getPlayers() )
++        {
++            PendingConnection connection = player.getPendingConnection();
++            if ( connection.getVersion() > BungeeCord.getInstance().getProtocolVersion() )
++            {
++                connection.disconnect( BungeeCord.getInstance().getTranslation( "outdated_server", BungeeCord.getInstance().getGameVersion() ) );
++            } else
++            {
++                connection.disconnect( BungeeCord.getInstance().getTranslation( "outdated_client", BungeeCord.getInstance().getGameVersion() ) );
++            }
++        }
++        // Amethyst end
+ 
+         sender.sendMessage( ChatColor.BOLD.toString() + ChatColor.RED.toString() + "Amethyst has been reloaded."
+                 + " This is NOT advisable and you will not be supported with any issues that arise! Please restart Amethyst ASAP." );
 -- 
 2.34.1.windows.1
 

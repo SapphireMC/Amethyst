@@ -1,11 +1,11 @@
-From 35b3e2ff2810cd8af3f87cfe9595edfbe5035668 Mon Sep 17 00:00:00 2001
+From 987390edbeba74d7df7943df116e52143890730e Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 3 Jan 2022 01:19:36 +0500
 Subject: [PATCH] Amethyst general patch
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-index a4011335..66e87dfb 100644
+index 8d4b3ee5..0fa0c0dd 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 @@ -1,6 +1,7 @@
@@ -16,11 +16,11 @@ index a4011335..66e87dfb 100644
  import java.io.File;
  import java.net.InetSocketAddress;
  import java.net.SocketAddress;
-@@ -327,4 +328,14 @@ public abstract class ProxyServer
+@@ -334,4 +335,14 @@ public abstract class ProxyServer
       */
      public abstract Title createTitle();
  
-+    // Amethyst start - add method to get Amethyst's instance
++    // Amethyst start
 +    /**
 +     * Returns an instance of an amethyst, with which you can get
 +     * its configuration.
@@ -31,12 +31,59 @@ index a4011335..66e87dfb 100644
 +    public abstract Amethyst getAmethyst();
 +    // Amethyst end
  }
+diff --git a/bootstrap/src/main/java/net/md_5/bungee/Bootstrap.java b/bootstrap/src/main/java/net/md_5/bungee/Bootstrap.java
+index 73006e0c..6e3ac9ac 100644
+--- a/bootstrap/src/main/java/net/md_5/bungee/Bootstrap.java
++++ b/bootstrap/src/main/java/net/md_5/bungee/Bootstrap.java
+@@ -1,16 +1,42 @@
+ package net.md_5.bungee;
+ 
++import java.io.File;
++
+ public class Bootstrap
+ {
+ 
+     public static void main(String[] args) throws Exception
+     {
++        // Amethyst start - improve checks
++        /*
+         if ( Float.parseFloat( System.getProperty( "java.class.version" ) ) < 52.0 )
+         {
+             System.err.println( "*** ERROR *** Amethyst requires Java 8 or above to function! Please download and install it!" );
+             System.out.println( "You can check your Java version with the command: java -version" );
+             return;
+         }
++        */
++        float javaVersion = Float.parseFloat( System.getProperty( "java.class.version" ) );
++        if ( javaVersion < 52.0 )
++        {
++            System.err.println( "Unsupported Java detected (" + javaVersion + "). This version of Amethyst requires at least Java 8." );
++            System.err.println( " Check your Java version with the command 'java -version'." );
++            return;
++        }
++        if ( javaVersion > 61.0 )
++        {
++            System.err.println( "Unsupported Java detected (" + javaVersion + "). Only up to Java 17 is supported." );
++            if ( !Boolean.getBoolean( "Amethyst.IgnoreJavaVersion" ) ) return; // Amethyst
++        }
++
++        // Do you love Java using + and ! as string based identifiers? I sure do!
++        String path = new File( "." ).getAbsolutePath();
++        if ( path.contains( "!" ) || path.contains( "+" ) )
++        {
++            System.err.println( "Cannot run Amethyst in a directory with ! or + in the pathname. Please rename the affected folders and try again." );
++            return;
++        }
++        // Amethyst end
+ 
+         BungeeCordLauncher.main( args );
+     }
 diff --git a/flame/pom.xml b/flame/pom.xml
 new file mode 100644
-index 00000000..e689d482
+index 00000000..ff4d2d85
 --- /dev/null
 +++ b/flame/pom.xml
-@@ -0,0 +1,35 @@
+@@ -0,0 +1,44 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<project xmlns="http://maven.apache.org/POM/4.0.0"
 +         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -71,14 +118,23 @@ index 00000000..e689d482
 +            <scope>compile</scope>
 +        </dependency>
 +    </dependencies>
++
++    <build>
++        <resources>
++            <resource>
++                <directory>src/main/resources</directory>
++                <filtering>true</filtering>
++            </resource>
++        </resources>
++    </build>
 +</project>
 \ No newline at end of file
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/Amethyst.java b/flame/src/main/java/io/sapphiremc/amethyst/Amethyst.java
 new file mode 100644
-index 00000000..373778e7
+index 00000000..147c1311
 --- /dev/null
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/Amethyst.java
-@@ -0,0 +1,69 @@
+@@ -0,0 +1,72 @@
 +/*
 + * Copyright (c) 2022 DenaryDev
 + *
@@ -99,7 +155,6 @@ index 00000000..373778e7
 +package io.sapphiremc.amethyst;
 +
 +import io.sapphiremc.amethyst.conf.AmethystConfig;
-+import java.util.Collection;
 +import java.util.logging.Logger;
 +import lombok.Getter;
 +import net.md_5.bungee.config.ConfigurationProvider;
@@ -113,16 +168,15 @@ index 00000000..373778e7
 + *
 + * @author DenaryDev
 + */
-+public class Amethyst
-+{
++public class Amethyst {
++
 +    private static Amethyst instance;
 +    /**
 +     * Instance of this class.
 +     * @see Amethyst
 +     */
-+    public static Amethyst getInstance()
-+    {
-+        if ( instance == null ) instance = new Amethyst();
++    public static Amethyst getInstance() {
++        if (instance == null) instance = new Amethyst();
 +        return instance;
 +    }
 +
@@ -132,6 +186,11 @@ index 00000000..373778e7
 +     */
 +    @Getter
 +    private final ConfigurationProvider provider = ConfigurationProvider.getProvider(YamlConfiguration.class);
++    /**
++     * Proxy logger instance
++     */
++    @Getter
++    private Logger logger;
 +    /**
 +     * Amethyst main config.
 +     * @see AmethystConfig
@@ -143,17 +202,17 @@ index 00000000..373778e7
 +     * This method is used by the proxy to initialize this
 +     * Doesn't use this if you don't know what you are doing
 +     */
-+    public void load()
-+    {
++    public void load(Logger logger) {
++        this.logger = logger;
 +        this.config = new AmethystConfig(provider);
 +    }
 +}
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AbstractYamlConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AbstractYamlConfig.java
 new file mode 100644
-index 00000000..1852c5c4
+index 00000000..541019c0
 --- /dev/null
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AbstractYamlConfig.java
-@@ -0,0 +1,139 @@
+@@ -0,0 +1,278 @@
 +/*
 + * Copyright (c) 2022 DenaryDev
 + *
@@ -173,9 +232,19 @@ index 00000000..1852c5c4
 + */
 +package io.sapphiremc.amethyst.conf;
 +
++import io.sapphiremc.amethyst.Amethyst;
++import java.io.File;
++import java.io.FileOutputStream;
++import java.io.IOException;
++import java.io.InputStream;
++import java.io.OutputStream;
++import java.net.URL;
++import java.net.URLConnection;
 +import java.util.List;
++import java.util.logging.Level;
 +import lombok.Getter;
 +import net.md_5.bungee.config.Configuration;
++import net.md_5.bungee.config.ConfigurationProvider;
 +
 +/**
 + * Abstract class for our configurations.
@@ -184,8 +253,32 @@ index 00000000..1852c5c4
 + *
 + * @author DenaryDev
 + */
-+public abstract class AbstractYamlConfig
-+{
++public abstract class AbstractYamlConfig {
++
++    /**
++     * The folder that the proxy data's files are located in.
++     */
++    @Getter
++    protected final File dataFolder = new File(new File("").getAbsolutePath());
++
++    /**
++     * The {@link ConfigurationProvider} provider for this configuration.
++     */
++    @Getter
++    protected final ConfigurationProvider provider;
++
++    /**
++     * File name of this configuration.
++     */
++    @Getter
++    protected final String filename;
++
++    /**
++     * File of this configuration.
++     */
++    @Getter
++    protected final File file;
++
 +    /**
 +     * Yaml configuration instance of this config.
 +     */
@@ -193,12 +286,105 @@ index 00000000..1852c5c4
 +    protected Configuration config;
 +
 +    /**
++     * Constructor for setting provider value.
++     *
++     * @param provider provider for this configuration
++     */
++    protected AbstractYamlConfig(ConfigurationProvider provider, String filename) {
++        this.provider = provider;
++        this.filename = filename;
++        this.file = new File(getDataFolder(), filename);
++    }
++
++    /**
++     * This method using for loading configuration from its file.
++     */
++    protected void init() {
++        if (!file.exists()) saveToFile(filename, false);
++
++        try {
++            if (!file.exists()) throw new NullPointerException("Failed to load configuration from file " + file.toPath() + " because 'file' is null!");
++
++            this.config = provider.load(file);
++        } catch (IOException ex) {
++            throw new RuntimeException("Failed to load configuration from file " + file.toPath(), ex);
++        }
++    }
++
++    /**
++     * Saving resource from proxy jar file.
++     *
++     * @param resourcePath full path to resource in jar
++     * @param replace Whether to overwrite the resource if it already exists
++     */
++    protected void saveToFile(String resourcePath, boolean replace) {
++        if (resourcePath == null || resourcePath.isEmpty()) {
++            throw new IllegalArgumentException("ResourcePath cannot be null or empty");
++        }
++
++        resourcePath = resourcePath.replace("\\", "/");
++        InputStream in = getFromJar(resourcePath);
++        if (in == null) {
++            throw new IllegalArgumentException("The embedded resource '" + resourcePath + "' cannot be found in Amethyst.jar");
++        }
++
++        File outFile = new File(dataFolder, resourcePath);
++        int lastIndex = resourcePath.lastIndexOf('/');
++        File outDir = new File(dataFolder, resourcePath.substring(0, Math.max(lastIndex, 0)));
++
++        if (!outDir.exists()) {
++            outDir.mkdirs();
++        }
++
++        try {
++            if (!outFile.exists() || replace) {
++                OutputStream out = new FileOutputStream(outFile);
++                byte[] buf = new byte[1024];
++                int len;
++                while ((len = in.read(buf)) > 0) {
++                    out.write(buf, 0, len);
++                }
++                out.close();
++                in.close();
++            } else {
++                Amethyst.getInstance().getLogger().log(Level.WARNING, "Could not save " + outFile.getName() + " to " + outFile + " because " + outFile.getName() + " already exists.");
++            }
++        } catch (IOException ex) {
++            Amethyst.getInstance().getLogger().log(Level.SEVERE, "Could not save " + outFile.getName() + " to " + outFile, ex);
++        }
++    }
++
++    /**
++     * This method is used for getting file {@link InputStream} from jar.
++     *
++     * @param filename file name
++     * @return file {@link InputStream}
++     */
++    protected InputStream getFromJar(String filename) {
++        if (filename == null) {
++            throw new IllegalArgumentException("Filename cannot be null");
++        }
++
++        try {
++            URL url = getClass().getClassLoader().getResource(filename);
++            if (url == null) return null;
++
++            URLConnection connection = url.openConnection();
++            connection.setUseCaches(false);
++            return connection.getInputStream();
++        } catch (IOException ex) {
++            return null;
++        }
++    }
++
++    /**
 +     * This method is used to load the content of this config.
 +     * Doesn't use this if you don't know what you are doing.
++     *
++     * @throws UnsupportedOperationException if not implemented.
 +     */
-+    protected void loadContent()
-+    {
-+        throw new UnsupportedOperationException( "Not supported yet!" );
++    protected void loadContent() {
++        throw new UnsupportedOperationException("Not supported yet");
 +    }
 +
 +    /**
@@ -209,9 +395,8 @@ index 00000000..1852c5c4
 +     * @param def default value
 +     * @return value from config or default value
 +     */
-+    protected boolean getBoolean(String key, boolean def)
-+    {
-+        return (boolean) get( key, def );
++    protected boolean getBoolean(String key, boolean def) {
++        return (boolean) get(key, def);
 +    }
 +
 +    /**
@@ -222,9 +407,8 @@ index 00000000..1852c5c4
 +     * @param def default value
 +     * @return value from config or default value
 +     */
-+    protected int getInt(String key, int def)
-+    {
-+        return (int) get( key, def );
++    protected int getInt(String key, int def) {
++        return (int) get(key, def);
 +    }
 +
 +    /**
@@ -235,9 +419,8 @@ index 00000000..1852c5c4
 +     * @param def default value
 +     * @return value from config or default value
 +     */
-+    protected double getDouble(String key, double def)
-+    {
-+        return (double) get( key, def );
++    protected double getDouble(String key, double def) {
++        return (double) get(key, def);
 +    }
 +
 +    /**
@@ -248,8 +431,7 @@ index 00000000..1852c5c4
 +     * @param def default value
 +     * @return value from config or default value
 +     */
-+    protected String getString(String key, String def)
-+    {
++    protected String getString(String key, String def) {
 +        return (String) get( key, def );
 +    }
 +
@@ -261,15 +443,12 @@ index 00000000..1852c5c4
 +     * @param def default value
 +     * @return value from config or default value
 +     */
-+    protected List<String> getStringList(String key, List<String> def)
-+    {
-+        if ( !config.contains( key ) )
-+        {
-+            config.set( key, def );
++    protected List<String> getStringList(String key, List<String> def) {
++        if (!config.contains(key)) {
++            config.set(key, def);
 +            return def;
-+        } else
-+        {
-+            return config.getStringList( key );
++        } else {
++            return config.getStringList(key);
 +        }
 +    }
 +
@@ -281,24 +460,43 @@ index 00000000..1852c5c4
 +     * @param def default value
 +     * @return value from config or default value
 +     */
-+    protected Object get(String key, Object def)
-+    {
-+        if ( !config.contains( key ) )
-+        {
-+            config.set( key, def );
++    protected Object get(String key, Object def) {
++        if (!config.contains(key)) {
++            config.set(key, def);
 +            return def;
-+        } else
-+        {
-+            return config.get( key, def );
++        } else {
++            return config.get(key, def);
++        }
++    }
++
++    /**
++     * Writes the specified value to the config
++     * at the specified key.
++     *
++     * @param key key
++     * @param value value
++     */
++    protected void set(String key, Object value) {
++        config.set(key, value);
++    }
++
++    /**
++     * Saving all cached changes to this config.
++     */
++    protected void save() {
++        try {
++            provider.save(config, file);
++        } catch (IOException ex) {
++            throw new RuntimeException("Failed to save config, check it for syntax errors", ex);
 +        }
 +    }
 +}
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 new file mode 100644
-index 00000000..7f753317
+index 00000000..e7567771
 --- /dev/null
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-@@ -0,0 +1,50 @@
+@@ -0,0 +1,36 @@
 +/*
 + * Copyright (c) 2022 DenaryDev
 + *
@@ -318,9 +516,6 @@ index 00000000..7f753317
 + */
 +package io.sapphiremc.amethyst.conf;
 +
-+import java.io.File;
-+import java.io.IOException;
-+import net.md_5.bungee.config.Configuration;
 +import net.md_5.bungee.config.ConfigurationProvider;
 +
 +/**
@@ -331,26 +526,23 @@ index 00000000..7f753317
 + *
 + * @author DenaryDev
 + */
-+public class AmethystConfig extends AbstractYamlConfig
-+{
-+    public AmethystConfig(ConfigurationProvider provider)
-+    {
-+        try
-+        {
-+            File file = new File( "./amethyst.yml" );
-+            boolean exists = file.exists();
-+            config = !exists ? new Configuration() : provider.load( file );
++public class AmethystConfig extends AbstractYamlConfig {
 +
-+            loadContent();
-+            if ( !exists ) provider.save( config, file );
-+        } catch ( IOException ex )
-+        {
-+            ex.printStackTrace();
-+        }
++    public AmethystConfig(ConfigurationProvider provider) {
++        super(provider, "amethyst.yml");
++        init();
 +    }
 +}
+diff --git a/flame/src/main/resources/amethyst.yml b/flame/src/main/resources/amethyst.yml
+new file mode 100644
+index 00000000..72394640
+--- /dev/null
++++ b/flame/src/main/resources/amethyst.yml
+@@ -0,0 +1,2 @@
++# Amethyst configuration file
++# Generated on ${project.version}
 diff --git a/pom.xml b/pom.xml
-index aff287f7..653c2415 100644
+index 9e586a2f..cfbb8500 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -51,6 +51,8 @@
@@ -424,13 +616,13 @@ index 0768e3b7..eef72175 100644
              return after >= other;
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 7ee4020e..23079da6 100644
+index aa691e2f..64e771f8 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -21,6 +21,7 @@ import io.netty.channel.ChannelFutureListener;
- import io.netty.channel.ChannelOption;
+@@ -22,6 +22,7 @@ import io.netty.channel.ChannelOption;
  import io.netty.channel.EventLoopGroup;
  import io.netty.util.ResourceLeakDetector;
+ import io.sapphiremc.amethyst.BuildData;
 +import io.sapphiremc.amethyst.Amethyst;
  import java.io.File;
  import java.io.FileReader;
@@ -443,26 +635,44 @@ index 7ee4020e..23079da6 100644
  
      {
          // TODO: Proper fallback when we interface the manager
+@@ -188,7 +190,7 @@ public class BungeeCord extends ProxyServer
+     public BungeeCord() throws IOException
+     {
+         // Java uses ! to indicate a resource inside of a jar/zip/other container. Running Bungee from within a directory that has a ! will cause this to muck up.
+-        Preconditions.checkState( new File( "." ).getAbsolutePath().indexOf( '!' ) == -1, "Cannot use Amethyst in directory with ! in path." );
++        // Preconditions.checkState( new File( "." ).getAbsolutePath().indexOf( '!' ) == -1, "Cannot use Amethyst in directory with ! in path." ); // Amethyst - move this to bootstrap
+ 
+         try
+         {
 @@ -224,6 +226,9 @@ public class BungeeCord extends ProxyServer
          logger = io.github.waterfallmc.waterfall.log4j.WaterfallLogger.create();
          // Waterfall end
  
-+        logger.info("Starting " + getName() + " version " + getVersion() + " (MC:1.8 - 1.18.1)"); // Amethyst - add logging on startup
++        logger.info("Booting up proxy server for minecraft 1.8 - 1.18.1"); // Amethyst - add logging on startup
 +        serverStartTime = System.nanoTime(); // Amethyst - add logging on startup
 +
          pluginManager = new PluginManager( this );
          getPluginManager().registerCommand( null, new CommandReload() );
          getPluginManager().registerCommand( null, new CommandEnd() );
-@@ -278,6 +283,8 @@ public class BungeeCord extends ProxyServer
+@@ -248,6 +253,8 @@ public class BungeeCord extends ProxyServer
+                 logger.info( "Using standard Java compressor." );
+             }
+         }
++
++        logger.info("The proxy is running using " + getName() + " version " + getGitInfo() + " (MC: 1.8-1.18.1) (Implementing API version " + getVersion() + ")"); // Amethyst - add logging on startup
+     }
+ 
+     /**
+@@ -278,6 +285,8 @@ public class BungeeCord extends ProxyServer
          pluginManager.loadPlugins();
          config.load();
  
-+        Amethyst.getInstance().load(); // Amethyst - load our configs
++        Amethyst.getInstance().load(logger); // Amethyst - load our configs
 +
          if ( config.isForgeSupport() )
          {
              registerChannel( ForgeConstants.FML_TAG );
-@@ -316,6 +323,9 @@ public class BungeeCord extends ProxyServer
+@@ -316,6 +325,9 @@ public class BungeeCord extends ProxyServer
                  independentThreadStop( getTranslation( "restart" ), false );
              }
          } );
@@ -472,17 +682,43 @@ index 7ee4020e..23079da6 100644
      }
  
      public void startListeners()
-@@ -813,4 +823,10 @@ public class BungeeCord extends ProxyServer
+@@ -819,4 +831,12 @@ public class BungeeCord extends ProxyServer
      {
          return new BungeeTitle();
      }
 +
++    // Amethyst start
 +    @Override
 +    public Amethyst getAmethyst()
 +    {
 +        return Amethyst.getInstance();
 +    }
++    // Amethyst end
  }
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
+index 632ff922..4373b97c 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
+@@ -61,6 +61,19 @@ public class BungeeCordLauncher
+             }
+         }
+ 
++        // Amethyst start - Log Java and OS versioning to help with debugging plugin issues
++        java.lang.management.RuntimeMXBean runtimeMX = java.lang.management.ManagementFactory.getRuntimeMXBean();
++        java.lang.management.OperatingSystemMXBean osMX = java.lang.management.ManagementFactory.getOperatingSystemMXBean();
++        if (runtimeMX != null && osMX != null) {
++            String javaInfo = "Java " + runtimeMX.getSpecVersion() + " (" + runtimeMX.getVmName() + " " + runtimeMX.getVmVersion() + ")";
++            String osInfo = "Host: " + osMX.getName() + " " + osMX.getVersion() + " (" + osMX.getArch() + ")";
++
++            System.out.println("System Info: " + javaInfo + " " + osInfo);
++        } else {
++            System.out.println("Unable to read system info");
++        }
++        // Amethyst end
++
+         BungeeCord bungee = new BungeeCord();
+         ProxyServer.setInstance( bungee );
+         bungee.getLogger().info( "Enabled " + bungee.getName() + " version " + bungee.getVersion() ); // Amethyst - use bungee name
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 index 9e74d158..e1c7879d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
@@ -520,6 +756,26 @@ index 4a768f36..59f47685 100644
 +            b.localAddress( listenerInfo.getHost().getHostString(), 0 ); // Amethyst
          }
          b.connect().addListener( listener );
+     }
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
+index d97c640f..fe643a8e 100644
+--- a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
++++ b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
+@@ -1,5 +1,6 @@
+ package net.md_5.bungee.command;
+ 
++import io.sapphiremc.amethyst.Amethyst;
+ import net.md_5.bungee.BungeeCord;
+ import net.md_5.bungee.api.ChatColor;
+ import net.md_5.bungee.api.CommandSender;
+@@ -24,6 +25,8 @@ public class CommandReload extends Command
+         proxy.startListeners();
+         proxy.getPluginManager().callEvent( new ProxyReloadEvent( sender ) );
+ 
++        Amethyst.getInstance().load( BungeeCord.getInstance().getLogger() ); // Amethyst - load our configs
++
+         sender.sendMessage( ChatColor.BOLD.toString() + ChatColor.RED.toString() + "Amethyst has been reloaded."
+                 + " This is NOT advisable and you will not be supported with any issues that arise! Please restart Amethyst ASAP." );
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 index 85d2197a..5d8b4edf 100644

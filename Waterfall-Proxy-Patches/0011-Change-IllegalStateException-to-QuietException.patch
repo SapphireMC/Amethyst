@@ -1,4 +1,4 @@
-From dabf7c87816c8205c6b83a1b19bc2e61e3dfce84 Mon Sep 17 00:00:00 2001
+From 64a0debba820a2675e3a24777de1eebde29f1c24 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Sun, 2 Jan 2022 16:22:55 +0500
 Subject: [PATCH] Change IllegalStateException to QuietException

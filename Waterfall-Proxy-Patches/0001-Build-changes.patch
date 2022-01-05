@@ -1,4 +1,4 @@
-From 2a5588112c8666dc9f915d975ea1dbceb20a74f3 Mon Sep 17 00:00:00 2001
+From 00b191e130a86417dd12f4c8e570335e076ae34b Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Fri, 31 Dec 2021 13:46:52 +0500
 Subject: [PATCH] Build changes
@@ -63,8 +63,26 @@ index 379b6023..d60d248d 100644
              <version>${project.version}</version>
              <scope>compile</scope>
          </dependency>
+diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
+index a4011335..8d4b3ee5 100644
+--- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
++++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
+@@ -50,6 +50,13 @@ public abstract class ProxyServer
+      */
+     public abstract String getVersion();
+ 
++    /**
++     * Gets the last git commit of the currently running proxy software.
++     *
++     * @return the last git commit of this instance
++     */
++    public abstract String getGitInfo();
++
+     /**
+      * Gets a localized string from the .properties file.
+      *
 diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
-index 00ce099c..fb5d009f 100644
+index 00ce099c..bc92a525 100644
 --- a/bootstrap/pom.xml
 +++ b/bootstrap/pom.xml
 @@ -4,19 +4,18 @@
@@ -111,6 +129,15 @@ index 00ce099c..fb5d009f 100644
          <plugins>
              <plugin>
                  <groupId>org.apache.maven.plugins</groupId>
+@@ -47,7 +46,7 @@
+                     <archive>
+                         <manifestEntries>
+                             <Main-Class>net.md_5.bungee.Bootstrap</Main-Class>
+-                            <Implementation-Version>${describe}</Implementation-Version>
++                            <Implementation-Version>git-Amethyst-"${git.commit.id.describe-short}"</Implementation-Version>
+                             <Specification-Version>${maven.build.timestamp}</Specification-Version>
+ 
+                             <!-- Log4j includes custom classes for Java 9+ (#293) -->
 @@ -94,6 +93,7 @@
          </plugins>
      </build>
@@ -573,7 +600,7 @@ index 1eff2c93..8a7c62ab 100644
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index 505d1d14..aff287f7 100644
+index 505d1d14..9e586a2f 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -4,24 +4,23 @@
@@ -668,20 +695,37 @@ index 505d1d14..aff287f7 100644
  
      <build>
          <plugins>
-+            <!-- Amethyst
++            <!-- Amethyst start - use other plugin
              <plugin>
                  <groupId>net.md-5</groupId>
                  <artifactId>scriptus</artifactId>
-@@ -139,7 +128,7 @@
+@@ -139,7 +128,25 @@
                          </goals>
                      </execution>
                  </executions>
--            </plugin>
 +            </plugin> -->
++            <plugin>
++                <groupId>io.github.git-commit-id</groupId>
++                <artifactId>git-commit-id-maven-plugin</artifactId>
++                <version>5.0.0</version>
++                <executions>
++                    <execution>
++                        <id>get-the-git-infos</id>
++                        <goals>
++                            <goal>revision</goal>
++                        </goals>
++                        <phase>initialize</phase>
++                    </execution>
++                </executions>
++                <configuration>
++                    <dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
++                </configuration>
+             </plugin>
++            <!-- Amethyst end -->
              <!-- Use latest version of the javadoc plugin, fixes some issues with the javadoc tool on recent JDK builds on macOS at least -->
              <plugin>
                  <groupId>org.apache.maven.plugins</groupId>
-@@ -397,8 +386,8 @@
+@@ -397,8 +404,8 @@
                                  </goals>
                                  <inherited>false</inherited>
                                  <configuration>
@@ -733,7 +777,7 @@ index a783d9b0..fa8f6511 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index cca0ef95..14c00fc4 100644
+index cca0ef95..d703131e 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -4,18 +4,17 @@
@@ -802,6 +846,92 @@ index cca0ef95..14c00fc4 100644
              <version>${project.version}</version>
              <scope>compile</scope>
          </dependency>
+@@ -153,6 +152,21 @@
+     </dependencies>
+ 
+     <build>
++        <plugins>
++            <plugin>
++                <groupId>org.codehaus.mojo</groupId>
++                <artifactId>templating-maven-plugin</artifactId>
++                <version>1.0.0</version>
++                <executions>
++                    <execution>
++                        <id>filter-src</id>
++                        <goals>
++                            <goal>filter-sources</goal>
++                        </goals>
++                    </execution>
++                </executions>
++            </plugin>
++        </plugins>
+         <resources>
+             <resource>
+                 <directory>src/main/resources</directory>
+diff --git a/proxy/src/main/java-templates/io/sapphiremc/amethyst/BuildData.java b/proxy/src/main/java-templates/io/sapphiremc/amethyst/BuildData.java
+new file mode 100644
+index 00000000..44753d74
+--- /dev/null
++++ b/proxy/src/main/java-templates/io/sapphiremc/amethyst/BuildData.java
+@@ -0,0 +1,27 @@
++/*
++ * Copyright (c) 2022 DenaryDev
++ *
++ * This program is free software: you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation, either version 3 of the
++ * License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public
++ * License along with this program.  If not, see
++ * <http://www.gnu.org/licenses/gpl-3.0.html>.
++ */
++package io.sapphiremc.amethyst;
++
++/**
++ * Created 06.01.2022
++ *
++ * @author DenaryDev
++ */
++public class BuildData {
++    public static String VERSION = "${project.version}";
++}
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index 07d74c67..e7272d8b 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -21,10 +21,10 @@ import io.netty.channel.ChannelFutureListener;
+ import io.netty.channel.ChannelOption;
+ import io.netty.channel.EventLoopGroup;
+ import io.netty.util.ResourceLeakDetector;
++import io.sapphiremc.amethyst.BuildData;
+ import java.io.File;
+ import java.io.FileReader;
+ import java.io.IOException;
+-import java.io.PrintStream;
+ import java.net.InetSocketAddress;
+ import java.net.SocketAddress;
+ import java.text.MessageFormat;
+@@ -545,7 +545,13 @@ public class BungeeCord extends ProxyServer
+     @Override
+     public String getVersion()
+     {
+-        return ( BungeeCord.class.getPackage().getImplementationVersion() == null ) ? "unknown" : BungeeCord.class.getPackage().getImplementationVersion();
++        return BuildData.VERSION; // Amethyst
++    }
++
++    @Override
++    public String getGitInfo()
++    {
++        return ( BungeeCord.class.getPackage().getImplementationVersion() == null ) ? "git-Amethyst-unknown" : BungeeCord.class.getPackage().getImplementationVersion(); // Amethyst
+     }
+ 
+     public void reloadMessages()
 diff --git a/proxy/src/main/java/net/md_5/bungee/module/ModuleManager.java b/proxy/src/main/java/net/md_5/bungee/module/ModuleManager.java
 index d3abee44..3992ecc7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/module/ModuleManager.java

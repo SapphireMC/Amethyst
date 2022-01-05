@@ -1,17 +1,17 @@
-From a153df207c17d98b80c461535ef24225504195a7 Mon Sep 17 00:00:00 2001
+From fe6a1aa7dd19ad58e3caeb2c37c5e245825e371b Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Tue, 4 Jan 2022 20:41:35 +0500
 Subject: [PATCH] Amethyst modules system
 
 
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-index 7f753317..4bf39352 100644
+index e7567771..51d2a3e4 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-@@ -32,6 +32,43 @@ import net.md_5.bungee.config.ConfigurationProvider;
+@@ -28,9 +28,56 @@ import net.md_5.bungee.config.ConfigurationProvider;
+  * @author DenaryDev
   */
- public class AmethystConfig extends AbstractYamlConfig
- {
+ public class AmethystConfig extends AbstractYamlConfig {
 +    /**
 +     * A module that provides the /alert and /alertraw commands.
 +     */
@@ -25,17 +25,13 @@ index 7f753317..4bf39352 100644
 +     */
 +    public boolean ipEnabled = true;
 +    /**
-+     * A module that provides the /list command.
++     * A module that provides the /glist command.
 +     */
 +    public boolean listEnabled = true;
 +    /**
-+     * A module that provides the /perms command.
++     * A module that provides the /gperms command.
 +     */
 +    public boolean permsEnabled = true;
-+    /**
-+     * A module that provides the /reload command.
-+     */
-+    public boolean reloadEnabled = true;
 +    /**
 +     * A module that provides the /send command.
 +     */
@@ -48,29 +44,76 @@ index 7f753317..4bf39352 100644
 +     * A module that contains reconnect location functionality in locations.yml.
 +     */
 +    public boolean reconnectEnabled = false;
-+
-     public AmethystConfig(ConfigurationProvider provider)
-     {
-         try
-@@ -47,4 +84,18 @@ public class AmethystConfig extends AbstractYamlConfig
-             ex.printStackTrace();
-         }
-     }
+ 
+     public AmethystConfig(ConfigurationProvider provider) {
+         super(provider, "amethyst.yml");
+         init();
++        loadContent();
++        save();
++    }
 +
 +    @Override
-+    public void loadContent()
++    protected void loadContent()
 +    {
 +        alertEnabled = getBoolean( "modules.alert", alertEnabled );
 +        findEnabled = getBoolean( "modules.find", findEnabled );
 +        ipEnabled = getBoolean( "modules.ip", ipEnabled );
 +        listEnabled = getBoolean( "modules.list", listEnabled );
 +        permsEnabled = getBoolean( "modules.perms", permsEnabled );
-+        reloadEnabled = getBoolean( "modules.reload", reloadEnabled );
 +        sendEnabled = getBoolean( "modules.send", sendEnabled );
 +        serverEnabled = getBoolean( "modules.server", serverEnabled );
 +        reconnectEnabled = getBoolean( "modules.reconnect", reconnectEnabled );
-+    }
+     }
  }
+diff --git a/flame/src/main/resources/amethyst.yml b/flame/src/main/resources/amethyst.yml
+index 72394640..e8da947f 100644
+--- a/flame/src/main/resources/amethyst.yml
++++ b/flame/src/main/resources/amethyst.yml
+@@ -1,2 +1,44 @@
+ # Amethyst configuration file
+ # Generated on ${project.version}
++
++# Modules configuration
++# In this section you can enable or disable certain proxy modules
++modules:
++  # Alert commands module
++  # Provides /alert and /alertraw commands
++  alert: true
++
++  # Find command module
++  # Provides /find command
++  # Default: true
++  find: true
++
++  # Ip command module
++  # Provides /ip command
++  # Default: true
++  ip: true
++
++  # List command module
++  # Provides /glist command
++  # Default: true
++  list: true
++
++  # Perms command module
++  # Provides /gperms command
++  # Default: true
++  perms: true
++
++  # Send command module
++  # Provides /send command
++  # Default: true
++  send: true
++
++  # Server command module
++  # Provides /server command
++  # Default: true
++  server: true
++
++  # Reconnect yaml module
++  # Provides reconnect location functionality in locations.yml
++  # Default: false
++  reconnect: false
 diff --git a/module/cmd-alert/pom.xml b/module/cmd-alert/pom.xml
 deleted file mode 100644
 index c0d9f7d5..00000000
@@ -471,7 +514,7 @@ index 9757ba83..00000000
 -description: ${project.description}
 -author: ${module.author}
 diff --git a/pom.xml b/pom.xml
-index 653c2415..e0fc0333 100644
+index cfbb8500..9c142f4d 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -45,7 +45,7 @@
@@ -485,10 +528,10 @@ index 653c2415..e0fc0333 100644
          <module>query</module>
 diff --git a/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java b/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java
 new file mode 100644
-index 00000000..87154a3a
+index 00000000..d3409642
 --- /dev/null
 +++ b/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java
-@@ -0,0 +1,69 @@
+@@ -0,0 +1,67 @@
 +/*
 + * Copyright (c) 2022 DenaryDev
 + *
@@ -512,16 +555,15 @@ index 00000000..87154a3a
 +import io.sapphiremc.amethyst.module.CommandAlert;
 +import io.sapphiremc.amethyst.module.CommandAlertRaw;
 +import io.sapphiremc.amethyst.module.CommandFind;
++import io.sapphiremc.amethyst.module.CommandIP;
 +import io.sapphiremc.amethyst.module.CommandList;
++import io.sapphiremc.amethyst.module.CommandPerms;
 +import io.sapphiremc.amethyst.module.CommandSend;
 +import io.sapphiremc.amethyst.module.CommandServer;
 +import io.sapphiremc.amethyst.module.YamlReconnectHandler;
 +import net.md_5.bungee.api.ProxyServer;
 +import net.md_5.bungee.api.config.ListenerInfo;
 +import net.md_5.bungee.api.plugin.PluginManager;
-+import io.sapphiremc.amethyst.module.CommandIP;
-+import io.sapphiremc.amethyst.module.CommandPerms;
-+import io.sapphiremc.amethyst.module.CommandReload;
 +
 +/**
 + * Created 04.01.2022
@@ -543,7 +585,6 @@ index 00000000..87154a3a
 +        if (config.ipEnabled) manager.registerCommand(null, new CommandIP());
 +        if (config.listEnabled) manager.registerCommand(null, new CommandList());
 +        if (config.permsEnabled) manager.registerCommand(null, new CommandPerms());
-+        if (config.reloadEnabled) manager.registerCommand(null, new CommandReload());
 +        if (config.sendEnabled) manager.registerCommand(null, new CommandSend());
 +        if (config.serverEnabled) manager.registerCommand(null, new CommandServer());
 +
@@ -562,7 +603,7 @@ diff --git a/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/Com
 similarity index 96%
 rename from module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlert.java
 rename to proxy/src/main/java/io/sapphiremc/amethyst/module/CommandAlert.java
-index 55d2f7b8..7d8d2d90 100644
+index 423fe5bd..5f242e36 100644
 --- a/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlert.java
 +++ b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandAlert.java
 @@ -1,4 +1,4 @@
@@ -575,7 +616,7 @@ diff --git a/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/Com
 similarity index 97%
 rename from module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlertRaw.java
 rename to proxy/src/main/java/io/sapphiremc/amethyst/module/CommandAlertRaw.java
-index 7292899d..18f0989f 100644
+index 4b405b19..78c9a129 100644
 --- a/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlertRaw.java
 +++ b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandAlertRaw.java
 @@ -1,4 +1,4 @@
@@ -588,7 +629,7 @@ diff --git a/module/cmd-find/src/main/java/net/md_5/bungee/module/cmd/find/Comma
 similarity index 96%
 rename from module/cmd-find/src/main/java/net/md_5/bungee/module/cmd/find/CommandFind.java
 rename to proxy/src/main/java/io/sapphiremc/amethyst/module/CommandFind.java
-index 7ea239ac..19b1dfa9 100644
+index c51caf1f..bba4be04 100644
 --- a/module/cmd-find/src/main/java/net/md_5/bungee/module/cmd/find/CommandFind.java
 +++ b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandFind.java
 @@ -1,4 +1,4 @@
@@ -601,7 +642,7 @@ diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandIP.java b/proxy/
 similarity index 91%
 rename from proxy/src/main/java/net/md_5/bungee/command/CommandIP.java
 rename to proxy/src/main/java/io/sapphiremc/amethyst/module/CommandIP.java
-index 1fd5a546..efa15009 100644
+index 9b405a0b..c6edd492 100644
 --- a/proxy/src/main/java/net/md_5/bungee/command/CommandIP.java
 +++ b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandIP.java
 @@ -1,8 +1,9 @@
@@ -619,7 +660,7 @@ diff --git a/module/cmd-list/src/main/java/net/md_5/bungee/module/cmd/list/Comma
 similarity index 97%
 rename from module/cmd-list/src/main/java/net/md_5/bungee/module/cmd/list/CommandList.java
 rename to proxy/src/main/java/io/sapphiremc/amethyst/module/CommandList.java
-index c2227110..78915c9e 100644
+index 331ca78e..a7b85178 100644
 --- a/module/cmd-list/src/main/java/net/md_5/bungee/module/cmd/list/CommandList.java
 +++ b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandList.java
 @@ -1,4 +1,4 @@
@@ -629,10 +670,10 @@ index c2227110..78915c9e 100644
  import java.util.ArrayList;
  import java.util.Collections;
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandPerms.java b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandPerms.java
-similarity index 96%
+similarity index 90%
 rename from proxy/src/main/java/net/md_5/bungee/command/CommandPerms.java
 rename to proxy/src/main/java/io/sapphiremc/amethyst/module/CommandPerms.java
-index 18422669..4073450a 100644
+index d52407c1..f7a0d4f6 100644
 --- a/proxy/src/main/java/net/md_5/bungee/command/CommandPerms.java
 +++ b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandPerms.java
 @@ -1,4 +1,4 @@
@@ -641,24 +682,20 @@ index 18422669..4073450a 100644
  
  import java.util.HashSet;
  import java.util.Set;
-diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandReload.java
-similarity index 96%
-rename from proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
-rename to proxy/src/main/java/io/sapphiremc/amethyst/module/CommandReload.java
-index 4eba24fa..d6ebe366 100644
---- a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
-+++ b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandReload.java
-@@ -1,4 +1,4 @@
--package net.md_5.bungee.command;
-+package io.sapphiremc.amethyst.module;
+@@ -12,7 +12,7 @@ public class CommandPerms extends Command
  
- import net.md_5.bungee.BungeeCord;
- import net.md_5.bungee.api.ChatColor;
+     public CommandPerms()
+     {
+-        super( "perms" );
++        super( "gperms", "bungeecord.command.perms" );
+     }
+ 
+     @Override
 diff --git a/module/cmd-send/src/main/java/net/md_5/bungee/module/cmd/send/CommandSend.java b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandSend.java
 similarity index 99%
 rename from module/cmd-send/src/main/java/net/md_5/bungee/module/cmd/send/CommandSend.java
 rename to proxy/src/main/java/io/sapphiremc/amethyst/module/CommandSend.java
-index f59f9457..0a1b74ef 100644
+index dbcfeb09..96dcd016 100644
 --- a/module/cmd-send/src/main/java/net/md_5/bungee/module/cmd/send/CommandSend.java
 +++ b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandSend.java
 @@ -1,4 +1,4 @@
@@ -671,7 +708,7 @@ diff --git a/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/C
 similarity index 98%
 rename from module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
 rename to proxy/src/main/java/io/sapphiremc/amethyst/module/CommandServer.java
-index 698b420f..2117c4bf 100644
+index d81de590..c3116ac0 100644
 --- a/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
 +++ b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandServer.java
 @@ -1,4 +1,4 @@
@@ -694,31 +731,24 @@ index 3a514a76..a703665b 100644
  import java.io.File;
  import java.io.FileReader;
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index d664976e..297f9e13 100644
+index 982f540f..654ac87f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -22,11 +22,11 @@ import io.netty.channel.ChannelOption;
- import io.netty.channel.EventLoopGroup;
+@@ -23,6 +23,7 @@ import io.netty.channel.EventLoopGroup;
  import io.netty.util.ResourceLeakDetector;
+ import io.sapphiremc.amethyst.BuildData;
  import io.sapphiremc.amethyst.Amethyst;
 +import io.sapphiremc.amethyst.AmethystModulesManager;
  import io.sapphiremc.amethyst.api.protocol.ProtocolVersion;
  import java.io.File;
  import java.io.FileReader;
- import java.io.IOException;
--import java.io.PrintStream;
- import java.net.InetSocketAddress;
- import java.net.SocketAddress;
- import java.text.MessageFormat;
-@@ -77,17 +77,11 @@ import net.md_5.bungee.chat.ScoreComponentSerializer;
- import net.md_5.bungee.chat.SelectorComponentSerializer;
- import net.md_5.bungee.chat.TextComponentSerializer;
+@@ -79,15 +80,12 @@ import net.md_5.bungee.chat.TextComponentSerializer;
  import net.md_5.bungee.chat.TranslatableComponentSerializer;
--import net.md_5.bungee.command.CommandBungee;
--import net.md_5.bungee.command.CommandEnd;
+ import net.md_5.bungee.command.CommandBungee;
+ import net.md_5.bungee.command.CommandEnd;
 -import net.md_5.bungee.command.CommandIP;
 -import net.md_5.bungee.command.CommandPerms;
--import net.md_5.bungee.command.CommandReload;
+ import net.md_5.bungee.command.CommandReload;
  import net.md_5.bungee.command.ConsoleCommandSender;
  import net.md_5.bungee.compress.CompressFactory;
  import net.md_5.bungee.conf.Configuration;
@@ -728,7 +758,7 @@ index d664976e..297f9e13 100644
  import net.md_5.bungee.netty.PipelineUtils;
  import net.md_5.bungee.protocol.DefinedPacket;
  import net.md_5.bungee.protocol.packet.PluginMessage;
-@@ -173,7 +167,7 @@ public class BungeeCord extends ProxyServer
+@@ -173,7 +171,7 @@ public class BungeeCord extends ProxyServer
              .registerTypeAdapter( Favicon.class, Favicon.getFaviconTypeAdapter() ).create();
      @Getter
      private ConnectionThrottle connectionThrottle;
@@ -737,39 +767,135 @@ index d664976e..297f9e13 100644
      private final long serverStartTime; // Amethyst - add logging on startup
  
      {
-@@ -230,11 +224,15 @@ public class BungeeCord extends ProxyServer
+@@ -232,11 +230,13 @@ public class BungeeCord extends ProxyServer
          serverStartTime = System.nanoTime(); // Amethyst - add logging on startup
  
          pluginManager = new PluginManager( this );
-+        // Amethyst start - We register modules in our new manager
-+        /*
++        // Amethyst start - We register some commands in our new manager
          getPluginManager().registerCommand( null, new CommandReload() );
          getPluginManager().registerCommand( null, new CommandEnd() );
-         getPluginManager().registerCommand( null, new CommandIP() );
+-        getPluginManager().registerCommand( null, new CommandIP() );
++       // getPluginManager().registerCommand( null, new CommandIP() );
          getPluginManager().registerCommand( null, new CommandBungee() );
-         getPluginManager().registerCommand( null, new CommandPerms() );
-+        */
+-        getPluginManager().registerCommand( null, new CommandPerms() );
++       // getPluginManager().registerCommand( null, new CommandPerms() );
 +        // Amethyst end
  
          if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
          {
-@@ -274,7 +272,7 @@ public class BungeeCord extends ProxyServer
+@@ -277,9 +277,11 @@ public class BungeeCord extends ProxyServer
+         bossEventLoopGroup = PipelineUtils.newEventLoopGroup( 0, new ThreadFactoryBuilder().setNameFormat( "Netty Boss IO Thread #%1$d" ).build() );
          workerEventLoopGroup = PipelineUtils.newEventLoopGroup( 0, new ThreadFactoryBuilder().setNameFormat( "Netty Worker IO Thread #%1$d" ).build() );
  
-         File moduleDirectory = new File( "modules" );
+-        File moduleDirectory = new File( "modules" );
 -        moduleManager.load( this, moduleDirectory );
-+       // moduleManager.load( this, moduleDirectory ); // Amethyst - we use our modules manager
-         pluginManager.detectPlugins( moduleDirectory );
+-        pluginManager.detectPlugins( moduleDirectory );
++        // Amethyst start - we use our modules manager
++       // File moduleDirectory = new File( "modules" );
++       // moduleManager.load( this, moduleDirectory );
++       // pluginManager.detectPlugins( moduleDirectory );
++        // Amethyst end
  
          pluginsFolder.mkdir();
-@@ -284,6 +282,7 @@ public class BungeeCord extends ProxyServer
+         pluginManager.detectPlugins( pluginsFolder );
+@@ -288,6 +290,7 @@ public class BungeeCord extends ProxyServer
          config.load();
  
-         Amethyst.getInstance().load(); // Amethyst - load our configs
+         Amethyst.getInstance().load(logger); // Amethyst - load our configs
 +        AmethystModulesManager.registerModules(this); // Amethyst - register modules
  
          if ( config.isForgeSupport() )
          {
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
+index fe643a8e..431f268a 100644
+--- a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
++++ b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
+@@ -1,6 +1,7 @@
+ package net.md_5.bungee.command;
+ 
+ import io.sapphiremc.amethyst.Amethyst;
++import io.sapphiremc.amethyst.AmethystModulesManager;
+ import net.md_5.bungee.BungeeCord;
+ import net.md_5.bungee.api.ChatColor;
+ import net.md_5.bungee.api.CommandSender;
+@@ -26,6 +27,7 @@ public class CommandReload extends Command
+         proxy.getPluginManager().callEvent( new ProxyReloadEvent( sender ) );
+ 
+         Amethyst.getInstance().load( BungeeCord.getInstance().getLogger() ); // Amethyst - load our configs
++        AmethystModulesManager.registerModules( BungeeCord.getInstance() ); // Amethyst - register modules
+ 
+         sender.sendMessage( ChatColor.BOLD.toString() + ChatColor.RED.toString() + "Amethyst has been reloaded."
+                 + " This is NOT advisable and you will not be supported with any issues that arise! Please restart Amethyst ASAP." );
+diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
+index f34eb7f9..94095faa 100644
+--- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
++++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
+@@ -115,23 +115,40 @@ public class YamlConfig implements ConfigurationAdapter
+         }
+ 
+         if(!doPermissions) return; // Waterfall
+-        Map<String, Object> permissions = get( "permissions", null );
+-        if ( permissions == null )
++
++        if ( !config.containsKey( "permissions.groups" ) )
+         {
+-            set( "permissions.default", Arrays.asList( new String[]
++            Map<String, Object> toConvert = get( "permissions", null );
++            for ( Map.Entry<String, Object> entry : toConvert.entrySet() )
+             {
+-                "bungeecord.command.server", "bungeecord.command.list"
+-            } ) );
+-            set( "permissions.admin", Arrays.asList( new String[]
++                if ( !entry.getKey().equals( "groups" ) && !entry.getKey().equals( "users" ) ) {
++                    set("permissions." + entry.getKey(), null);
++                    set("permissions.groups." + entry.getKey(), entry.getValue());
++                }
++            }
++        }
++
++        Map<String, Object> permissions = get( "permissions.groups", null );
++        if ( permissions == null )
++        {
++            set( "permissions.groups.default", Arrays.asList("bungeecord.command.server", "bungeecord.command.list", "bungeecord.command.perms") ); // Amethyst - add permission to /gperms command
++            set( "permissions.groups.admin", Arrays.asList("bungeecord.command.alert", "bungeecord.command.end", "bungeecord.command.find", "bungeecord.command.ip", "bungeecord.command.reload", "bungeecord.command.send") ); // Amethyst - add more permissions
++        }
++
++        if ( config.containsKey( "groups" ) )
++        {
++            Map<String, Object> toConvert = get( "groups", null );
++            if ( toConvert != null )
+             {
+-                "bungeecord.command.alert", "bungeecord.command.end", "bungeecord.command.ip", "bungeecord.command.reload"
+-            } ) );
++                set( "permissions.users", toConvert );
++                set( "groups", null );
++            }
+         }
+ 
+-        Map<String, Object> groups = get( "groups", null );
+-        if ( groups == null )
++        Map<String, Object> users = get( "permissions.users", null );
++        if ( users == null )
+         {
+-            set( "groups.md_5", Collections.singletonList( "default" ) ); // Amethyst - set this to default, fix security issue
++            set( "permissions.users.md_5", Collections.singletonList( "default" ) ); // Amethyst - set this to default, fix security issue
+         }
+     }
+ 
+@@ -329,10 +346,10 @@ public class YamlConfig implements ConfigurationAdapter
+     public Collection<String> getGroups(String player)
+     {
+         // #1270: Do this to support player names with .
+-        Map<String, Collection<String>> raw = get( "groups", Collections.emptyMap() );
+-        Collection<String> groups = raw.get( player );
++        Map<String, Collection<String>> raw = get( "users", Collections.emptyMap() ); // Amethyst - rename it
++        Collection<String> users = raw.get( player );
+ 
+-        Collection<String> ret = ( groups == null ) ? new HashSet<String>() : new HashSet<>( groups );
++        Collection<String> ret = ( users == null ) ? new HashSet<String>() : new HashSet<>( users );
+         ret.add( "default" );
+         return ret;
+     }
 -- 
 2.34.1.windows.1
 
