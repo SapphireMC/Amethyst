@@ -1,11 +1,11 @@
-From ed9e4e89c0294ad1ad8967e74d0f1308b13ca762 Mon Sep 17 00:00:00 2001
+From 1c8e8858fe1efabdb97671ccbbe77c164793fa0b Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Wed, 5 Jan 2022 01:24:39 +0500
 Subject: [PATCH] Make min and max versions configurable
 
 
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-index 51d2a3e4..70b0f0e1 100644
+index c6bbbe7e..1aef4ee8 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 @@ -61,6 +61,17 @@ public class AmethystConfig extends AbstractYamlConfig {
@@ -26,7 +26,7 @@ index 51d2a3e4..70b0f0e1 100644
      public AmethystConfig(ConfigurationProvider provider) {
          super(provider, "amethyst.yml");
          init();
-@@ -79,5 +90,8 @@ public class AmethystConfig extends AbstractYamlConfig {
+@@ -78,5 +89,8 @@ public class AmethystConfig extends AbstractYamlConfig {
          sendEnabled = getBoolean( "modules.send", sendEnabled );
          serverEnabled = getBoolean( "modules.server", serverEnabled );
          reconnectEnabled = getBoolean( "modules.reconnect", reconnectEnabled );
@@ -36,7 +36,7 @@ index 51d2a3e4..70b0f0e1 100644
      }
  }
 diff --git a/flame/src/main/resources/amethyst.yml b/flame/src/main/resources/amethyst.yml
-index e8da947f..90126376 100644
+index e8da947f..0d9f9ac7 100644
 --- a/flame/src/main/resources/amethyst.yml
 +++ b/flame/src/main/resources/amethyst.yml
 @@ -42,3 +42,18 @@ modules:
@@ -51,13 +51,13 @@ index e8da947f..90126376 100644
 +  # Players with a version below than this will not be able to log into the server
 +  # Examples: 1.9, 1.12, 1.15.2
 +  # Default: 1.8
-+  min: 1.8
++  min: "1.8"
 +
 +  # Maximum supported version
 +  # Players with a version above than this will not be able to log into the server
 +  # Examples: 1.9, 1.12, 1.15.2
 +  # Default: 1.18.1
-+  max: 1.18.1
++  max: "1.18.1"
 diff --git a/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java b/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java
 index 7793437a..ed13979a 100644
 --- a/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java
@@ -177,7 +177,7 @@ index 7d3220f9..5e4ff7f4 100644
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 654ac87f..1f73d365 100644
+index 3a1a16c1..a13971af 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -291,6 +291,7 @@ public class BungeeCord extends ProxyServer
@@ -189,7 +189,7 @@ index 654ac87f..1f73d365 100644
          if ( config.isForgeSupport() )
          {
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
-index 431f268a..c78a37a1 100644
+index 431f268a..f3496558 100644
 --- a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
 +++ b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
 @@ -2,9 +2,12 @@ package net.md_5.bungee.command;
@@ -205,22 +205,24 @@ index 431f268a..c78a37a1 100644
  import net.md_5.bungee.api.event.ProxyReloadEvent;
  import net.md_5.bungee.api.plugin.Command;
  
-@@ -28,6 +31,21 @@ public class CommandReload extends Command
+@@ -28,6 +31,23 @@ public class CommandReload extends Command
  
          Amethyst.getInstance().load( BungeeCord.getInstance().getLogger() ); // Amethyst - load our configs
          AmethystModulesManager.registerModules( BungeeCord.getInstance() ); // Amethyst - register modules
 +        ProtocolVersion.register(); // Amethyst - register min and max supported versions
 +
 +        // Amethyst start - check players for outdated
-+        for (ProxiedPlayer player : BungeeCord.getInstance().getPlayers() )
-+        {
-+            PendingConnection connection = player.getPendingConnection();
-+            if ( connection.getVersion() > BungeeCord.getInstance().getProtocolVersion() )
++        if ( proxy.getOnlineCount() > 0 ) {
++            for ( ProxiedPlayer player : proxy.getPlayers() )
 +            {
-+                connection.disconnect( BungeeCord.getInstance().getTranslation( "outdated_server", BungeeCord.getInstance().getGameVersion() ) );
-+            } else
-+            {
-+                connection.disconnect( BungeeCord.getInstance().getTranslation( "outdated_client", BungeeCord.getInstance().getGameVersion() ) );
++                PendingConnection connection = player.getPendingConnection();
++                if ( connection.getVersion() > proxy.getProtocolVersion() )
++                {
++                    connection.disconnect( proxy.getTranslation( "outdated_server", proxy.getGameVersion() ) );
++                } else
++                {
++                    connection.disconnect( proxy.getTranslation( "outdated_client", proxy.getGameVersion() ) );
++                }
 +            }
 +        }
 +        // Amethyst end

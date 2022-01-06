@@ -1,14 +1,14 @@
-From fe6a1aa7dd19ad58e3caeb2c37c5e245825e371b Mon Sep 17 00:00:00 2001
+From 23ac24ccf5953fba2ebb918207c07e7da66cdb12 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Tue, 4 Jan 2022 20:41:35 +0500
 Subject: [PATCH] Amethyst modules system
 
 
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-index e7567771..51d2a3e4 100644
+index e7567771..c6bbbe7e 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-@@ -28,9 +28,56 @@ import net.md_5.bungee.config.ConfigurationProvider;
+@@ -28,9 +28,55 @@ import net.md_5.bungee.config.ConfigurationProvider;
   * @author DenaryDev
   */
  public class AmethystConfig extends AbstractYamlConfig {
@@ -49,7 +49,6 @@ index e7567771..51d2a3e4 100644
          super(provider, "amethyst.yml");
          init();
 +        loadContent();
-+        save();
 +    }
 +
 +    @Override
@@ -528,10 +527,10 @@ index cfbb8500..9c142f4d 100644
          <module>query</module>
 diff --git a/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java b/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java
 new file mode 100644
-index 00000000..d3409642
+index 00000000..7550d6a1
 --- /dev/null
 +++ b/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java
-@@ -0,0 +1,67 @@
+@@ -0,0 +1,74 @@
 +/*
 + * Copyright (c) 2022 DenaryDev
 + *
@@ -564,6 +563,9 @@ index 00000000..d3409642
 +import net.md_5.bungee.api.ProxyServer;
 +import net.md_5.bungee.api.config.ListenerInfo;
 +import net.md_5.bungee.api.plugin.PluginManager;
++import net.md_5.bungee.command.CommandBungee;
++import net.md_5.bungee.command.CommandEnd;
++import net.md_5.bungee.command.CommandReload;
 +
 +/**
 + * Created 04.01.2022
@@ -575,6 +577,10 @@ index 00000000..d3409642
 +        AmethystConfig config = proxy.getAmethyst().getConfig();
 +        PluginManager manager = proxy.getPluginManager();
 +        manager.unregisterCommands(null);
++
++        manager.registerCommand(null, new CommandBungee());
++        manager.registerCommand(null, new CommandEnd());
++        manager.registerCommand(null, new CommandReload());
 +
 +        // Command modules
 +        if (config.alertEnabled) {
@@ -731,7 +737,7 @@ index 3a514a76..a703665b 100644
  import java.io.File;
  import java.io.FileReader;
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 982f540f..654ac87f 100644
+index 982f540f..3a1a16c1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -23,6 +23,7 @@ import io.netty.channel.EventLoopGroup;
@@ -771,13 +777,16 @@ index 982f540f..654ac87f 100644
          serverStartTime = System.nanoTime(); // Amethyst - add logging on startup
  
          pluginManager = new PluginManager( this );
-+        // Amethyst start - We register some commands in our new manager
-         getPluginManager().registerCommand( null, new CommandReload() );
-         getPluginManager().registerCommand( null, new CommandEnd() );
+-        getPluginManager().registerCommand( null, new CommandReload() );
+-        getPluginManager().registerCommand( null, new CommandEnd() );
 -        getPluginManager().registerCommand( null, new CommandIP() );
-+       // getPluginManager().registerCommand( null, new CommandIP() );
-         getPluginManager().registerCommand( null, new CommandBungee() );
+-        getPluginManager().registerCommand( null, new CommandBungee() );
 -        getPluginManager().registerCommand( null, new CommandPerms() );
++        // Amethyst start - We register some commands in our new manager
++       // getPluginManager().registerCommand( null, new CommandReload() );
++       // getPluginManager().registerCommand( null, new CommandEnd() );
++       // getPluginManager().registerCommand( null, new CommandIP() );
++       // getPluginManager().registerCommand( null, new CommandBungee() );
 +       // getPluginManager().registerCommand( null, new CommandPerms() );
 +        // Amethyst end
  

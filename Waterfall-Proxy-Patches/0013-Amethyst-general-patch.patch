@@ -1,4 +1,4 @@
-From 987390edbeba74d7df7943df116e52143890730e Mon Sep 17 00:00:00 2001
+From 99ca5d8ecf68fe22fb3e156e38d164fe785dcc11 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 3 Jan 2022 01:19:36 +0500
 Subject: [PATCH] Amethyst general patch
@@ -209,10 +209,10 @@ index 00000000..147c1311
 +}
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AbstractYamlConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AbstractYamlConfig.java
 new file mode 100644
-index 00000000..541019c0
+index 00000000..afadb428
 --- /dev/null
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AbstractYamlConfig.java
-@@ -0,0 +1,278 @@
+@@ -0,0 +1,250 @@
 +/*
 + * Copyright (c) 2022 DenaryDev
 + *
@@ -445,7 +445,6 @@ index 00000000..541019c0
 +     */
 +    protected List<String> getStringList(String key, List<String> def) {
 +        if (!config.contains(key)) {
-+            config.set(key, def);
 +            return def;
 +        } else {
 +            return config.getStringList(key);
@@ -461,34 +460,7 @@ index 00000000..541019c0
 +     * @return value from config or default value
 +     */
 +    protected Object get(String key, Object def) {
-+        if (!config.contains(key)) {
-+            config.set(key, def);
-+            return def;
-+        } else {
-+            return config.get(key, def);
-+        }
-+    }
-+
-+    /**
-+     * Writes the specified value to the config
-+     * at the specified key.
-+     *
-+     * @param key key
-+     * @param value value
-+     */
-+    protected void set(String key, Object value) {
-+        config.set(key, value);
-+    }
-+
-+    /**
-+     * Saving all cached changes to this config.
-+     */
-+    protected void save() {
-+        try {
-+            provider.save(config, file);
-+        } catch (IOException ex) {
-+            throw new RuntimeException("Failed to save config, check it for syntax errors", ex);
-+        }
++        return config.get(key, def);
 +    }
 +}
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
