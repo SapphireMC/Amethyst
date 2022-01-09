@@ -1,0 +1,260 @@
+From 57766a40623e1005e5935701edc42cfba90563bd Mon Sep 17 00:00:00 2001
+From: DenaryDev <denaryplanet@gmail.com>
+Date: Mon, 10 Jan 2022 02:59:49 +0500
+Subject: [PATCH] Amethyst motd system
+
+
+diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
+index 513a9079..b8cc9107 100644
+--- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
++++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
+@@ -17,9 +17,11 @@
+  */
+ package io.sapphiremc.amethyst.conf;
+ 
++import java.util.Arrays;
+ import java.util.Collection;
+ import java.util.Collections;
+ import java.util.List;
++import java.util.Random;
+ import net.md_5.bungee.config.ConfigurationProvider;
+ 
+ /**
+@@ -106,6 +108,41 @@ public class AmethystConfig extends AbstractYamlConfig {
+      */
+     public boolean logHaProxy = false;
+ 
++    /**
++     * Enable or disable custom motd.
++     */
++    public boolean motdEnabled = true;
++    /**
++     * List of first motd lines.
++     */
++    public List<String> motdFirstLines = Collections.singletonList("&eDefault &6Amethyst &emotd");
++    /**
++     * List of second motd lines.
++     */
++    public List<String> motdSecondLines = Collections.singletonList("&eChange me in &6amethyst.yml &efile!");
++
++    /**
++     * Gets random motd line from first or second lines list.
++     *
++     * @param linesList motd lines list
++     * @return random motd line
++     */
++    public String getRandomMotdLine(List<String> linesList) {
++        if (linesList.isEmpty()) return null;
++
++        Random random = new Random();
++        return linesList.get(random.nextInt(linesList.size()));
++    }
++
++    /**
++     * Enable or disable motd hoverBox.
++     */
++    public boolean motdHoverBoxEnabled = true;
++    /**
++     * Motd hoverBox content.
++     */
++    public List<String> motdHoverBoxContent = Arrays.asList("&eAmethyst", "", "&7Online: &f%online%", "", "&bServers:", "&8- &7Lobby: &f%online_lobby%", "", "&eexample.net");
++
+     public AmethystConfig(ConfigurationProvider provider) {
+         super(provider, "amethyst.yml");
+         init();
+@@ -115,6 +152,13 @@ public class AmethystConfig extends AbstractYamlConfig {
+     @Override
+     protected void loadContent()
+     {
++        motdEnabled = getBoolean("motd.enabled", motdEnabled);
++        motdFirstLines = getStringList("motd.firstLines", motdFirstLines);
++        motdSecondLines = getStringList("motd.secondLines", motdSecondLines);
++
++        motdHoverBoxEnabled = getBoolean("motd.hoverBox.enabled", motdHoverBoxEnabled);
++        motdHoverBoxContent = getStringList("motd.hoverBox.content", motdHoverBoxContent);
++
+         firewallEnabled = getBoolean("firewall.enabled", firewallEnabled);
+         firewallNotify = getBoolean("firewall.notify", firewallNotify);
+         firewallClearInterval = getInt("firewall.clear-interval", firewallClearInterval);
+diff --git a/flame/src/main/resources/amethyst.yml b/flame/src/main/resources/amethyst.yml
+index 1aa3c837..57e54ac5 100644
+--- a/flame/src/main/resources/amethyst.yml
++++ b/flame/src/main/resources/amethyst.yml
+@@ -1,6 +1,38 @@
+ # Amethyst configuration file
+ # Generated on ${project.version}
+ 
++# Motd configuration
++motd:
++  # Enable amethyst custom motd?
++  enabled: true
++
++  # First motd lines
++  # Supported placeholders: %online%, %online_<server_name>%, %online_max%
++  firstLines:
++    - "&eDefault &6Amethyst &emotd"
++
++  # Second motd lines
++  # Supported placeholders: %online%, %online_<server_name>%, %online_max%
++  secondLines:
++    - "&eChange me in &6amethyst.yml &efile!"
++
++  # HoverBox configuration
++  hoverBox:
++    # Enable hoverBox?
++    enable: true
++
++    # HoverBox content
++    # Supported placeholders: %online%, %online_<server_name>%, %online_max%
++    content:
++      - "&eAmethyst"
++      - ""
++      - "&7Online: &f%online%"
++      - ""
++      - "&bServers:"
++      - "&8- &7Lobby: &f%online_lobby%"
++      - ""
++      - "&eexample.net"
++
+ # Versions configuration
+ # In this section, you can configure the minimum and maximum supported versions
+ versions:
+diff --git a/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java b/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java
+index 7550d6a1..49f9c607 100644
+--- a/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java
++++ b/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java
+@@ -18,6 +18,7 @@
+ package io.sapphiremc.amethyst;
+ 
+ import io.sapphiremc.amethyst.conf.AmethystConfig;
++import io.sapphiremc.amethyst.listeners.PingListener;
+ import io.sapphiremc.amethyst.module.CommandAlert;
+ import io.sapphiremc.amethyst.module.CommandAlertRaw;
+ import io.sapphiremc.amethyst.module.CommandFind;
+@@ -40,10 +41,13 @@ import net.md_5.bungee.command.CommandReload;
+  * @author DenaryDev
+  */
+ public class AmethystModulesManager {
++    private static final PingListener PING_LISTENER = new PingListener();
++
+     public static void registerModules(ProxyServer proxy) {
+         AmethystConfig config = proxy.getAmethyst().getConfig();
+         PluginManager manager = proxy.getPluginManager();
+         manager.unregisterCommands(null);
++        manager.unregisterListener(PING_LISTENER);
+ 
+         manager.registerCommand(null, new CommandBungee());
+         manager.registerCommand(null, new CommandEnd());
+@@ -70,5 +74,8 @@ public class AmethystModulesManager {
+                 }
+             }
+         }
++
++        // Ping listener for custom motd
++        if (config.motdEnabled) manager.registerListener(null, PING_LISTENER);
+     }
+ }
+diff --git a/proxy/src/main/java/io/sapphiremc/amethyst/listeners/PingListener.java b/proxy/src/main/java/io/sapphiremc/amethyst/listeners/PingListener.java
+new file mode 100644
+index 00000000..941616e1
+--- /dev/null
++++ b/proxy/src/main/java/io/sapphiremc/amethyst/listeners/PingListener.java
+@@ -0,0 +1,95 @@
++/*
++ * Copyright (c) 2022 DenaryDev
++ *
++ * This program is free software: you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation, either version 3 of the
++ * License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public
++ * License along with this program.  If not, see
++ * <http://www.gnu.org/licenses/gpl-3.0.html>.
++ */
++package io.sapphiremc.amethyst.listeners;
++
++import io.sapphiremc.amethyst.api.TextUtils;
++import io.sapphiremc.amethyst.conf.AmethystConfig;
++import java.util.ArrayList;
++import java.util.List;
++import java.util.UUID;
++import net.md_5.bungee.api.ProxyServer;
++import net.md_5.bungee.api.ServerPing;
++import net.md_5.bungee.api.config.ServerInfo;
++import net.md_5.bungee.api.connection.ProxiedPlayer;
++import net.md_5.bungee.api.event.ProxyPingEvent;
++import net.md_5.bungee.api.plugin.Listener;
++import net.md_5.bungee.event.EventHandler;
++
++/**
++ * Created 10.01.2022
++ *
++ * @author DenaryDev
++ */
++public class PingListener implements Listener {
++
++    @EventHandler
++    public void onPing(ProxyPingEvent event) {
++        AmethystConfig config = ProxyServer.getInstance().getAmethyst().getConfig();
++        if (!config.motdEnabled) return;
++
++        ServerPing ping = event.getResponse();
++
++        String firstLine = config.getRandomMotdLine(config.motdFirstLines);
++        String secondLine = config.getRandomMotdLine(config.motdSecondLines);
++
++        StringBuilder motd = new StringBuilder();
++        if (firstLine != null) motd.append(firstLine);
++        if (secondLine != null) motd.append("\n").append(secondLine);
++
++        if (motd.length() > 0) ping.setDescription(replacePlaceholders(motd.toString()));
++
++        if (config.motdHoverBoxEnabled) {
++            List<String> hoverBox = config.motdHoverBoxContent;
++            ServerPing.PlayerInfo[] sample = new ServerPing.PlayerInfo[hoverBox.size()];
++
++            int i = 0;
++            for (String hover : hoverBox) {
++                sample[i] = new ServerPing.PlayerInfo(replacePlaceholders(hover), new UUID(0L, 0L));
++                i++;
++            }
++
++            ping.getPlayers().setSample(sample);
++        }
++    }
++
++    private String replacePlaceholders(String input) {
++        if (input.contains("%online%")) input = input.replace("%online%", String.valueOf(ProxyServer.getInstance().getOnlineCount()));
++        if (input.contains("%online_%")) {
++            if (input.contains("%online_max%")) {
++                input = input.replace("%online_max%", String.valueOf(ProxyServer.getInstance().getConfig().getPlayerLimit()));
++            } else {
++                for (ServerInfo server : ProxyServer.getInstance().getServersCopy().values()) {
++                    if (input.contains("%online_" + server.getName() + "%")) {
++                        input = input.replace("%online_" + server + "%", String.valueOf(getOnlineOnServer(server)));
++                    }
++                }
++            }
++        }
++        return TextUtils.stylish(input);
++    }
++
++    private int getOnlineOnServer(ServerInfo server) {
++        List<ProxiedPlayer> players = new ArrayList<>();
++        for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
++            if (player.getServer().getInfo().getName().equals(server.getName())) {
++                players.add(player);
++            }
++        }
++        return players.size();
++    }
++}
+-- 
+2.34.1.windows.1
+

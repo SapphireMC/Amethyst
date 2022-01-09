@@ -1,0 +1,26 @@
+From 518d13cd50f86a509f8e919fc3dfd073a78fcf02 Mon Sep 17 00:00:00 2001
+From: DenaryDev <denaryplanet@gmail.com>
+Date: Fri, 7 Jan 2022 01:09:18 +0500
+Subject: [PATCH] Check if packetID is invalid.
+
+
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+index dfe60ab5..fab61368 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+@@ -68,6 +68,12 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+             int packetId = DefinedPacket.readVarInt( in );
+             packetTypeInfo = packetId;
+ 
++            // Amethyst start - Check if packetId is invalid.
++            if ( packetId < 0 || packetId > Protocol.MAX_PACKET_ID )
++            {
++                throw new FastDecoderException( "[" + ctx.channel().remoteAddress() + "] <-> MinecraftDecoder received invalid packet #1, id " + packetId );
++            }
++            // Amethyst end
+             DefinedPacket packet = prot.createPacket( packetId, protocolVersion, supportsForge );
+             if ( packet != null )
+             {
+-- 
+2.34.1.windows.1
+

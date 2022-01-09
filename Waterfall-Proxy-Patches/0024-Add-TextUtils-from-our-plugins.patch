@@ -1,0 +1,195 @@
+From f1ccd51cc65f7e9fe2ba980219a5377b79db3cd0 Mon Sep 17 00:00:00 2001
+From: DenaryDev <denaryplanet@gmail.com>
+Date: Mon, 10 Jan 2022 02:07:00 +0500
+Subject: [PATCH] Add TextUtils from our plugins
+
+
+diff --git a/chat/src/main/java/io/sapphiremc/amethyst/api/TextUtils.java b/chat/src/main/java/io/sapphiremc/amethyst/api/TextUtils.java
+new file mode 100644
+index 00000000..e771a777
+--- /dev/null
++++ b/chat/src/main/java/io/sapphiremc/amethyst/api/TextUtils.java
+@@ -0,0 +1,180 @@
++/*
++ * Copyright (c) 2022 DenaryDev
++ *
++ * This program is free software: you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation, either version 3 of the
++ * License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public
++ * License along with this program.  If not, see
++ * <http://www.gnu.org/licenses/gpl-3.0.html>.
++ */
++package io.sapphiremc.amethyst.api;
++
++import lombok.experimental.UtilityClass;
++import net.md_5.bungee.api.ChatColor;
++
++import java.awt.*;
++import java.util.Arrays;
++import java.util.List;
++import java.util.regex.Matcher;
++import java.util.regex.Pattern;
++import java.util.stream.Collectors;
++
++/**
++ * Created 10.01.2022
++ *
++ * @author DenaryDev
++ */
++@UtilityClass
++public class TextUtils {
++
++    private final Pattern HEX_COLORS_PATTERN = Pattern.compile("\\{#([a-fA-F0-9]{6})}");
++    private final Pattern HEX_GRADIENT_PATTERN = Pattern.compile("\\{#([a-fA-F0-9]{6})(:#([a-fA-F0-9]{6}))+( )([^{}])*(})");
++    private final Pattern HEX_BUNGEE_PATTERN = Pattern.compile("§[xX](§[a-fA-F0-9]){6}");
++
++    private final List<ChatColor> FORMAT_COLORS = Arrays.asList(ChatColor.BOLD, ChatColor.ITALIC, ChatColor.UNDERLINE, ChatColor.MAGIC, ChatColor.STRIKETHROUGH, ChatColor.RESET);
++
++    /**
++     * Returns true if the given value is a color, otherwise false.
++     *
++     * @param color value
++     * @return if the given value is a color
++     */
++    public boolean isColor(ChatColor color) {
++        for (ChatColor formatColor : FORMAT_COLORS) {
++            if (formatColor == color) {
++                return false;
++            }
++        }
++
++        return true;
++    }
++
++    /**
++     * Returns true if the given value is a format, otherwise false.
++     *
++     * @param color value
++     * @return if the given value is a format
++     */
++    public boolean isFormat(ChatColor color) {
++        return !isColor(color);
++    }
++
++    /**
++     * Removes bungee hex-codes from string
++     *
++     * @param str string to strip hex
++     * @return stripped string
++     */
++    public String stripHex(String str) {
++        if (str == null) {
++            return null;
++        }
++
++        Matcher matcher = HEX_BUNGEE_PATTERN.matcher(str);
++        return matcher.replaceAll("");
++    }
++
++    /**
++     * Finds simple and gradient hex patterns in string and converts it to Bungee format
++     *
++     * @param text string to stylish
++     * @return stylished string
++     */
++    public String stylish(String text) {
++        if (null == text) {
++            return null;
++        }
++
++        Matcher matcher = HEX_GRADIENT_PATTERN.matcher(text);
++
++        StringBuffer stringBuffer = new StringBuffer();
++
++        while (matcher.find()) {
++            String gradient = matcher.group();
++
++            int groups = 0;
++            for (int i = 1; gradient.charAt(i) == '#'; i += 8) {
++                groups++;
++            }
++
++            Color[] colors = new Color[groups];
++            for (int i = 0; i < groups; i++) {
++                colors[i] = ChatColor.of(gradient.substring((8 * i) + 1, (8 * i) + 8)).getColor();
++            }
++
++            String substring = gradient.substring((groups - 1) * 8 + 9, gradient.length() - 1);
++
++            char[] chars = substring.toCharArray();
++
++            StringBuilder gradientBuilder = new StringBuilder();
++
++            int colorLength = chars.length / (colors.length - 1);
++            int lastColorLength;
++            if (0 == colorLength) {
++                colorLength = 1;
++                lastColorLength = 1;
++                colors = Arrays.copyOfRange(colors, 0, chars.length);
++            } else {
++                lastColorLength = chars.length % (colorLength * (colors.length - 1)) + colorLength;
++            }
++
++            for (int i = 0; i < (colors.length - 1); i++) {
++                int currentColorLength = ((i == colors.length - 2) ? lastColorLength : colorLength);
++                for (int j = 0; j < currentColorLength; j++) {
++                    Color color = calculateGradientColor(j + 1, currentColorLength, colors[i], colors[i + 1]);
++                    ChatColor chatColor = ChatColor.of(color);
++
++                    gradientBuilder.append(chatColor).append(chars[colorLength * i + j]);
++                }
++            }
++
++            matcher.appendReplacement(stringBuffer, gradientBuilder.toString());
++        }
++
++        matcher.appendTail(stringBuffer);
++        text = stringBuffer.toString();
++
++        matcher = HEX_COLORS_PATTERN.matcher(text);
++        stringBuffer = new StringBuffer();
++
++        while (matcher.find()) {
++            String hexColorString = matcher.group();
++            matcher.appendReplacement(stringBuffer, ChatColor.of(hexColorString.substring(1, hexColorString.length() - 1)).toString());
++        }
++
++        matcher.appendTail(stringBuffer);
++
++        return ChatColor.translateAlternateColorCodes('&', stringBuffer.toString());
++    }
++
++    /**
++     * Finds simple and gradient hex patterns in {@link List} and converts it to Bungee format
++     *
++     * @param list {@link List} to stylish
++     * @return stylised {@link List}
++     */
++    public List<String> stylish(List<String> list) {
++        if (list == null)
++            return null;
++
++        return list.stream().map(TextUtils::stylish).collect(Collectors.toList());
++    }
++
++    private Color calculateGradientColor(int x, int parts, Color from, Color to) {
++        double p = (double) (parts - x + 1) / (double) parts;
++
++        return new Color(
++                (int) (from.getRed() * p + to.getRed() * (1 - p)),
++                (int) (from.getGreen() * p + to.getGreen() * (1 - p)),
++                (int) (from.getBlue() * p + to.getBlue() * (1 - p))
++        );
++    }
++}
+-- 
+2.34.1.windows.1
+

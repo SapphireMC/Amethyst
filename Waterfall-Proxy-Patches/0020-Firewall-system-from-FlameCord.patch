@@ -1,0 +1,666 @@
+From a6455bd5fb8ba4c83717f5038fc475f387b27b93 Mon Sep 17 00:00:00 2001
+From: DenaryDev <denaryplanet@gmail.com>
+Date: Mon, 10 Jan 2022 00:39:35 +0500
+Subject: [PATCH] Firewall system from FlameCord
+
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
+index 5d920b7a..bed92ca8 100644
+--- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
++++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
+@@ -2,6 +2,7 @@ package net.md_5.bungee.api;
+ 
+ import com.google.common.base.Preconditions;
+ import io.sapphiremc.amethyst.Amethyst;
++import io.sapphiremc.amethyst.firewall.FirewallManager;
+ import java.io.File;
+ import java.net.InetSocketAddress;
+ import java.net.SocketAddress;
+@@ -353,5 +354,13 @@ public abstract class ProxyServer
+      * @return the localized {@link BaseComponent}
+      */
+     public abstract BaseComponent[] getTranslationComponent(String name, Object... args);
++
++    /**
++     * Gets an instance of amethyst firewall manager
++     *
++     * @return firewall manager
++     * @see FirewallManager
++     */
++    public abstract FirewallManager getFirewallManager();
+     // Amethyst end
+ }
+diff --git a/flame/src/main/java/io/sapphiremc/amethyst/Amethyst.java b/flame/src/main/java/io/sapphiremc/amethyst/Amethyst.java
+index a6c9add4..533f13c6 100644
+--- a/flame/src/main/java/io/sapphiremc/amethyst/Amethyst.java
++++ b/flame/src/main/java/io/sapphiremc/amethyst/Amethyst.java
+@@ -19,6 +19,8 @@ package io.sapphiremc.amethyst;
+ 
+ import io.sapphiremc.amethyst.conf.AmethystConfig;
+ import io.sapphiremc.amethyst.conf.MessagesConfig;
++import io.sapphiremc.amethyst.firewall.FirewallManager;
++import java.util.Collection;
+ import java.util.logging.Logger;
+ import lombok.Getter;
+ import net.md_5.bungee.config.ConfigurationProvider;
+@@ -67,15 +69,45 @@ public class Amethyst {
+      */
+     @Getter
+     private MessagesConfig messages;
++    /**
++     * Amethyst firewall manager.
++     * @see FirewallManager
++     */
++    @Getter
++    private FirewallManager firewallManager;
++    /**
++     * Firewall tick thread.
++     * @see FirewallManager#tick()
++     */
++    @Getter
++    private Thread firewallTickThread;
++
++    private boolean taskRunning;
+ 
+     /**
+      * This method is used by the proxy to initialize this
+      * Doesn't use this if you don't know what you are doing
+      */
+-    public void load(Logger logger) {
++    public void load(Logger logger, Collection<String> whitelistedAddresses) {
++        this.taskRunning = false;
+         this.provider = ConfigurationProvider.getProvider(YamlConfiguration.class);
+         this.logger = logger;
+         this.config = new AmethystConfig(provider);
+         this.messages = new MessagesConfig(provider);
++        this.firewallManager = new FirewallManager(whitelistedAddresses);
++        this.taskRunning = true;
++
++        this.firewallTickThread = new Thread(() -> {
++            while (taskRunning) {
++                try {
++                    Thread.sleep(1000L);
++                    if (!taskRunning) return;
++
++                    firewallManager.tick();
++                } catch (Exception ignored) {
++                }
++            }
++        });
++        this.firewallTickThread.start();
+     }
+ }
+diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
+index 1aef4ee8..513a9079 100644
+--- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
++++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
+@@ -17,6 +17,9 @@
+  */
+ package io.sapphiremc.amethyst.conf;
+ 
++import java.util.Collection;
++import java.util.Collections;
++import java.util.List;
+ import net.md_5.bungee.config.ConfigurationProvider;
+ 
+ /**
+@@ -72,6 +75,37 @@ public class AmethystConfig extends AbstractYamlConfig {
+      */
+     public String maxVersion = "1.18.1";
+ 
++    /**
++     * Firewall status.
++     * true - enabled, false - disabled.
++     */
++    public boolean firewallEnabled = true;
++    /**
++     * Firewall cleaning notifications.
++     */
++    public boolean firewallNotify = true;
++    /**
++     * Firewall address clear interval.
++     */
++    public int firewallClearInterval = 60;
++    /**
++     * Firewall names.
++     */
++    public Collection<String> firewallNames = Collections.singletonList("mcspam");
++
++    /**
++     * Enable or disable InitialHandler logging.
++     */
++    public boolean logInitialHandler = false;
++    /**
++     * Enable or disable Exceptions logging.
++     */
++    public boolean logExceptions = false;
++    /**
++     * Enable or disable HaProxy logging.
++     */
++    public boolean logHaProxy = false;
++
+     public AmethystConfig(ConfigurationProvider provider) {
+         super(provider, "amethyst.yml");
+         init();
+@@ -81,6 +115,15 @@ public class AmethystConfig extends AbstractYamlConfig {
+     @Override
+     protected void loadContent()
+     {
++        firewallEnabled = getBoolean("firewall.enabled", firewallEnabled);
++        firewallNotify = getBoolean("firewall.notify", firewallNotify);
++        firewallClearInterval = getInt("firewall.clear-interval", firewallClearInterval);
++        firewallNames = getStringList("firewall.names", (List<String>) firewallNames);
++
++        logInitialHandler = getBoolean("logger.initialHandler", logInitialHandler);
++        logExceptions = getBoolean("logger.exceptions", logExceptions);
++        logHaProxy = getBoolean("logger.haProxy", logHaProxy);
++
+         alertEnabled = getBoolean( "modules.alert", alertEnabled );
+         findEnabled = getBoolean( "modules.find", findEnabled );
+         ipEnabled = getBoolean( "modules.ip", ipEnabled );
+diff --git a/flame/src/main/java/io/sapphiremc/amethyst/firewall/FirewallManager.java b/flame/src/main/java/io/sapphiremc/amethyst/firewall/FirewallManager.java
+new file mode 100644
+index 00000000..68813f15
+--- /dev/null
++++ b/flame/src/main/java/io/sapphiremc/amethyst/firewall/FirewallManager.java
+@@ -0,0 +1,182 @@
++/*
++ * Copyright (c) 2022 DenaryDev
++ *
++ * This program is free software: you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation, either version 3 of the
++ * License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public
++ * License along with this program.  If not, see
++ * <http://www.gnu.org/licenses/gpl-3.0.html>.
++ */
++package io.sapphiremc.amethyst.firewall;
++
++import io.sapphiremc.amethyst.Amethyst;
++import java.net.InetSocketAddress;
++import java.net.SocketAddress;
++import java.util.ArrayList;
++import java.util.Collection;
++import java.util.Locale;
++import lombok.Getter;
++
++/**
++ * Firewall manager for proxy.
++ * Ported from FlameCord
++ *
++ * Created 07.01.2022
++ *
++ * @author DenaryDev
++ */
++public class FirewallManager {
++    private final Amethyst core = Amethyst.getInstance();
++
++    /**
++     * List of whitelisted addresses.
++     */
++    @Getter
++    private final Collection<String> whitelistedAddresses = new ArrayList<>();
++    /**
++     * List of addresses protected by firewall.
++     */
++    @Getter
++    private final Collection<String> firewalled = new ArrayList<>();
++    /**
++     * Firewall address flush interval.
++     */
++    @Getter
++    private final int clearDelay;
++    /**
++     * Time until firewall addresses are cleared.
++     */
++    @Getter
++    private int untilNextClear;
++
++    public FirewallManager(Collection<String> whitelistedAddresses) {
++        this.whitelistedAddresses.addAll(whitelistedAddresses);
++        this.clearDelay = core.getConfig().firewallClearInterval;
++        this.untilNextClear = this.clearDelay;
++    }
++
++    /**
++     * Returns true if the address is in the whitelist,
++     * otherwise returns false.
++     *
++     * @param address address to check
++     * @return is the address in the whitelist
++     */
++    public boolean isWhitelisted(SocketAddress address) {
++        for (String whitelistedAddress : whitelistedAddresses) {
++            if (address.toString().endsWith(whitelistedAddress)) {
++                return true;
++            }
++        }
++
++        return false;
++    }
++
++    /**
++     * Adds the address to the list of addresses protected
++     * by the firewall.
++     *
++     * @param address address to add
++     */
++    public void addFirewalled(SocketAddress address) {
++        if (address == null) {
++            return;
++        }
++
++        if (core.getConfig().firewallEnabled && !isWhitelisted(address)) {
++            InetSocketAddress inetAddress = (InetSocketAddress) address;
++            String host = inetAddress.getHostString();
++
++            if (!this.firewalled.contains(host)) {
++                this.firewalled.add(host);
++                logAdded(address);
++            }
++        }
++    }
++
++    /**
++     * Logs information about adding an address.
++     *
++     * @param address logging address
++     */
++    public void logAdded(SocketAddress address) {
++        if (core.getConfig().firewallNotify) {
++            InetSocketAddress inetAddress = (InetSocketAddress) address;
++            String host = inetAddress.getHostString();
++
++            core.getLogger().info(host + " had been firewalled from the proxy!");
++        }
++    }
++
++    /**
++     * Logs information about blocking an address.
++     *
++     * @param address logging address
++     */
++    public void logBlocked(SocketAddress address) {
++        if (core.getConfig().firewallNotify) {
++            InetSocketAddress inetAddress = (InetSocketAddress) address;
++            String host = inetAddress.getHostString();
++
++            core.getLogger().info(host + " is firewalled from the proxy, request blocked!");
++        }
++    }
++
++    /**
++     * Returns true if the address is protected by a firewall,
++     * otherwise returns false.
++     *
++     * @param address address to check
++     * @return is the address protected by a firewall
++     */
++    public boolean isFirewalled(SocketAddress address) {
++        InetSocketAddress inetAddress = (InetSocketAddress) address;
++
++        return this.firewalled.contains(inetAddress.getHostString());
++    }
++
++    /**
++     * Returns true if the name is in the list of firewall names,
++     * otherwise returns false.
++     *
++     * @param name name to check
++     * @return is the name in the list of firewall name
++     */
++    public boolean isFirewalled(String name) {
++        Collection<String> firewallNames = core.getConfig().firewallNames;
++        for (String string : firewallNames) {
++            if (name.toLowerCase(Locale.ROOT).contains(string)) {
++                return true;
++            }
++        }
++
++        return false;
++    }
++
++    /**
++     * Update time until next clear.
++     */
++    public void tick() {
++        if (--untilNextClear <= 0) {
++            int size = this.firewalled.size();
++
++            if (size > 0) {
++                if (core.getConfig().firewallNotify) {
++                    core.getLogger().info(  size + " addresses had been automatically removed from the firewall!" );
++                }
++
++                this.firewalled.clear();
++            }
++
++            this.untilNextClear = clearDelay;
++        }
++    }
++}
+diff --git a/flame/src/main/resources/amethyst.yml b/flame/src/main/resources/amethyst.yml
+index 922dbf31..1aa3c837 100644
+--- a/flame/src/main/resources/amethyst.yml
++++ b/flame/src/main/resources/amethyst.yml
+@@ -16,6 +16,28 @@ versions:
+   # Default: 1.18.1
+   max: "1.18.1"
+ 
++# Firewall configuration
++firewall:
++  # Enable firewall system?
++  enabled: true
++
++  # Notify in the console when a firewall is blocking addresses?
++  notify: true
++
++  # Blocked address cleanup interval.
++  clear-nverval: 60
++
++# Logger configuration
++logger:
++  # Enable or disable InitialHandler logging.
++  initialHandler: false
++
++  # Enable or disable Exceptions logging.
++  exceptions: false
++
++  # Enable or disable HaProxy logging.
++  haProxy: false
++
+ # Modules configuration
+ # In this section you can enable or disable certain proxy modules
+ modules:
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+index fab61368..6bffa708 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+@@ -5,6 +5,7 @@ import io.netty.buffer.ByteBufUtil;
+ import io.netty.channel.ChannelHandlerContext;
+ import io.netty.handler.codec.CorruptedFrameException;
+ import io.netty.handler.codec.MessageToMessageDecoder;
++import io.sapphiremc.amethyst.Amethyst;
+ import io.sapphiremc.amethyst.api.protocol.ProtocolDirection;
+ import java.util.List;
+ import lombok.AllArgsConstructor;
+@@ -47,8 +48,10 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+ 
+             if ( readableBytes > 2097152 )
+             {
++                Amethyst.getInstance().getFirewallManager().addFirewalled(ctx.channel().remoteAddress()); // Amethyst - Firewall system
+                 throw new FastDecoderException( "Error decoding packet with too many readableBytes: " + readableBytes );
+             } else if ( capacity > 2097152 )
++                Amethyst.getInstance().getFirewallManager().addFirewalled(ctx.channel().remoteAddress()); // Amethyst - Firewall system
+             {
+                 throw new FastDecoderException( "Error decoding packet with too big capacity: " + capacity );
+             }
+@@ -111,6 +114,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+             } else {
+                 packetTypeStr = "unknown";
+             }
++            Amethyst.getInstance().getFirewallManager().addFirewalled(ctx.channel().remoteAddress()); // Amethyst - Firewall system
+             throw new FastDecoderException("Error decoding packet " + packetTypeStr + " with contents:\n" + ByteBufUtil.prettyHexDump(slice), e); // Waterfall
+         } finally
+         {
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index 0beb914f..d2ba2177 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -25,6 +25,7 @@ import io.sapphiremc.amethyst.BuildData;
+ import io.sapphiremc.amethyst.Amethyst;
+ import io.sapphiremc.amethyst.AmethystModulesManager;
+ import io.sapphiremc.amethyst.api.protocol.ProtocolVersion;
++import io.sapphiremc.amethyst.firewall.FirewallManager;
+ import java.io.File;
+ import java.io.FileReader;
+ import java.io.IOException;
+@@ -293,7 +294,15 @@ public class BungeeCord extends ProxyServer
+         pluginManager.loadPlugins();
+         config.load();
+ 
+-        Amethyst.getInstance().load(logger); // Amethyst - load our configs
++        // Amethyst start - firewall manager
++        Collection<String> whitelistedAddresses = new HashSet<>();
++
++        for ( ServerInfo server : getServersCopy().values() )
++        {
++            whitelistedAddresses.add( server.getSocketAddress().toString() );
++        }
++        // Amethyst end
++        Amethyst.getInstance().load( logger, whitelistedAddresses ); // Amethyst - load our configs
+         AmethystModulesManager.registerModules(this); // Amethyst - register modules
+         ProtocolVersion.register(); // Amethyst - configurable min and max versions
+ 
+@@ -863,5 +872,11 @@ public class BungeeCord extends ProxyServer
+     {
+         return TextComponent.fromLegacyText( getTranslation( name, args ) );
+     }
++
++    @Override
++    public FirewallManager getFirewallManager()
++    {
++        return getAmethyst().getFirewallManager();
++    }
+     // Amethyst end
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+index 604671ff..309043ac 100644
+--- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
++++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+@@ -165,6 +165,7 @@ public class ServerConnector extends PacketHandler
+     {
+         if ( packet.packet == null )
+         {
++            BungeeCord.getInstance().getFirewallManager().addFirewalled(ch.getRemoteAddress()); // Amethyst - Firewall on unexpected packet
+             throw new QuietException( "Unexpected packet received during server connector process!\n" + BufUtil.dump( packet.buf, 16 ) ); // Amethyst
+         }
+     }
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
+index 1c696a7d..083bc116 100644
+--- a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
++++ b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
+@@ -3,8 +3,11 @@ package net.md_5.bungee.command;
+ import io.sapphiremc.amethyst.Amethyst;
+ import io.sapphiremc.amethyst.AmethystModulesManager;
+ import io.sapphiremc.amethyst.api.protocol.ProtocolVersion;
++import java.util.Collection;
++import java.util.HashSet;
+ import net.md_5.bungee.BungeeCord;
+ import net.md_5.bungee.api.CommandSender;
++import net.md_5.bungee.api.config.ServerInfo;
+ import net.md_5.bungee.api.connection.PendingConnection;
+ import net.md_5.bungee.api.connection.ProxiedPlayer;
+ import net.md_5.bungee.api.event.ProxyReloadEvent;
+@@ -28,7 +31,15 @@ public class CommandReload extends Command
+         proxy.startListeners();
+         proxy.getPluginManager().callEvent( new ProxyReloadEvent( sender ) );
+ 
+-        Amethyst.getInstance().load( BungeeCord.getInstance().getLogger() ); // Amethyst - load our configs
++        // Amethyst start - firewall manager
++        Collection<String> whitelistedAddresses = new HashSet<>();
++
++        for ( ServerInfo server : proxy.getServersCopy().values() )
++        {
++            whitelistedAddresses.add( server.getSocketAddress().toString() );
++        }
++        // Amethyst end
++        Amethyst.getInstance().load( BungeeCord.getInstance().getLogger(), whitelistedAddresses ); // Amethyst - load our configs
+         AmethystModulesManager.registerModules( BungeeCord.getInstance() ); // Amethyst - register modules
+         ProtocolVersion.register(); // Amethyst - register min and max supported versions
+ 
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index e4c927f1..492ee574 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -154,6 +154,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     {
+         if ( packet.packet == null )
+         {
++            BungeeCord.getInstance().getFirewallManager().addFirewalled(ch.getRemoteAddress()); // Amethyst - Firewall on unexpected packet
+             throw new QuietException( "Unexpected packet received during server login process! " + BufUtil.dump( packet.buf, 16 ) ); // Amethyst
+         }
+     }
+@@ -344,7 +345,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+         {
+             case 1:
+                 // Ping
+-                if ( bungee.getConfig().isLogPings() )
++                if ( bungee.getConfig().isLogPings() && bungee.getAmethyst().getConfig().logInitialHandler ) // Amethyst - Option to fully disable InitialHandler logging.
+                 {
+                     bungee.getLogger().log( Level.INFO, "{0} has pinged", this );
+                 }
+@@ -353,7 +354,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+                 break;
+             case 2:
+                 // Login
+-                if (BungeeCord.getInstance().getConfig().isLogInitialHandlerConnections() ) // Waterfall
++                if (BungeeCord.getInstance().getConfig().isLogInitialHandlerConnections() && bungee.getAmethyst().getConfig().logInitialHandler) // Waterfall  // Amethyst - Option to fully disable InitialHandler logging.
+                 {
+                     bungee.getLogger().log( Level.INFO, "{0} has connected", this );
+                 }
+@@ -373,6 +374,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+                 }
+                 break;
+             default:
++                BungeeCord.getInstance().getFirewallManager().addFirewalled(ch.getRemoteAddress()); // Amethyst - Firewall on unexpected packet
+                 throw new QuietException( "Cannot request protocol " + handshake.getRequestedProtocol() );
+         }
+     }
+@@ -387,6 +389,16 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+             disconnect( bungee.getTranslationComponent( "error.name-invalid" ) );
+             return;
+         }
++
++        // Amethyst start - Firewall and close if username is blocked
++        if ( BungeeCord.getInstance().getFirewallManager().isFirewalled( loginRequest.getData() ) )
++        {
++            BungeeCord.getInstance().getFirewallManager().addFirewalled( ch.getRemoteAddress() );
++            ch.close();
++            return;
++        }
++        // Amethyst end
++
+         this.loginRequest = loginRequest;
+ 
+         int limit = BungeeCord.getInstance().config.getPlayerLimit();
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
+index 6df3f3dd..d3300cbd 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
+@@ -57,6 +57,7 @@ public class PingHandler extends PacketHandler
+     {
+         if ( packet.packet == null )
+         {
++            BungeeCord.getInstance().getFirewallManager().addFirewalled( channel.getRemoteAddress() ); // Amethyst - Firewall on unexpected packet
+             throw new QuietException( "Unexpected packet received during ping process! " + BufUtil.dump( packet.buf, 16 ) );
+         }
+     }
+diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
+index 6d38de16..58a508d4 100644
+--- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
++++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
+@@ -44,7 +44,7 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+             channel = new ChannelWrapper( ctx );
+             handler.connected( channel );
+ 
+-            if ( !( handler instanceof InitialHandler || handler instanceof PingHandler ) )
++            if ( !( handler instanceof InitialHandler || handler instanceof PingHandler ) && ProxyServer.getInstance().getAmethyst().getConfig().logInitialHandler ) // Amethyst - Option to fully disable InitialHandler logging.
+             {
+                 ProxyServer.getInstance().getLogger().log( Level.INFO, "{0} has connected", handler );
+             }
+@@ -59,7 +59,7 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+             channel.markClosed();
+             handler.disconnected( channel );
+ 
+-            if ( !( handler instanceof InitialHandler || handler instanceof PingHandler ) )
++            if ( !( handler instanceof InitialHandler || handler instanceof PingHandler ) && ProxyServer.getInstance().getAmethyst().getConfig().logInitialHandler ) // Amethyst - Option to fully disable InitialHandler logging.
+             {
+                 ProxyServer.getInstance().getLogger().log( Level.INFO, "{0} has disconnected", handler );
+             }
+@@ -98,10 +98,13 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+                 {
+                     InetSocketAddress newAddress = new InetSocketAddress( proxy.sourceAddress(), proxy.sourcePort() );
+ 
+-                    ProxyServer.getInstance().getLogger().log( Level.FINE, "Set remote address via PROXY {0} -> {1}", new Object[]
++                    if ( ProxyServer.getInstance().getAmethyst().getConfig().logHaProxy ) // Amethyst - Option to fully disable InitialHandler logging.
+                     {
+-                        channel.getRemoteAddress(), newAddress
+-                    } );
++                        ProxyServer.getInstance().getLogger().log( Level.FINE, "Set remote address via PROXY {0} -> {1}", new Object[]
++                        {
++                            channel.getRemoteAddress(), newAddress
++                        } );
++                    }
+ 
+                     channel.setRemoteAddress( newAddress );
+                 }
+@@ -144,7 +147,7 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+     {
+         if ( ctx.channel().isActive() )
+         {
+-            boolean logExceptions = !( handler instanceof PingHandler );
++            boolean logExceptions = ProxyServer.getInstance().getAmethyst().getConfig().logExceptions && !(handler instanceof PingHandler); // Amethyst - Option to fully disable exceptions logging.
+ 
+             if ( logExceptions )
+             {
+diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
+index 3d08e38a..454c57b1 100644
+--- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
++++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
+@@ -61,8 +61,17 @@ public class PipelineUtils
+         {
+             SocketAddress remoteAddress = ( ch.remoteAddress() == null ) ? ch.parent().localAddress() : ch.remoteAddress();
+ 
++            // Amethyst - Firewall system
++            if ( BungeeCord.getInstance().getFirewallManager().isFirewalled( remoteAddress ) )
++            {
++                BungeeCord.getInstance().getFirewallManager().logBlocked( remoteAddress );
++                ch.close();
++                return;
++            }
++
+             if ( BungeeCord.getInstance().getConnectionThrottle() != null && BungeeCord.getInstance().getConnectionThrottle().throttle( remoteAddress ) )
+             {
++                BungeeCord.getInstance().getFirewallManager().addFirewalled( remoteAddress ); // Amethyst - Firewall throttled connections
+                 ch.close();
+                 return;
+             }
+diff --git a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
+index a0b7a4ec..ca11bcc0 100644
+--- a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
++++ b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
+@@ -9,6 +9,7 @@ import io.netty.channel.AddressedEnvelope;
+ import io.netty.channel.ChannelHandlerContext;
+ import io.netty.channel.SimpleChannelInboundHandler;
+ import io.netty.channel.socket.DatagramPacket;
++import io.sapphiremc.amethyst.Amethyst;
+ import java.net.InetAddress;
+ import java.util.LinkedHashMap;
+ import java.util.List;
+@@ -70,6 +71,7 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
+         ByteBuf in = msg.content();
+         if ( in.readUnsignedByte() != 0xFE || in.readUnsignedByte() != 0xFD )
+         {
++            Amethyst.getInstance().getFirewallManager().addFirewalled( ctx.channel().remoteAddress() ); // Amethyst - Firewall system
+             bungee.getLogger().log( Level.WARNING, "Query - Incorrect magic!: {0}", msg.sender() );
+             ctx.close(); // Amethyst - Close on incorrect magic
+             return;
+@@ -163,6 +165,7 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
+                 out.writeByte( 0x00 ); // Null
+             } else
+             {
++                Amethyst.getInstance().getFirewallManager().addFirewalled( ctx.channel().remoteAddress() );
+                 // Error!
+                 throw new IllegalStateException( "Invalid data request packet" );
+             }
+-- 
+2.34.1.windows.1
+

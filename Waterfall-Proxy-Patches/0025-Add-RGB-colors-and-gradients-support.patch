@@ -1,0 +1,39 @@
+From fd335255f64262431eaf0ecab084704376165100 Mon Sep 17 00:00:00 2001
+From: DenaryDev <denaryplanet@gmail.com>
+Date: Mon, 10 Jan 2022 02:10:14 +0500
+Subject: [PATCH] Add RGB colors and gradients support.
+
+
+diff --git a/chat/src/main/java/net/md_5/bungee/api/ChatColor.java b/chat/src/main/java/net/md_5/bungee/api/ChatColor.java
+index d7747deb..b905dcf6 100644
+--- a/chat/src/main/java/net/md_5/bungee/api/ChatColor.java
++++ b/chat/src/main/java/net/md_5/bungee/api/ChatColor.java
+@@ -1,6 +1,7 @@
+ package net.md_5.bungee.api;
+ 
+ import com.google.common.base.Preconditions;
++import io.sapphiremc.amethyst.api.TextUtils;
+ import java.awt.Color;
+ import java.util.HashMap;
+ import java.util.Locale;
+@@ -213,6 +214,8 @@ public final class ChatColor
+ 
+     public static String translateAlternateColorCodes(char altColorChar, String textToTranslate)
+     {
++        // Amethyst start - use our method to translate rgb colors and gradients.
++        /*
+         char[] b = textToTranslate.toCharArray();
+         for ( int i = 0; i < b.length - 1; i++ )
+         {
+@@ -223,6 +226,8 @@ public final class ChatColor
+             }
+         }
+         return new String( b );
++        */
++        return TextUtils.stylish( textToTranslate );
+     }
+ 
+     /**
+-- 
+2.34.1.windows.1
+

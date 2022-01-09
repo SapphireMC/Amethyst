@@ -1,0 +1,40 @@
+From dd5b8c8c7623a8fd5ba9b7c29200b0b63b73c0cc Mon Sep 17 00:00:00 2001
+From: DenaryDev <denaryplanet@gmail.com>
+Date: Mon, 10 Jan 2022 01:51:44 +0500
+Subject: [PATCH] Apply packet limits from FlameCord
+
+
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Handshake.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Handshake.java
+index 7dbbfd3c..c41c70ce 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Handshake.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Handshake.java
+@@ -1,6 +1,7 @@
+ package net.md_5.bungee.protocol.packet;
+ 
+ import io.netty.buffer.ByteBuf;
++import io.sapphiremc.amethyst.api.protocol.ProtocolDirection;
+ import lombok.AllArgsConstructor;
+ import lombok.Data;
+ import lombok.EqualsAndHashCode;
+@@ -43,4 +44,18 @@ public class Handshake extends DefinedPacket
+     {
+         handler.handle( this );
+     }
++
++    // Amethyst start - Apply packet limits (from FlameCord)
++    @Override
++    public int expectedMaxLength(ByteBuf buf, ProtocolDirection direction, int protocolVersion)
++    {
++        return 1036 + 256;
++    }
++
++    @Override
++    public int expectedMinLength(ByteBuf buf, ProtocolDirection direction, int protocolVersion)
++    {
++        return 5;
++    }
++    // Amethyst end
+ }
+-- 
+2.34.1.windows.1
+

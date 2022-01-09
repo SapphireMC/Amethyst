@@ -1,4 +1,4 @@
-From 1c8e8858fe1efabdb97671ccbbe77c164793fa0b Mon Sep 17 00:00:00 2001
+From 5b523bad024107ba7d096e5db219c7a1c832bf21 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Wed, 5 Jan 2022 01:24:39 +0500
 Subject: [PATCH] Make min and max versions configurable
@@ -36,14 +36,13 @@ index c6bbbe7e..1aef4ee8 100644
      }
  }
 diff --git a/flame/src/main/resources/amethyst.yml b/flame/src/main/resources/amethyst.yml
-index e8da947f..0d9f9ac7 100644
+index e8da947f..922dbf31 100644
 --- a/flame/src/main/resources/amethyst.yml
 +++ b/flame/src/main/resources/amethyst.yml
-@@ -42,3 +42,18 @@ modules:
-   # Provides reconnect location functionality in locations.yml
-   # Default: false
-   reconnect: false
-+
+@@ -1,6 +1,21 @@
+ # Amethyst configuration file
+ # Generated on ${project.version}
+ 
 +# Versions configuration
 +# In this section, you can configure the minimum and maximum supported versions
 +versions:
@@ -58,6 +57,10 @@ index e8da947f..0d9f9ac7 100644
 +  # Examples: 1.9, 1.12, 1.15.2
 +  # Default: 1.18.1
 +  max: "1.18.1"
++
+ # Modules configuration
+ # In this section you can enable or disable certain proxy modules
+ modules:
 diff --git a/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java b/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java
 index 7793437a..ed13979a 100644
 --- a/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java

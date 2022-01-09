@@ -1,0 +1,47 @@
+From 154e2cb4888312df563714a598f7adac05ad89c6 Mon Sep 17 00:00:00 2001
+From: DenaryDev <denaryplanet@gmail.com>
+Date: Mon, 10 Jan 2022 01:41:27 +0500
+Subject: [PATCH] Always release packets
+
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
+index 58a508d4..416b47ac 100644
+--- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
++++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
+@@ -115,12 +115,13 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+             return;
+         }
+ 
+-        if ( handler != null )
++        // Amethyst start - always release packets.
++        PacketWrapper packet = (PacketWrapper) msg;
++        try
+         {
+-            PacketWrapper packet = (PacketWrapper) msg;
+-            boolean sendPacket = handler.shouldHandle( packet );
+-            try
++            if ( handler != null )
+             {
++                boolean sendPacket = handler.shouldHandle( packet );
+                 if ( sendPacket && packet.packet != null )
+                 {
+                     try
+@@ -135,11 +136,12 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+                 {
+                     handler.handle( packet );
+                 }
+-            } finally
+-            {
+-                packet.trySingleRelease();
+             }
++        } finally
++        {
++            packet.trySingleRelease();
+         }
++        // Amethyst end
+     }
+ 
+     @Override
+-- 
+2.34.1.windows.1
+

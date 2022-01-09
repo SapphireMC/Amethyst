@@ -1,0 +1,50 @@
+From c78493d9316f514abf906656035856dfd00e8624 Mon Sep 17 00:00:00 2001
+From: DenaryDev <denaryplanet@gmail.com>
+Date: Mon, 10 Jan 2022 03:18:22 +0500
+Subject: [PATCH] Some fixes
+
+
+diff --git a/chat/src/main/java/net/md_5/bungee/api/ChatColor.java b/chat/src/main/java/net/md_5/bungee/api/ChatColor.java
+index b905dcf6..f98da0e3 100644
+--- a/chat/src/main/java/net/md_5/bungee/api/ChatColor.java
++++ b/chat/src/main/java/net/md_5/bungee/api/ChatColor.java
+@@ -214,8 +214,6 @@ public final class ChatColor
+ 
+     public static String translateAlternateColorCodes(char altColorChar, String textToTranslate)
+     {
+-        // Amethyst start - use our method to translate rgb colors and gradients.
+-        /*
+         char[] b = textToTranslate.toCharArray();
+         for ( int i = 0; i < b.length - 1; i++ )
+         {
+@@ -226,8 +224,6 @@ public final class ChatColor
+             }
+         }
+         return new String( b );
+-        */
+-        return TextUtils.stylish( textToTranslate );
+     }
+ 
+     /**
+diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
+index 94095faa..79b8b9b3 100644
+--- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
++++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
+@@ -119,11 +119,13 @@ public class YamlConfig implements ConfigurationAdapter
+         if ( !config.containsKey( "permissions.groups" ) )
+         {
+             Map<String, Object> toConvert = get( "permissions", null );
++            List<String> converted = new ArrayList<>();
+             for ( Map.Entry<String, Object> entry : toConvert.entrySet() )
+             {
+-                if ( !entry.getKey().equals( "groups" ) && !entry.getKey().equals( "users" ) ) {
++                if ( !entry.getKey().equals( "groups" ) && !entry.getKey().equals( "users" ) && !converted.contains( entry.getKey() ) ) {
+                     set("permissions." + entry.getKey(), null);
+                     set("permissions.groups." + entry.getKey(), entry.getValue());
++                    converted.add( entry.getKey() );
+                 }
+             }
+         }
+-- 
+2.34.1.windows.1
+
