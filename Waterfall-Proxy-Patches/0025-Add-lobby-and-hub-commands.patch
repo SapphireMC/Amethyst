@@ -1,0 +1,195 @@
+From 78e87bc3eb7ef302e53ce4a39a99f545fb7e830f Mon Sep 17 00:00:00 2001
+From: DenaryDev <denaryplanet@gmail.com>
+Date: Mon, 10 Jan 2022 18:39:08 +0500
+Subject: [PATCH] Add lobby and hub commands
+
+
+diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
+index b8cc9107..8ac85644 100644
+--- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
++++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
+@@ -121,6 +121,28 @@ public class AmethystConfig extends AbstractYamlConfig {
+      */
+     public List<String> motdSecondLines = Collections.singletonList("&eChange me in &6amethyst.yml &efile!");
+ 
++    /**
++     * A module that provides the /lobby and /hub commands.
++     */
++    public boolean lobbyEnabled = true;
++    /**
++     * Enable or disable lobby teleport message.
++     */
++    public boolean lobbyMessage = true;
++    /**
++     * List of lobbies.
++     */
++    public List<String> lobbyServers = Collections.singletonList("lobby");
++    /**
++     * Gets random lobby server from lobby servers list.
++     */
++    public String getRandomLobby() {
++        if (lobbyServers == null) return null;
++
++        Random random = new Random();
++        return lobbyServers.get(random.nextInt(lobbyServers.size()));
++    }
++
+     /**
+      * Gets random motd line from first or second lines list.
+      *
+@@ -159,6 +181,10 @@ public class AmethystConfig extends AbstractYamlConfig {
+         motdHoverBoxEnabled = getBoolean("motd.hoverBox.enabled", motdHoverBoxEnabled);
+         motdHoverBoxContent = getStringList("motd.hoverBox.content", motdHoverBoxContent);
+ 
++        lobbyEnabled = getBoolean("lobby.enabled", lobbyEnabled);
++        lobbyMessage = getBoolean("lobby.message", lobbyMessage);
++        lobbyServers = getStringList("lobby.servers", lobbyServers);
++
+         firewallEnabled = getBoolean("firewall.enabled", firewallEnabled);
+         firewallNotify = getBoolean("firewall.notify", firewallNotify);
+         firewallClearInterval = getInt("firewall.clear-interval", firewallClearInterval);
+diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
+index 9c914e92..82727979 100644
+--- a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
++++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
+@@ -44,6 +44,9 @@ public class MessagesConfig extends AbstractYamlConfig {
+         getString("command.list.header", "Available servers:");
+         getString("command.list.entry", "&a[{0}] &e({1}): &r{2}");
+         getString("command.list.total", "Total players online: {0}");
++        getString("command.lobby.success", "&7&oAttempt to move you to the lobby...");
++        getString("command.lobby.error.already-in", "&cYou are already in the lobby!");
++        getString("command.lobby.error.not-found", "&cNo lobby servers were found, please inform the server administrator!");
+         getString("command.perms.groups", "&6You have the following groups: {0}");
+         getString("command.perms.permissions", "=&9- {0}");
+         getString("command.reload.success", "&c&lAmethyst has been reloaded. This is NOT advisable and you will not be supported with any issues that arise! Please restart Amethyst ASAP.");
+diff --git a/flame/src/main/resources/amethyst.yml b/flame/src/main/resources/amethyst.yml
+index 57e54ac5..70b54bfa 100644
+--- a/flame/src/main/resources/amethyst.yml
++++ b/flame/src/main/resources/amethyst.yml
+@@ -48,6 +48,19 @@ versions:
+   # Default: 1.18.1
+   max: "1.18.1"
+ 
++# Lobby module configuration
++lobby:
++  # Enable lobby module?
++  enabled: true
++
++  # Send the player a message when teleporting to the lobby?
++  message: true
++
++  # Lobby servers
++  # Use ids from bungeecord.yml
++  servers:
++    - "lobby"
++
+ # Firewall configuration
+ firewall:
+   # Enable firewall system?
+diff --git a/flame/src/main/resources/messages.yml b/flame/src/main/resources/messages.yml
+index 1ae70cb0..ec8db3de 100644
+--- a/flame/src/main/resources/messages.yml
++++ b/flame/src/main/resources/messages.yml
+@@ -23,6 +23,13 @@ command:
+     entry: "&a[{0}] &e({1}): &r{2}"
+     total: "Total players online: {0}"
+ 
++  # Lobby command
++  lobby:
++    success: "&7&oAttempt to move you to the lobby..."
++    error:
++      already-in: "&cYou are already in the lobby!"
++      not-found: "&cNo lobby servers were found, please inform the server administrator!"
++
+   # Perms command
+   perms:
+     groups: "&6You have the following groups: {0}"
+diff --git a/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java b/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java
+index 49f9c607..db5b9440 100644
+--- a/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java
++++ b/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java
+@@ -24,6 +24,7 @@ import io.sapphiremc.amethyst.module.CommandAlertRaw;
+ import io.sapphiremc.amethyst.module.CommandFind;
+ import io.sapphiremc.amethyst.module.CommandIP;
+ import io.sapphiremc.amethyst.module.CommandList;
++import io.sapphiremc.amethyst.module.CommandLobby;
+ import io.sapphiremc.amethyst.module.CommandPerms;
+ import io.sapphiremc.amethyst.module.CommandSend;
+ import io.sapphiremc.amethyst.module.CommandServer;
+@@ -61,6 +62,7 @@ public class AmethystModulesManager {
+         if (config.findEnabled) manager.registerCommand(null, new CommandFind());
+         if (config.ipEnabled) manager.registerCommand(null, new CommandIP());
+         if (config.listEnabled) manager.registerCommand(null, new CommandList());
++        if (config.lobbyEnabled) manager.registerCommand(null, new CommandLobby());
+         if (config.permsEnabled) manager.registerCommand(null, new CommandPerms());
+         if (config.sendEnabled) manager.registerCommand(null, new CommandSend());
+         if (config.serverEnabled) manager.registerCommand(null, new CommandServer());
+diff --git a/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandLobby.java b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandLobby.java
+new file mode 100644
+index 00000000..2086429c
+--- /dev/null
++++ b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandLobby.java
+@@ -0,0 +1,60 @@
++/*
++ * Copyright (c) 2022 DenaryDev
++ *
++ * This program is free software: you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation, either version 3 of the
++ * License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public
++ * License along with this program.  If not, see
++ * <http://www.gnu.org/licenses/gpl-3.0.html>.
++ */
++package io.sapphiremc.amethyst.module;
++
++import io.sapphiremc.amethyst.conf.AmethystConfig;
++import java.util.List;
++import net.md_5.bungee.api.CommandSender;
++import net.md_5.bungee.api.ProxyServer;
++import net.md_5.bungee.api.connection.ProxiedPlayer;
++import net.md_5.bungee.api.plugin.Command;
++
++/**
++ * Created 10.01.2022
++ *
++ * @author DenaryDev
++ */
++public class CommandLobby extends Command {
++
++    public CommandLobby() {
++        super("lobby", "bungeecord.command.lobby", "hub");
++    }
++
++    @Override
++    public void execute(CommandSender sender, String[] args) {
++        ProxyServer proxy = ProxyServer.getInstance();
++        if (sender instanceof ProxiedPlayer) {
++            AmethystConfig config = proxy.getAmethyst().getConfig();
++            if (!config.lobbyServers.isEmpty()) {
++                ProxiedPlayer player = (ProxiedPlayer) sender;
++                if (!config.lobbyServers.contains(player.getServer().getInfo().getName())) {
++                    player.connect(proxy.getServerInfo(config.getRandomLobby()));
++                    if (config.lobbyMessage) {
++                        player.sendMessage(proxy.getTranslationComponent("command.lobby.success"));
++                    }
++                } else {
++                    sender.sendMessage(proxy.getTranslationComponent("command.lobby.error.already-in"));
++                }
++            } else {
++                sender.sendMessage(proxy.getTranslationComponent("command.lobby.error.not-found"));
++            }
++        } else {
++            sender.sendMessage(proxy.getTranslationComponent("error.players-only"));
++        }
++    }
++}
+-- 
+2.34.1.windows.1
+
