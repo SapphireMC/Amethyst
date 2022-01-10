@@ -1,4 +1,4 @@
-From 00b191e130a86417dd12f4c8e570335e076ae34b Mon Sep 17 00:00:00 2001
+From a23cd0f90bf93325c1742735a089c9c70ea4a6d5 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Fri, 31 Dec 2021 13:46:52 +0500
 Subject: [PATCH] Build changes
@@ -600,7 +600,7 @@ index 1eff2c93..8a7c62ab 100644
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index 505d1d14..9e586a2f 100644
+index 505d1d14..6ad28166 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -4,24 +4,23 @@
@@ -699,7 +699,7 @@ index 505d1d14..9e586a2f 100644
              <plugin>
                  <groupId>net.md-5</groupId>
                  <artifactId>scriptus</artifactId>
-@@ -139,7 +128,25 @@
+@@ -139,7 +128,26 @@
                          </goals>
                      </execution>
                  </executions>
@@ -719,13 +719,14 @@ index 505d1d14..9e586a2f 100644
 +                </executions>
 +                <configuration>
 +                    <dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
++                    <useNativeGit>false</useNativeGit>
 +                </configuration>
              </plugin>
 +            <!-- Amethyst end -->
              <!-- Use latest version of the javadoc plugin, fixes some issues with the javadoc tool on recent JDK builds on macOS at least -->
              <plugin>
                  <groupId>org.apache.maven.plugins</groupId>
-@@ -397,8 +404,8 @@
+@@ -397,8 +405,8 @@
                                  </goals>
                                  <inherited>false</inherited>
                                  <configuration>
