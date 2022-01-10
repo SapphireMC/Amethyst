@@ -1,4 +1,4 @@
-From 57766a40623e1005e5935701edc42cfba90563bd Mon Sep 17 00:00:00 2001
+From e81d7b3c2a8f61310ec0368189592cdfd1a5da3d Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 10 Jan 2022 02:59:49 +0500
 Subject: [PATCH] Amethyst motd system
@@ -156,10 +156,10 @@ index 7550d6a1..49f9c607 100644
  }
 diff --git a/proxy/src/main/java/io/sapphiremc/amethyst/listeners/PingListener.java b/proxy/src/main/java/io/sapphiremc/amethyst/listeners/PingListener.java
 new file mode 100644
-index 00000000..941616e1
+index 00000000..bb7a5b91
 --- /dev/null
 +++ b/proxy/src/main/java/io/sapphiremc/amethyst/listeners/PingListener.java
-@@ -0,0 +1,95 @@
+@@ -0,0 +1,97 @@
 +/*
 + * Copyright (c) 2022 DenaryDev
 + *
@@ -179,11 +179,12 @@ index 00000000..941616e1
 + */
 +package io.sapphiremc.amethyst.listeners;
 +
-+import io.sapphiremc.amethyst.api.TextUtils;
 +import io.sapphiremc.amethyst.conf.AmethystConfig;
 +import java.util.ArrayList;
 +import java.util.List;
++import java.util.Map;
 +import java.util.UUID;
++import net.md_5.bungee.api.ChatColor;
 +import net.md_5.bungee.api.ProxyServer;
 +import net.md_5.bungee.api.ServerPing;
 +import net.md_5.bungee.api.config.ServerInfo;
@@ -227,22 +228,23 @@ index 00000000..941616e1
 +
 +            ping.getPlayers().setSample(sample);
 +        }
++        event.setResponse(ping);
 +    }
 +
 +    private String replacePlaceholders(String input) {
 +        if (input.contains("%online%")) input = input.replace("%online%", String.valueOf(ProxyServer.getInstance().getOnlineCount()));
-+        if (input.contains("%online_%")) {
++        if (input.contains("%online_")) {
 +            if (input.contains("%online_max%")) {
 +                input = input.replace("%online_max%", String.valueOf(ProxyServer.getInstance().getConfig().getPlayerLimit()));
 +            } else {
 +                for (ServerInfo server : ProxyServer.getInstance().getServersCopy().values()) {
 +                    if (input.contains("%online_" + server.getName() + "%")) {
-+                        input = input.replace("%online_" + server + "%", String.valueOf(getOnlineOnServer(server)));
++                        input = input.replace("%online_" + server.getName() + "%", String.valueOf(getOnlineOnServer(server)));
 +                    }
 +                }
 +            }
 +        }
-+        return TextUtils.stylish(input);
++        return ChatColor.translateAlternateColorCodes('&', input);
 +    }
 +
 +    private int getOnlineOnServer(ServerInfo server) {

@@ -1,4 +1,4 @@
-From 23ac24ccf5953fba2ebb918207c07e7da66cdb12 Mon Sep 17 00:00:00 2001
+From a6028039e0bc8e367cc479d8fda8bc41eeef46c1 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Tue, 4 Jan 2022 20:41:35 +0500
 Subject: [PATCH] Amethyst modules system
@@ -836,10 +836,10 @@ index fe643a8e..431f268a 100644
          sender.sendMessage( ChatColor.BOLD.toString() + ChatColor.RED.toString() + "Amethyst has been reloaded."
                  + " This is NOT advisable and you will not be supported with any issues that arise! Please restart Amethyst ASAP." );
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-index f34eb7f9..94095faa 100644
+index 787172e4..49836d12 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-@@ -115,23 +115,40 @@ public class YamlConfig implements ConfigurationAdapter
+@@ -115,23 +115,42 @@ public class YamlConfig implements ConfigurationAdapter
          }
  
          if(!doPermissions) return; // Waterfall
@@ -850,14 +850,16 @@ index f34eb7f9..94095faa 100644
          {
 -            set( "permissions.default", Arrays.asList( new String[]
 +            Map<String, Object> toConvert = get( "permissions", null );
++            List<String> converted = new ArrayList<>();
 +            for ( Map.Entry<String, Object> entry : toConvert.entrySet() )
              {
 -                "bungeecord.command.server", "bungeecord.command.list"
 -            } ) );
 -            set( "permissions.admin", Arrays.asList( new String[]
-+                if ( !entry.getKey().equals( "groups" ) && !entry.getKey().equals( "users" ) ) {
++                if ( !entry.getKey().equals( "groups" ) && !entry.getKey().equals( "users" ) && !converted.contains( entry.getKey() ) ) {
 +                    set("permissions." + entry.getKey(), null);
 +                    set("permissions.groups." + entry.getKey(), entry.getValue());
++                    converted.add( entry.getKey() );
 +                }
 +            }
 +        }
@@ -891,7 +893,7 @@ index f34eb7f9..94095faa 100644
          }
      }
  
-@@ -329,10 +346,10 @@ public class YamlConfig implements ConfigurationAdapter
+@@ -329,10 +348,10 @@ public class YamlConfig implements ConfigurationAdapter
      public Collection<String> getGroups(String player)
      {
          // #1270: Do this to support player names with .

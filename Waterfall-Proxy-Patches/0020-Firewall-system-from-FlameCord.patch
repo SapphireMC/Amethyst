@@ -1,4 +1,4 @@
-From a6455bd5fb8ba4c83717f5038fc475f387b27b93 Mon Sep 17 00:00:00 2001
+From c9064a4c863cf82d3b890e99102172ac282eb30e Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 10 Jan 2022 00:39:35 +0500
 Subject: [PATCH] Firewall system from FlameCord
@@ -380,7 +380,7 @@ index 922dbf31..1aa3c837 100644
  # In this section you can enable or disable certain proxy modules
  modules:
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index fab61368..6bffa708 100644
+index fab61368..ce954f3a 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 @@ -5,6 +5,7 @@ import io.netty.buffer.ByteBufUtil;
@@ -391,17 +391,18 @@ index fab61368..6bffa708 100644
  import io.sapphiremc.amethyst.api.protocol.ProtocolDirection;
  import java.util.List;
  import lombok.AllArgsConstructor;
-@@ -47,8 +48,10 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+@@ -47,9 +48,11 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
  
              if ( readableBytes > 2097152 )
              {
 +                Amethyst.getInstance().getFirewallManager().addFirewalled(ctx.channel().remoteAddress()); // Amethyst - Firewall system
                  throw new FastDecoderException( "Error decoding packet with too many readableBytes: " + readableBytes );
              } else if ( capacity > 2097152 )
-+                Amethyst.getInstance().getFirewallManager().addFirewalled(ctx.channel().remoteAddress()); // Amethyst - Firewall system
              {
++                Amethyst.getInstance().getFirewallManager().addFirewalled(ctx.channel().remoteAddress()); // Amethyst - Firewall system
                  throw new FastDecoderException( "Error decoding packet with too big capacity: " + capacity );
              }
+         }
 @@ -111,6 +114,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
              } else {
                  packetTypeStr = "unknown";

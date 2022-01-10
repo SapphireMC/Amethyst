@@ -1,11 +1,11 @@
-From 707c7d35071d8c08f3afa46e2d8a5ae05f934fc2 Mon Sep 17 00:00:00 2001
+From 00fb58630b47243a2e6d938ba70fccbe6fee22a4 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Sun, 2 Jan 2022 15:37:01 +0500
 Subject: [PATCH] Use bungeecord.yml instead of config.yml
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-index 05f92ef3..2d4cd5db 100644
+index 05f92ef3..10ccb6b7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 @@ -51,17 +51,34 @@ public class YamlConfig implements ConfigurationAdapter
@@ -30,7 +30,7 @@ index 05f92ef3..2d4cd5db 100644
 +    {
 +        File oldFile = new File( "config.yml" );
 +        if (oldFile.exists()) {
-+            System.out.println("\u001B[0;33;1mDetected old BungeeCord's 'config.yml', converting it to new 'bungeecord.yml'...");
++            System.out.println("Detected old BungeeCord's 'config.yml', converting it to new 'bungeecord.yml'...");
 +            if (oldFile.renameTo(file)) {
 +                System.out.println("Conversion was successful! Continuing loading ...");
 +            } else {
