@@ -1,4 +1,4 @@
-From 78be7bcb34a75819f558bcee2fd69c91c7a86230 Mon Sep 17 00:00:00 2001
+From 4afe0ba853afeb03fba9b83fbe994a70c266f7dc Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Sun, 2 Jan 2022 16:15:48 +0500
 Subject: [PATCH] Use local variables to reduce method calls
@@ -135,7 +135,7 @@ index c2227110..331ca78e 100644
      }
  }
 diff --git a/module/cmd-send/src/main/java/net/md_5/bungee/module/cmd/send/CommandSend.java b/module/cmd-send/src/main/java/net/md_5/bungee/module/cmd/send/CommandSend.java
-index f59f9457..dbcfeb09 100644
+index f59f9457..f9c08ada 100644
 --- a/module/cmd-send/src/main/java/net/md_5/bungee/module/cmd/send/CommandSend.java
 +++ b/module/cmd-send/src/main/java/net/md_5/bungee/module/cmd/send/CommandSend.java
 @@ -25,6 +25,7 @@ import net.md_5.bungee.api.plugin.TabExecutor;
@@ -209,7 +209,15 @@ index f59f9457..dbcfeb09 100644
                      return;
                  }
                  targets = Collections.singletonList( player );
-@@ -169,7 +171,7 @@ public class CommandSend extends Command implements TabExecutor
+@@ -160,6 +162,7 @@ public class CommandSend extends Command implements TabExecutor
+     @Override
+     public Iterable<String> onTabComplete(CommandSender sender, String[] args)
+     {
++        if (proxy == null) proxy = ProxyServer.getInstance();
+         if ( args.length > 2 || args.length == 0 )
+         {
+             return ImmutableSet.of();
+@@ -169,7 +172,7 @@ public class CommandSend extends Command implements TabExecutor
          if ( args.length == 1 )
          {
              String search = args[0].toLowerCase( Locale.ROOT );
@@ -218,7 +226,7 @@ index f59f9457..dbcfeb09 100644
              {
                  if ( player.getName().toLowerCase( Locale.ROOT ).startsWith( search ) )
                  {
-@@ -187,7 +189,7 @@ public class CommandSend extends Command implements TabExecutor
+@@ -187,7 +190,7 @@ public class CommandSend extends Command implements TabExecutor
          } else
          {
              String search = args[1].toLowerCase( Locale.ROOT );
