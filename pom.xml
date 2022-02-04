@@ -11,17 +11,27 @@
     <description>Super project for Amethyst.</description>
     <url>https://github.com/SapphireMC/Amethyst</url>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>8</java.version>
-    </properties>
+    <distributionManagement>
+        <repository>
+            <id>sapphiremc-releases</id>
+            <url>http://repo.denaryworld.ru/releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>sapphiremc-snapshots</id>
+            <url>http://repo.denaryworld.ru/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <modules>
         <module>Amethyst-Proxy</module>
     </modules>
 
     <build>
-        <defaultGoal>clean package</defaultGoal>
+        <defaultGoal>clean install</defaultGoal>
     </build>
 
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>8</java.version>
+    </properties>
 </project>
