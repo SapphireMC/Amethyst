@@ -1,20 +1,29 @@
-From 96e6035ea18d4be8d2d1f2c86ec7138bcc5db4f1 Mon Sep 17 00:00:00 2001
+From 1631233188687a15853015e7ef0983f852febd35 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Thu, 6 Jan 2022 18:32:40 +0500
 Subject: [PATCH] Amethyst message system
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-index 0fa0c0dd..5d920b7a 100644
+index 0fa0c0dd..7c464176 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
+@@ -59,7 +59,7 @@ public abstract class ProxyServer
+     public abstract String getGitInfo();
+ 
+     /**
+-     * Gets a localized string from the .properties file.
++     * Gets a localized string from Amethyst messages.yml file.
+      *
+      * @param name translation name
+      * @param args translation arguments
 @@ -344,5 +344,14 @@ public abstract class ProxyServer
       * @see Amethyst
       */
      public abstract Amethyst getAmethyst();
 +
 +    /**
-+     * Gets a localized {@link BaseComponent} from the .properties file.
++     * Gets a localized {@link BaseComponent} from Amethyst messages.yml file.
 +     *
 +     * @param name translation name
 +     * @param args translation arguments
@@ -470,7 +479,7 @@ index f7a0d4f6..f1a12da7 100644
      }
  }
 diff --git a/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandSend.java b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandSend.java
-index 96dcd016..467a76c5 100644
+index e12c1f65..6724fb6a 100644
 --- a/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandSend.java
 +++ b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandSend.java
 @@ -45,7 +45,7 @@ public class CommandSend extends Command implements TabExecutor
@@ -714,46 +723,46 @@ index 458b315c..604671ff 100644
          {
              user.disconnect( message );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 370b0b8f..ae3868c6 100644
+index 69d4cc16..5832e5ba 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -325,7 +325,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -329,7 +329,7 @@ public final class UserConnection implements ProxiedPlayer
                  callback.done( ServerConnectRequest.Result.ALREADY_CONNECTED, null );
              }
  
--            sendMessage( bungee.getTranslation( "already_connected" ) );
-+            sendMessage( bungee.getTranslationComponent( "error.already.connected" ) );
+-            if (request.isSendFeedback()) sendMessage( bungee.getTranslation( "already_connected" ) ); // Waterfall
++            if (request.isSendFeedback()) sendMessage( bungee.getTranslationComponent( "error.already.connected" ) ); // Waterfall
              return;
          }
          if ( pendingConnects.contains( target ) )
-@@ -335,7 +335,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -339,7 +339,7 @@ public final class UserConnection implements ProxiedPlayer
                  callback.done( ServerConnectRequest.Result.ALREADY_CONNECTING, null );
              }
  
--            sendMessage( bungee.getTranslation( "already_connecting" ) );
-+            sendMessage( bungee.getTranslationComponent( "error.already.connecting" ) );
+-            if (request.isSendFeedback()) sendMessage( bungee.getTranslation( "already_connecting" ) ); // Waterfall
++            if (request.isSendFeedback()) sendMessage( bungee.getTranslationComponent( "error.already.connecting" ) ); // Waterfall
              return;
          }
  
-@@ -371,14 +371,14 @@ public final class UserConnection implements ProxiedPlayer
+@@ -375,14 +375,14 @@ public final class UserConnection implements ProxiedPlayer
                      ServerInfo def = updateAndGetNextServer( target );
                      if ( request.isRetry() && def != null && ( getServer() == null || def != getServer().getInfo() ) )
                      {
--                        sendMessage( bungee.getTranslation( "fallback_lobby" ) );
-+                        sendMessage( bungee.getTranslationComponent( "event.fallback.lobby" ) );
-                         connect( def, null, true, ServerConnectEvent.Reason.LOBBY_FALLBACK, request.getConnectTimeout() ); // Waterfall
+-                        if (request.isSendFeedback()) sendMessage( bungee.getTranslation( "fallback_lobby" ) ); // Waterfall
++                        if (request.isSendFeedback()) sendMessage( bungee.getTranslation( "event.fallback.lobby" ) ); // Waterfall
+                         connect( def, null, true, ServerConnectEvent.Reason.LOBBY_FALLBACK, request.getConnectTimeout(), request.isSendFeedback() ); // Waterfall
                      } else if ( dimensionChange )
                      {
 -                        disconnect( bungee.getTranslation( "fallback_kick", connectionFailMessage( future.cause() ) ) );
 +                        disconnect( bungee.getTranslationComponent( "event.fallback.kick", connectionFailMessage( future.cause() ) ) );
                      } else
                      {
--                        sendMessage( bungee.getTranslation( "fallback_kick", connectionFailMessage( future.cause() ) ) );
-+                        sendMessage( bungee.getTranslationComponent( "event.fallback.kick", connectionFailMessage( future.cause() ) ) );
+-                        if (request.isSendFeedback()) sendMessage( bungee.getTranslation( "fallback_kick", connectionFailMessage( future.cause() ) ) );
++                        if (request.isSendFeedback()) sendMessage( bungee.getTranslationComponent( "event.fallback.kick", connectionFailMessage( future.cause() ) ) );
                      }
                  }
              }
-@@ -402,7 +402,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -406,7 +406,7 @@ public final class UserConnection implements ProxiedPlayer
      {
          if ( cause instanceof ConnectTimeoutException )
          {
@@ -1005,5 +1014,5 @@ index 5890e8c9..00000000
 -command_ip=\u00a79IP of {0} is {1}
 -illegal_chat_characters=\u00a7cillegal characters in chat ({0})
 -- 
-2.34.1.windows.1
+2.35.1.windows.2
 

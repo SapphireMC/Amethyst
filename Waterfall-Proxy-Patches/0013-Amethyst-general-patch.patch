@@ -1,4 +1,4 @@
-From 99ca5d8ecf68fe22fb3e156e38d164fe785dcc11 Mon Sep 17 00:00:00 2001
+From 728473ed0f62cbc2b878877c43aa293346640dce Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 3 Jan 2022 01:19:36 +0500
 Subject: [PATCH] Amethyst general patch
@@ -514,7 +514,7 @@ index 00000000..72394640
 +# Amethyst configuration file
 +# Generated on ${project.version}
 diff --git a/pom.xml b/pom.xml
-index 9e586a2f..cfbb8500 100644
+index aed1838d..61513b4e 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -51,6 +51,8 @@
@@ -705,7 +705,7 @@ index 9e74d158..e1c7879d 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 4a768f36..59f47685 100644
+index 4e1ee017..d246d3d0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -36,6 +36,7 @@ import net.md_5.bungee.api.SkinConfiguration;
@@ -716,7 +716,7 @@ index 4a768f36..59f47685 100644
  import net.md_5.bungee.api.config.ServerInfo;
  import net.md_5.bungee.api.connection.ProxiedPlayer;
  import net.md_5.bungee.api.event.PermissionCheckEvent;
-@@ -389,9 +390,10 @@ public final class UserConnection implements ProxiedPlayer
+@@ -393,9 +394,10 @@ public final class UserConnection implements ProxiedPlayer
                  .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, request.getConnectTimeout() )
                  .remoteAddress( target.getAddress() );
          // Windows is bugged, multi homed users will just have to live with random connecting IPs
@@ -763,7 +763,7 @@ index 85d2197a..5d8b4edf 100644
      @Synchronized("serversLock") // Waterfall
      public void load()
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-index 2d4cd5db..f34eb7f9 100644
+index 10ccb6b7..787172e4 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 @@ -131,7 +131,7 @@ public class YamlConfig implements ConfigurationAdapter
@@ -789,5 +789,5 @@ index f8081506..0babc2a5 100644
      }
  
 -- 
-2.34.1.windows.1
+2.35.1.windows.2
 

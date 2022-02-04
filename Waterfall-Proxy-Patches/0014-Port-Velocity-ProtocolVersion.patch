@@ -1,4 +1,4 @@
-From c16e71664411782a9c2f6231adeb03d661d3860d Mon Sep 17 00:00:00 2001
+From 90cfa21d99f62835740d7f7843c29e7625926e92 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 3 Jan 2022 17:46:53 +0500
 Subject: [PATCH] Port Velocity ProtocolVersion
@@ -2747,7 +2747,7 @@ index e1c7879d..458b315c 100644
                  user.unsafe().sendPacket( new ViewDistance( login.getViewDistance() ) );
              }
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 59f47685..370b0b8f 100644
+index d246d3d0..69d4cc16 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -12,6 +12,7 @@ import io.netty.channel.ChannelInitializer;
@@ -2766,7 +2766,7 @@ index 59f47685..370b0b8f 100644
  import net.md_5.bungee.protocol.packet.Chat;
  import net.md_5.bungee.protocol.packet.ClientSettings;
  import net.md_5.bungee.protocol.packet.Kick;
-@@ -514,11 +514,11 @@ public final class UserConnection implements ProxiedPlayer
+@@ -518,11 +518,11 @@ public final class UserConnection implements ProxiedPlayer
          // transform score components
          message = ChatComponentTransformer.getInstance().transform( this, true, message );
  
@@ -4033,5 +4033,5 @@ index faca17fa..25e167e8 100644
              for ( int i = 0; i < components.length; i++ )
              {
 -- 
-2.34.1.windows.1
+2.35.1.windows.2
 
