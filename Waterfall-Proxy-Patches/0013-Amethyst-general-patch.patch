@@ -1,4 +1,4 @@
-From 728473ed0f62cbc2b878877c43aa293346640dce Mon Sep 17 00:00:00 2001
+From 7c607fadc7b4d22fb2c9d518c1cd3bf6a682f115 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 3 Jan 2022 01:19:36 +0500
 Subject: [PATCH] Amethyst general patch
@@ -705,10 +705,10 @@ index 9e74d158..e1c7879d 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 4e1ee017..d246d3d0 100644
+index ca7d310e..19940acc 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -36,6 +36,7 @@ import net.md_5.bungee.api.SkinConfiguration;
+@@ -35,6 +35,7 @@ import net.md_5.bungee.api.SkinConfiguration;
  import net.md_5.bungee.api.Title;
  import net.md_5.bungee.api.chat.BaseComponent;
  import net.md_5.bungee.api.chat.TextComponent;
@@ -716,7 +716,7 @@ index 4e1ee017..d246d3d0 100644
  import net.md_5.bungee.api.config.ServerInfo;
  import net.md_5.bungee.api.connection.ProxiedPlayer;
  import net.md_5.bungee.api.event.PermissionCheckEvent;
-@@ -393,9 +394,10 @@ public final class UserConnection implements ProxiedPlayer
+@@ -392,9 +393,10 @@ public final class UserConnection implements ProxiedPlayer
                  .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, request.getConnectTimeout() )
                  .remoteAddress( target.getAddress() );
          // Windows is bugged, multi homed users will just have to live with random connecting IPs

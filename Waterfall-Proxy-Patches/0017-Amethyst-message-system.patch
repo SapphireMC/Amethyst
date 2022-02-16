@@ -1,4 +1,4 @@
-From 1631233188687a15853015e7ef0983f852febd35 Mon Sep 17 00:00:00 2001
+From 994e38a0b708ebdea40d2b63ee85ef1832d6205b Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Thu, 6 Jan 2022 18:32:40 +0500
 Subject: [PATCH] Amethyst message system
@@ -99,10 +99,10 @@ index 147c1311..a6c9add4 100644
  }
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
 new file mode 100644
-index 00000000..9c914e92
+index 00000000..4674a8f0
 --- /dev/null
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
-@@ -0,0 +1,96 @@
+@@ -0,0 +1,95 @@
 +/*
 + * Copyright (c) 2022 DenaryDev
 + *
@@ -159,7 +159,7 @@ index 00000000..9c914e92
 +        getString("command.server.available", "&6You may connect to the following servers at this time: ");
 +        getString("command.server.hover", "{0} players online\nClick to connect to this server");
 +
-+        getString("event.fallback.kick", "&cCould not connect to a default or fallback server, please try again later: {0}");
++        getString("event.fallback.kick", "&cCould not connect to a default or fallback server. Incorrectly configured address/port/firewall? {0}");
 +        getString("event.fallback.lobby", "&cCould not connect to target server, you have been moved to a fallback server.");
 +        getString("event.restart", "[Proxy] Proxy restarting.");
 +        getString("event.server-down", "&cThe server you were previously on went down, you have been connected to a fallback server");
@@ -186,7 +186,6 @@ index 00000000..9c914e92
 +        getString("error.ping-cannot-connect", "&c[Bungee] Can't connect to server.");
 +        getString("error.players-only", "&cOnly in game players can use this command");
 +        getString("error.proxy-full", "Server is full!");
-+        getString("error.timeout", "Server not reachable (timeout). Offline? Incorrectly configured address/port/firewall?");
 +        getString("error.username-needed", "&cPlease follow this command by a user name.");
 +    }
 +
@@ -201,10 +200,10 @@ index 00000000..9c914e92
 +}
 diff --git a/flame/src/main/resources/messages.yml b/flame/src/main/resources/messages.yml
 new file mode 100644
-index 00000000..1ae70cb0
+index 00000000..071c698f
 --- /dev/null
 +++ b/flame/src/main/resources/messages.yml
-@@ -0,0 +1,102 @@
+@@ -0,0 +1,101 @@
 +# Amethyst messages file
 +# Generated on ${project.version}
 +
@@ -258,7 +257,7 @@ index 00000000..1ae70cb0
 +event:
 +  # Fallback
 +  fallback:
-+    kick: "&cCould not connect to a default or fallback server, please try again later: {0}"
++    kick: "&cCould not connect to a default or fallback server. Incorrectly configured address/port/firewall? {0}"
 +    lobby: "&cCould not connect to target server, you have been moved to a fallback server."
 +
 +  # Restart
@@ -305,7 +304,6 @@ index 00000000..1ae70cb0
 +  ping-cannot-connect: "&c[Bungee] Can't connect to server."
 +  players-only: "&cOnly in game players can use this command"
 +  proxy-full: "Server is full!"
-+  timeout: "Server not reachable (timeout). Offline? Incorrectly configured address/port/firewall?"
 +  username-needed: "&cPlease follow this command by a user name."
 diff --git a/proxy/pom.xml b/proxy/pom.xml
 index d703131e..0a031a27 100644
@@ -723,10 +721,10 @@ index 458b315c..604671ff 100644
          {
              user.disconnect( message );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 69d4cc16..5832e5ba 100644
+index a8215b7c..34236cbd 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -329,7 +329,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -328,7 +328,7 @@ public final class UserConnection implements ProxiedPlayer
                  callback.done( ServerConnectRequest.Result.ALREADY_CONNECTED, null );
              }
  
@@ -735,7 +733,7 @@ index 69d4cc16..5832e5ba 100644
              return;
          }
          if ( pendingConnects.contains( target ) )
-@@ -339,7 +339,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -338,7 +338,7 @@ public final class UserConnection implements ProxiedPlayer
                  callback.done( ServerConnectRequest.Result.ALREADY_CONNECTING, null );
              }
  
@@ -744,7 +742,7 @@ index 69d4cc16..5832e5ba 100644
              return;
          }
  
-@@ -375,14 +375,14 @@ public final class UserConnection implements ProxiedPlayer
+@@ -374,14 +374,14 @@ public final class UserConnection implements ProxiedPlayer
                      ServerInfo def = updateAndGetNextServer( target );
                      if ( request.isRetry() && def != null && ( getServer() == null || def != getServer().getInfo() ) )
                      {
@@ -762,15 +760,6 @@ index 69d4cc16..5832e5ba 100644
                      }
                  }
              }
-@@ -406,7 +406,7 @@ public final class UserConnection implements ProxiedPlayer
-     {
-         if ( cause instanceof ConnectTimeoutException )
-         {
--            return bungee.getTranslation( "timeout" );
-+            return bungee.getTranslation( "error.timeout" );
-         } else
-         {
-             return cause.getClass().getName();
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
 index f3496558..1c696a7d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
@@ -833,10 +822,10 @@ index 5d8b4edf..af08fd32 100644
                          });
                      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index f4d5aad4..b2380998 100644
+index dd1afc0d..a5ae8ebc 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -88,7 +88,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -93,7 +93,7 @@ public class DownstreamBridge extends PacketHandler
  
          // Waterfall start
          ServerInfo def = con.updateAndGetNextServer( server.getInfo() );
@@ -845,7 +834,7 @@ index f4d5aad4..b2380998 100644
          if ( event.isCancelled() && event.getCancelServer() != null )
          {
              server.setObsolete( true );
-@@ -115,7 +115,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -120,7 +120,7 @@ public class DownstreamBridge extends PacketHandler
          {
              // Waterfall start
              ServerInfo def = con.updateAndGetNextServer( server.getInfo() );
@@ -970,10 +959,10 @@ index 9002d79b..74d46c23 100644
                  empty = false;
 diff --git a/proxy/src/main/resources/messages.properties b/proxy/src/main/resources/messages.properties
 deleted file mode 100644
-index 5890e8c9..00000000
+index e16cf0a8..00000000
 --- a/proxy/src/main/resources/messages.properties
 +++ /dev/null
-@@ -1,39 +0,0 @@
+@@ -1,38 +0,0 @@
 -alert=\u00a78[\u00a74Alert\u00a78]\u00a7r 
 -already_connected=\u00a7cYou are already connected to this server!
 -already_connected_proxy=\u00a7cYou are already connected to this proxy!
@@ -981,9 +970,8 @@ index 5890e8c9..00000000
 -command_list=\u00a7a[{0}] \u00a7e({1}): \u00a7r{2}
 -connect_kick=\u00a7cKicked whilst connecting to {0}: {1}
 -current_server=\u00a76You are currently connected to {0}.
--fallback_kick=\u00a7cCould not connect to a default or fallback server, please try again later: {0}
+-fallback_kick=\u00a7cCould not connect to a default or fallback server. Incorrectly configured address/port/firewall? {0}
 -fallback_lobby=\u00a7cCould not connect to target server, you have been moved to a fallback server.
--timeout=Server not reachable (timeout). Offline? Incorrectly configured address/port/firewall?
 -lost_connection=[Proxy] Lost connection to server.
 -mojang_fail=Error occurred while contacting login servers, are they down?
 -no_permission=\u00a7cYou do not have permission to execute this command!

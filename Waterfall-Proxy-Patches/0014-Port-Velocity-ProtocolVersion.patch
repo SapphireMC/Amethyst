@@ -1,4 +1,4 @@
-From 90cfa21d99f62835740d7f7843c29e7625926e92 Mon Sep 17 00:00:00 2001
+From 4b17d420a8062179528755326a08f4a401f62393 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 3 Jan 2022 17:46:53 +0500
 Subject: [PATCH] Port Velocity ProtocolVersion
@@ -2747,18 +2747,18 @@ index e1c7879d..458b315c 100644
                  user.unsafe().sendPacket( new ViewDistance( login.getViewDistance() ) );
              }
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index d246d3d0..69d4cc16 100644
+index 19940acc..a8215b7c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -12,6 +12,7 @@ import io.netty.channel.ChannelInitializer;
+@@ -11,6 +11,7 @@ import io.netty.channel.ChannelFutureListener;
+ import io.netty.channel.ChannelInitializer;
  import io.netty.channel.ChannelOption;
- import io.netty.channel.ConnectTimeoutException;
  import io.netty.util.internal.PlatformDependent;
 +import io.sapphiremc.amethyst.api.protocol.ProtocolVersion;
  import java.net.InetSocketAddress;
  import java.net.SocketAddress;
  import java.util.Collection;
-@@ -56,7 +57,6 @@ import net.md_5.bungee.protocol.MinecraftDecoder;
+@@ -55,7 +56,6 @@ import net.md_5.bungee.protocol.MinecraftDecoder;
  import net.md_5.bungee.protocol.MinecraftEncoder;
  import net.md_5.bungee.protocol.PacketWrapper;
  import net.md_5.bungee.protocol.Protocol;
@@ -2766,7 +2766,7 @@ index d246d3d0..69d4cc16 100644
  import net.md_5.bungee.protocol.packet.Chat;
  import net.md_5.bungee.protocol.packet.ClientSettings;
  import net.md_5.bungee.protocol.packet.Kick;
-@@ -518,11 +518,11 @@ public final class UserConnection implements ProxiedPlayer
+@@ -511,11 +511,11 @@ public final class UserConnection implements ProxiedPlayer
          // transform score components
          message = ChatComponentTransformer.getInstance().transform( this, true, message );
  
@@ -2781,10 +2781,10 @@ index d246d3d0..69d4cc16 100644
                  sendMessage( position, sender, ComponentSerializer.toString( new TextComponent( BaseComponent.toLegacyText( message ) ) ) );
              } else
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index d3650ff8..f4d5aad4 100644
+index 97c4b210..dd1afc0d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -18,6 +18,7 @@ import io.netty.buffer.ByteBuf;
+@@ -16,6 +16,7 @@ import io.netty.buffer.ByteBuf;
  import io.netty.buffer.ByteBufAllocator;
  import io.netty.buffer.Unpooled;
  import io.netty.channel.unix.DomainSocketAddress;
@@ -2792,7 +2792,7 @@ index d3650ff8..f4d5aad4 100644
  import java.io.DataInput;
  import java.net.InetSocketAddress;
  import java.util.ArrayList;
-@@ -52,7 +53,6 @@ import net.md_5.bungee.netty.ChannelWrapper;
+@@ -50,7 +51,6 @@ import net.md_5.bungee.netty.ChannelWrapper;
  import net.md_5.bungee.netty.PacketHandler;
  import net.md_5.bungee.protocol.DefinedPacket;
  import net.md_5.bungee.protocol.PacketWrapper;
@@ -2800,7 +2800,7 @@ index d3650ff8..f4d5aad4 100644
  import net.md_5.bungee.protocol.packet.BossBar;
  import net.md_5.bungee.protocol.packet.Commands;
  import net.md_5.bungee.protocol.packet.EntityEffect;
-@@ -285,7 +285,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -290,7 +290,7 @@ public class DownstreamBridge extends PacketHandler
              throw CancelSendSignal.INSTANCE;
          }
  
@@ -2809,7 +2809,7 @@ index d3650ff8..f4d5aad4 100644
          {
              ByteBuf brand = Unpooled.wrappedBuffer( pluginMessage.getData() );
              String serverBrand = DefinedPacket.readString( brand );
-@@ -749,6 +749,6 @@ public class DownstreamBridge extends PacketHandler
+@@ -754,6 +754,6 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public String toString()
      {
