@@ -21,7 +21,5 @@ jobs:
           distribution: 'zulu'
       - name: Configure Git User Details
         run: git config --global user.email "actions@github.com" && git config --global user.name "Github Actions"
-      - name: Apply Patches
-        run: ./amethyst patch
-      - name: Build
+      - name: Apply Patches and Build
         run: ./amethyst build
