@@ -1,4 +1,4 @@
-From b6fbac55e47c016559e1044b17e5f82d22cddf8c Mon Sep 17 00:00:00 2001
+From f52402b21d80851bbdd531bad72d36bb750623cc Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 10 Jan 2022 00:39:35 +0500
 Subject: [PATCH] Firewall system from FlameCord
@@ -325,7 +325,7 @@ index 00000000..6705414b
 +    }
 +}
 diff --git a/flame/src/main/resources/amethyst.yml b/flame/src/main/resources/amethyst.yml
-index 8b2bffc3..c8e7f85c 100644
+index 8b2bffc3..78ce8440 100644
 --- a/flame/src/main/resources/amethyst.yml
 +++ b/flame/src/main/resources/amethyst.yml
 @@ -16,6 +16,36 @@ versions:
@@ -341,7 +341,7 @@ index 8b2bffc3..c8e7f85c 100644
 +  notify: true
 +
 +  # Blocked addresses cleanup interval.
-+  clear-nverval: 60
++  clear-inverval: 60
 +
 +  # Firewall names
 +  names:

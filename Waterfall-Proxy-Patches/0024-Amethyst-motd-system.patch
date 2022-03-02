@@ -1,18 +1,18 @@
-From 24d3f12c9bdef1750dcc49b46f1a22e7818286c6 Mon Sep 17 00:00:00 2001
+From 1ae5b946761405f8011c374c1a91b58e73ebdb58 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 10 Jan 2022 02:59:49 +0500
 Subject: [PATCH] Amethyst motd system
 
 
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-index 0955606a..6ef97273 100644
+index 0955606a..f534dd2c 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 @@ -1,8 +1,10 @@
  package io.sapphiremc.amethyst.conf;
  
-+import java.util.Arrays;
  import java.util.Collection;
++import java.util.Collections;
  import java.util.Arrays;
  import java.util.List;
 +import java.util.Random;
@@ -76,7 +76,7 @@ index 0955606a..6ef97273 100644
          firewallNotify = getBoolean("firewall.notify", firewallNotify);
          firewallClearInterval = getInt("firewall.clear-interval", firewallClearInterval);
 diff --git a/flame/src/main/resources/amethyst.yml b/flame/src/main/resources/amethyst.yml
-index c8e7f85c..20a9e7b8 100644
+index 78ce8440..ca82d370 100644
 --- a/flame/src/main/resources/amethyst.yml
 +++ b/flame/src/main/resources/amethyst.yml
 @@ -1,6 +1,38 @@
