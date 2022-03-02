@@ -1,4 +1,4 @@
-From a6b0f2b61986c03b788c580fe5a1240015564194 Mon Sep 17 00:00:00 2001
+From abe6d86eceacbf9d3164099d4b35d583e33966e2 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 3 Jan 2022 01:19:36 +0500
 Subject: [PATCH] Amethyst general patch
@@ -131,27 +131,10 @@ index 00000000..ff4d2d85
 \ No newline at end of file
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/Amethyst.java b/flame/src/main/java/io/sapphiremc/amethyst/Amethyst.java
 new file mode 100644
-index 00000000..147c1311
+index 00000000..aad66497
 --- /dev/null
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/Amethyst.java
-@@ -0,0 +1,72 @@
-+/*
-+ * Copyright (c) 2022 DenaryDev
-+ *
-+ * This program is free software: you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as
-+ * published by the Free Software Foundation, either version 3 of the
-+ * License, or (at your option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public
-+ * License along with this program.  If not, see
-+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
-+ */
+@@ -0,0 +1,51 @@
 +package io.sapphiremc.amethyst;
 +
 +import io.sapphiremc.amethyst.conf.AmethystConfig;
@@ -163,10 +146,6 @@ index 00000000..147c1311
 +/**
 + * Amethyst main class
 + * Use this only to get parameter values!
-+ *
-+ * Created 02.01.2022
-+ *
-+ * @author DenaryDev
 + */
 +public class Amethyst {
 +
@@ -209,27 +188,10 @@ index 00000000..147c1311
 +}
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AbstractYamlConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AbstractYamlConfig.java
 new file mode 100644
-index 00000000..afadb428
+index 00000000..f8dda3b7
 --- /dev/null
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AbstractYamlConfig.java
-@@ -0,0 +1,250 @@
-+/*
-+ * Copyright (c) 2022 DenaryDev
-+ *
-+ * This program is free software: you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as
-+ * published by the Free Software Foundation, either version 3 of the
-+ * License, or (at your option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public
-+ * License along with this program.  If not, see
-+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
-+ */
+@@ -0,0 +1,229 @@
 +package io.sapphiremc.amethyst.conf;
 +
 +import io.sapphiremc.amethyst.Amethyst;
@@ -248,10 +210,6 @@ index 00000000..afadb428
 +
 +/**
 + * Abstract class for our configurations.
-+ *
-+ * Created 03.01.2022
-+ *
-+ * @author DenaryDev
 + */
 +public abstract class AbstractYamlConfig {
 +
@@ -465,27 +423,10 @@ index 00000000..afadb428
 +}
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 new file mode 100644
-index 00000000..e7567771
+index 00000000..893fa2b8
 --- /dev/null
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-@@ -0,0 +1,36 @@
-+/*
-+ * Copyright (c) 2022 DenaryDev
-+ *
-+ * This program is free software: you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as
-+ * published by the Free Software Foundation, either version 3 of the
-+ * License, or (at your option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public
-+ * License along with this program.  If not, see
-+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
-+ */
+@@ -0,0 +1,15 @@
 +package io.sapphiremc.amethyst.conf;
 +
 +import net.md_5.bungee.config.ConfigurationProvider;
@@ -493,10 +434,6 @@ index 00000000..e7567771
 +/**
 + * Amethyst main configuration class
 + * Use this only to get parameter values!
-+ *
-+ * Created 02.01.2022
-+ *
-+ * @author DenaryDev
 + */
 +public class AmethystConfig extends AbstractYamlConfig {
 +

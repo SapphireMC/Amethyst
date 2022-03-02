@@ -1,14 +1,14 @@
-From eff333f7e49b9d957cefb15705be22b9d79f8675 Mon Sep 17 00:00:00 2001
+From 0c874579230c60c140e24aacc4c8d49dc4410680 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Wed, 5 Jan 2022 01:24:39 +0500
 Subject: [PATCH] Make min and max versions configurable
 
 
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-index c6bbbe7e..1aef4ee8 100644
+index 84f940ca..309a26d8 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-@@ -61,6 +61,17 @@ public class AmethystConfig extends AbstractYamlConfig {
+@@ -40,6 +40,17 @@ public class AmethystConfig extends AbstractYamlConfig {
       */
      public boolean reconnectEnabled = false;
  
@@ -26,7 +26,7 @@ index c6bbbe7e..1aef4ee8 100644
      public AmethystConfig(ConfigurationProvider provider) {
          super(provider, "amethyst.yml");
          init();
-@@ -78,5 +89,8 @@ public class AmethystConfig extends AbstractYamlConfig {
+@@ -57,5 +68,8 @@ public class AmethystConfig extends AbstractYamlConfig {
          sendEnabled = getBoolean( "modules.send", sendEnabled );
          serverEnabled = getBoolean( "modules.server", serverEnabled );
          reconnectEnabled = getBoolean( "modules.reconnect", reconnectEnabled );
@@ -62,10 +62,10 @@ index e8da947f..922dbf31 100644
  # In this section you can enable or disable certain proxy modules
  modules:
 diff --git a/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java b/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java
-index 6bb3ed66..5b971947 100644
+index b999c93f..35b6fba7 100644
 --- a/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java
 +++ b/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java
-@@ -20,6 +20,7 @@ package io.sapphiremc.amethyst.api.protocol;
+@@ -3,6 +3,7 @@ package io.sapphiremc.amethyst.api.protocol;
  import com.google.common.collect.ImmutableList;
  import com.google.common.collect.ImmutableMap;
  import com.google.common.collect.Sets;
@@ -73,7 +73,7 @@ index 6bb3ed66..5b971947 100644
  import java.util.EnumSet;
  import java.util.HashMap;
  import java.util.List;
-@@ -78,18 +79,16 @@ public enum ProtocolVersion {
+@@ -61,18 +62,16 @@ public enum ProtocolVersion {
      /**
       * Represents the lowest supported version.
       */
@@ -95,7 +95,7 @@ index 6bb3ed66..5b971947 100644
  
      /**
       * A map linking the protocol version number to its {@link ProtocolVersion} representation.
-@@ -111,6 +110,28 @@ public enum ProtocolVersion {
+@@ -94,6 +93,28 @@ public enum ProtocolVersion {
          ID_TO_PROTOCOL_CONSTANT = ImmutableMap.copyOf(versions);
      }
  
@@ -124,7 +124,7 @@ index 6bb3ed66..5b971947 100644
      /**
       * A set containing all the protocols that the proxy actually supports, excluding special-purpose
       * "versions" like {@link #LEGACY} and {@link #UNKNOWN}.
-@@ -203,6 +224,16 @@ public enum ProtocolVersion {
+@@ -186,6 +207,16 @@ public enum ProtocolVersion {
          return ID_TO_PROTOCOL_CONSTANT.getOrDefault(protocol, UNKNOWN);
      }
  

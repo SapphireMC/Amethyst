@@ -1,11 +1,11 @@
-From c9064a4c863cf82d3b890e99102172ac282eb30e Mon Sep 17 00:00:00 2001
+From ee8beda9db69a502967e67bee4bd639b3313c815 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 10 Jan 2022 00:39:35 +0500
 Subject: [PATCH] Firewall system from FlameCord
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-index 5d920b7a..bed92ca8 100644
+index 7c464176..436ff2b8 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 @@ -2,6 +2,7 @@ package net.md_5.bungee.api;
@@ -31,10 +31,10 @@ index 5d920b7a..bed92ca8 100644
      // Amethyst end
  }
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/Amethyst.java b/flame/src/main/java/io/sapphiremc/amethyst/Amethyst.java
-index a6c9add4..533f13c6 100644
+index 934c0ccf..74dec507 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/Amethyst.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/Amethyst.java
-@@ -19,6 +19,8 @@ package io.sapphiremc.amethyst;
+@@ -2,6 +2,8 @@ package io.sapphiremc.amethyst;
  
  import io.sapphiremc.amethyst.conf.AmethystConfig;
  import io.sapphiremc.amethyst.conf.MessagesConfig;
@@ -43,7 +43,7 @@ index a6c9add4..533f13c6 100644
  import java.util.logging.Logger;
  import lombok.Getter;
  import net.md_5.bungee.config.ConfigurationProvider;
-@@ -67,15 +69,45 @@ public class Amethyst {
+@@ -46,15 +48,45 @@ public class Amethyst {
       */
      @Getter
      private MessagesConfig messages;
@@ -91,11 +91,10 @@ index a6c9add4..533f13c6 100644
      }
  }
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-index 1aef4ee8..513a9079 100644
+index 309a26d8..1c6be170 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-@@ -17,6 +17,9 @@
-  */
+@@ -1,5 +1,8 @@
  package io.sapphiremc.amethyst.conf;
  
 +import java.util.Collection;
@@ -104,7 +103,7 @@ index 1aef4ee8..513a9079 100644
  import net.md_5.bungee.config.ConfigurationProvider;
  
  /**
-@@ -72,6 +75,37 @@ public class AmethystConfig extends AbstractYamlConfig {
+@@ -51,6 +54,37 @@ public class AmethystConfig extends AbstractYamlConfig {
       */
      public String maxVersion = "1.18.1";
  
@@ -142,7 +141,7 @@ index 1aef4ee8..513a9079 100644
      public AmethystConfig(ConfigurationProvider provider) {
          super(provider, "amethyst.yml");
          init();
-@@ -81,6 +115,15 @@ public class AmethystConfig extends AbstractYamlConfig {
+@@ -60,6 +94,15 @@ public class AmethystConfig extends AbstractYamlConfig {
      @Override
      protected void loadContent()
      {
@@ -160,27 +159,10 @@ index 1aef4ee8..513a9079 100644
          ipEnabled = getBoolean( "modules.ip", ipEnabled );
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/firewall/FirewallManager.java b/flame/src/main/java/io/sapphiremc/amethyst/firewall/FirewallManager.java
 new file mode 100644
-index 00000000..68813f15
+index 00000000..6705414b
 --- /dev/null
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/firewall/FirewallManager.java
-@@ -0,0 +1,182 @@
-+/*
-+ * Copyright (c) 2022 DenaryDev
-+ *
-+ * This program is free software: you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as
-+ * published by the Free Software Foundation, either version 3 of the
-+ * License, or (at your option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public
-+ * License along with this program.  If not, see
-+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
-+ */
+@@ -0,0 +1,161 @@
 +package io.sapphiremc.amethyst.firewall;
 +
 +import io.sapphiremc.amethyst.Amethyst;
@@ -194,10 +176,6 @@ index 00000000..68813f15
 +/**
 + * Firewall manager for proxy.
 + * Ported from FlameCord
-+ *
-+ * Created 07.01.2022
-+ *
-+ * @author DenaryDev
 + */
 +public class FirewallManager {
 +    private final Amethyst core = Amethyst.getInstance();
@@ -663,5 +641,5 @@ index a0b7a4ec..ca11bcc0 100644
                  throw new IllegalStateException( "Invalid data request packet" );
              }
 -- 
-2.34.1.windows.1
+2.35.1
 

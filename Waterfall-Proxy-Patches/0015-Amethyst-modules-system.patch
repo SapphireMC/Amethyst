@@ -1,15 +1,15 @@
-From a6028039e0bc8e367cc479d8fda8bc41eeef46c1 Mon Sep 17 00:00:00 2001
+From 6bcb0c1f1f143460ea53246fa3775149fd6efc3e Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Tue, 4 Jan 2022 20:41:35 +0500
 Subject: [PATCH] Amethyst modules system
 
 
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-index e7567771..c6bbbe7e 100644
+index 893fa2b8..84f940ca 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-@@ -28,9 +28,55 @@ import net.md_5.bungee.config.ConfigurationProvider;
-  * @author DenaryDev
+@@ -7,9 +7,55 @@ import net.md_5.bungee.config.ConfigurationProvider;
+  * Use this only to get parameter values!
   */
  public class AmethystConfig extends AbstractYamlConfig {
 +    /**
@@ -513,7 +513,7 @@ index 9757ba83..00000000
 -description: ${project.description}
 -author: ${module.author}
 diff --git a/pom.xml b/pom.xml
-index cfbb8500..9c142f4d 100644
+index 61513b4e..eda1866c 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -45,7 +45,7 @@
@@ -527,27 +527,10 @@ index cfbb8500..9c142f4d 100644
          <module>query</module>
 diff --git a/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java b/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java
 new file mode 100644
-index 00000000..7550d6a1
+index 00000000..7e0fedb3
 --- /dev/null
 +++ b/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java
-@@ -0,0 +1,74 @@
-+/*
-+ * Copyright (c) 2022 DenaryDev
-+ *
-+ * This program is free software: you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as
-+ * published by the Free Software Foundation, either version 3 of the
-+ * License, or (at your option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public
-+ * License along with this program.  If not, see
-+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
-+ */
+@@ -0,0 +1,52 @@
 +package io.sapphiremc.amethyst;
 +
 +import io.sapphiremc.amethyst.conf.AmethystConfig;
@@ -567,11 +550,6 @@ index 00000000..7550d6a1
 +import net.md_5.bungee.command.CommandEnd;
 +import net.md_5.bungee.command.CommandReload;
 +
-+/**
-+ * Created 04.01.2022
-+ *
-+ * @author DenaryDev
-+ */
 +public class AmethystModulesManager {
 +    public static void registerModules(ProxyServer proxy) {
 +        AmethystConfig config = proxy.getAmethyst().getConfig();
@@ -701,7 +679,7 @@ diff --git a/module/cmd-send/src/main/java/net/md_5/bungee/module/cmd/send/Comma
 similarity index 99%
 rename from module/cmd-send/src/main/java/net/md_5/bungee/module/cmd/send/CommandSend.java
 rename to proxy/src/main/java/io/sapphiremc/amethyst/module/CommandSend.java
-index dbcfeb09..96dcd016 100644
+index f9c08ada..e12c1f65 100644
 --- a/module/cmd-send/src/main/java/net/md_5/bungee/module/cmd/send/CommandSend.java
 +++ b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandSend.java
 @@ -1,4 +1,4 @@
@@ -908,5 +886,5 @@ index 787172e4..49836d12 100644
          return ret;
      }
 -- 
-2.34.1.windows.1
+2.35.1
 

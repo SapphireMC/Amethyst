@@ -1,4 +1,4 @@
-From ec2f86ee1da74c59edc18ead0c6a1059cb0ce5a0 Mon Sep 17 00:00:00 2001
+From 3a927504c2942035c9a476fd9d07aa0434390e5a Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 3 Jan 2022 17:46:53 +0500
 Subject: [PATCH] Port Velocity ProtocolVersion
@@ -33,61 +33,22 @@ index f497395e..9e78f2c1 100644
       *
 diff --git a/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolDirection.java b/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolDirection.java
 new file mode 100644
-index 00000000..7c74af73
+index 00000000..c8f6c430
 --- /dev/null
 +++ b/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolDirection.java
-@@ -0,0 +1,28 @@
-+/*
-+ * Copyright (c) 2022 DenaryDev
-+ *
-+ * This program is free software: you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as
-+ * published by the Free Software Foundation, either version 3 of the
-+ * License, or (at your option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public
-+ * License along with this program.  If not, see
-+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
-+ */
+@@ -0,0 +1,6 @@
 +package io.sapphiremc.amethyst.api.protocol;
 +
-+/**
-+ * Created 03.01.2022
-+ *
-+ * @author DenaryDev
-+ */
 +public enum ProtocolDirection {
 +    TO_CLIENT,
 +    TO_SERVER
 +}
 diff --git a/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java b/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java
 new file mode 100644
-index 00000000..6bb3ed66
+index 00000000..b999c93f
 --- /dev/null
 +++ b/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java
-@@ -0,0 +1,305 @@
-+/*
-+ * Copyright (c) 2022 DenaryDev
-+ *
-+ * This program is free software: you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as
-+ * published by the Free Software Foundation, either version 3 of the
-+ * License, or (at your option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public
-+ * License along with this program.  If not, see
-+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
-+ */
+@@ -0,0 +1,288 @@
 +package io.sapphiremc.amethyst.api.protocol;
 +
 +import com.google.common.collect.ImmutableList;
@@ -1213,33 +1174,32 @@ index 7f0b71c9..9d2c3ed2 100644
  
              ProtocolData protocolData = getProtocolData( version );
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
-index 21329e93..5e170fbb 100644
+index 21329e93..c095bd09 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
-@@ -2,7 +2,14 @@ package net.md_5.bungee.protocol;
- 
+@@ -3,6 +3,12 @@ package net.md_5.bungee.protocol;
  import com.google.common.collect.ImmutableList;
  import java.util.List;
-+import io.sapphiremc.amethyst.api.protocol.ProtocolVersion; // Amethyst - This need for javadoc
-+import io.sapphiremc.amethyst.api.protocol.ProtocolDirection; // Amethyst - This need for javadoc
  
 +/**
 + * BungeeCord protocol version constants class.
 + *
-+ * @deprecated use {@link ProtocolVersion}.
++ * @deprecated use {@link io.sapphiremc.amethyst.api.protocol.ProtocolVersion}.
 + */
++@Deprecated
  public class ProtocolConstants
  {
  
-@@ -114,6 +121,11 @@ public class ProtocolConstants
+@@ -114,6 +120,12 @@ public class ProtocolConstants
              return after >= other;
      }
  
 +    /**
 +     * BungeeCord protocol directions enum.
 +     *
-+     * @deprecated Use {@link ProtocolDirection}.
++     * @deprecated Use {@link io.sapphiremc.amethyst.api.protocol.ProtocolDirection}.
 +     */
++    @Deprecated
      public enum Direction
      {
  

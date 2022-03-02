@@ -1,4 +1,4 @@
-From 994e38a0b708ebdea40d2b63ee85ef1832d6205b Mon Sep 17 00:00:00 2001
+From 6918226813c4eee1a69ed287839c66229e18c9cd Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Thu, 6 Jan 2022 18:32:40 +0500
 Subject: [PATCH] Amethyst message system
@@ -55,10 +55,10 @@ index 90031156..369ab407 100644
              this.callEvent( new ProxyExceptionEvent( new ProxyCommandException( ex, command, sender, args ) ) ); //Waterfall - throw error event
          }
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/Amethyst.java b/flame/src/main/java/io/sapphiremc/amethyst/Amethyst.java
-index 147c1311..a6c9add4 100644
+index aad66497..934c0ccf 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/Amethyst.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/Amethyst.java
-@@ -18,6 +18,7 @@
+@@ -1,6 +1,7 @@
  package io.sapphiremc.amethyst;
  
  import io.sapphiremc.amethyst.conf.AmethystConfig;
@@ -66,7 +66,7 @@ index 147c1311..a6c9add4 100644
  import java.util.logging.Logger;
  import lombok.Getter;
  import net.md_5.bungee.config.ConfigurationProvider;
-@@ -48,7 +49,7 @@ public class Amethyst {
+@@ -27,7 +28,7 @@ public class Amethyst {
       * @see YamlConfiguration
       */
      @Getter
@@ -75,7 +75,7 @@ index 147c1311..a6c9add4 100644
      /**
       * Proxy logger instance
       */
-@@ -60,13 +61,21 @@ public class Amethyst {
+@@ -39,13 +40,21 @@ public class Amethyst {
       */
      @Getter
      private AmethystConfig config;
@@ -99,27 +99,10 @@ index 147c1311..a6c9add4 100644
  }
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
 new file mode 100644
-index 00000000..4674a8f0
+index 00000000..835888c3
 --- /dev/null
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
-@@ -0,0 +1,95 @@
-+/*
-+ * Copyright (c) 2022 DenaryDev
-+ *
-+ * This program is free software: you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as
-+ * published by the Free Software Foundation, either version 3 of the
-+ * License, or (at your option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public
-+ * License along with this program.  If not, see
-+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
-+ */
+@@ -0,0 +1,73 @@
 +package io.sapphiremc.amethyst.conf;
 +
 +import io.sapphiremc.amethyst.Amethyst;
@@ -127,11 +110,6 @@ index 00000000..4674a8f0
 +import net.md_5.bungee.api.ChatColor;
 +import net.md_5.bungee.config.ConfigurationProvider;
 +
-+/**
-+ * Created 06.01.2022
-+ *
-+ * @author DenaryDev
-+ */
 +public class MessagesConfig extends AbstractYamlConfig {
 +
 +    public MessagesConfig(ConfigurationProvider provider) {
@@ -1002,5 +980,5 @@ index e16cf0a8..00000000
 -command_ip=\u00a79IP of {0} is {1}
 -illegal_chat_characters=\u00a7cillegal characters in chat ({0})
 -- 
-2.35.1.windows.2
+2.35.1
 

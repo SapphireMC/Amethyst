@@ -1,14 +1,14 @@
-From 78e87bc3eb7ef302e53ce4a39a99f545fb7e830f Mon Sep 17 00:00:00 2001
+From 122beff80fc6ac7d90d067407aea020b021c6539 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 10 Jan 2022 18:39:08 +0500
 Subject: [PATCH] Add lobby and hub commands
 
 
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-index b8cc9107..8ac85644 100644
+index c259c7be..99ce9a6f 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-@@ -121,6 +121,28 @@ public class AmethystConfig extends AbstractYamlConfig {
+@@ -100,6 +100,28 @@ public class AmethystConfig extends AbstractYamlConfig {
       */
      public List<String> motdSecondLines = Collections.singletonList("&eChange me in &6amethyst.yml &efile!");
  
@@ -37,7 +37,7 @@ index b8cc9107..8ac85644 100644
      /**
       * Gets random motd line from first or second lines list.
       *
-@@ -159,6 +181,10 @@ public class AmethystConfig extends AbstractYamlConfig {
+@@ -138,6 +160,10 @@ public class AmethystConfig extends AbstractYamlConfig {
          motdHoverBoxEnabled = getBoolean("motd.hoverBox.enabled", motdHoverBoxEnabled);
          motdHoverBoxContent = getStringList("motd.hoverBox.content", motdHoverBoxContent);
  
@@ -49,10 +49,10 @@ index b8cc9107..8ac85644 100644
          firewallNotify = getBoolean("firewall.notify", firewallNotify);
          firewallClearInterval = getInt("firewall.clear-interval", firewallClearInterval);
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
-index 9c914e92..82727979 100644
+index 835888c3..bebfa299 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
-@@ -44,6 +44,9 @@ public class MessagesConfig extends AbstractYamlConfig {
+@@ -22,6 +22,9 @@ public class MessagesConfig extends AbstractYamlConfig {
          getString("command.list.header", "Available servers:");
          getString("command.list.entry", "&a[{0}] &e({1}): &r{2}");
          getString("command.list.total", "Total players online: {0}");
@@ -87,7 +87,7 @@ index 57e54ac5..70b54bfa 100644
  firewall:
    # Enable firewall system?
 diff --git a/flame/src/main/resources/messages.yml b/flame/src/main/resources/messages.yml
-index 1ae70cb0..ec8db3de 100644
+index 071c698f..d4de461c 100644
 --- a/flame/src/main/resources/messages.yml
 +++ b/flame/src/main/resources/messages.yml
 @@ -23,6 +23,13 @@ command:
@@ -105,10 +105,10 @@ index 1ae70cb0..ec8db3de 100644
    perms:
      groups: "&6You have the following groups: {0}"
 diff --git a/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java b/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java
-index 49f9c607..db5b9440 100644
+index e8c575c3..0c0bd76e 100644
 --- a/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java
 +++ b/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java
-@@ -24,6 +24,7 @@ import io.sapphiremc.amethyst.module.CommandAlertRaw;
+@@ -7,6 +7,7 @@ import io.sapphiremc.amethyst.module.CommandAlertRaw;
  import io.sapphiremc.amethyst.module.CommandFind;
  import io.sapphiremc.amethyst.module.CommandIP;
  import io.sapphiremc.amethyst.module.CommandList;
@@ -116,7 +116,7 @@ index 49f9c607..db5b9440 100644
  import io.sapphiremc.amethyst.module.CommandPerms;
  import io.sapphiremc.amethyst.module.CommandSend;
  import io.sapphiremc.amethyst.module.CommandServer;
-@@ -61,6 +62,7 @@ public class AmethystModulesManager {
+@@ -39,6 +40,7 @@ public class AmethystModulesManager {
          if (config.findEnabled) manager.registerCommand(null, new CommandFind());
          if (config.ipEnabled) manager.registerCommand(null, new CommandIP());
          if (config.listEnabled) manager.registerCommand(null, new CommandList());
@@ -126,27 +126,10 @@ index 49f9c607..db5b9440 100644
          if (config.serverEnabled) manager.registerCommand(null, new CommandServer());
 diff --git a/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandLobby.java b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandLobby.java
 new file mode 100644
-index 00000000..2086429c
+index 00000000..f2da93b7
 --- /dev/null
 +++ b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandLobby.java
-@@ -0,0 +1,60 @@
-+/*
-+ * Copyright (c) 2022 DenaryDev
-+ *
-+ * This program is free software: you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as
-+ * published by the Free Software Foundation, either version 3 of the
-+ * License, or (at your option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public
-+ * License along with this program.  If not, see
-+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
-+ */
+@@ -0,0 +1,38 @@
 +package io.sapphiremc.amethyst.module;
 +
 +import io.sapphiremc.amethyst.conf.AmethystConfig;
@@ -156,11 +139,6 @@ index 00000000..2086429c
 +import net.md_5.bungee.api.connection.ProxiedPlayer;
 +import net.md_5.bungee.api.plugin.Command;
 +
-+/**
-+ * Created 10.01.2022
-+ *
-+ * @author DenaryDev
-+ */
 +public class CommandLobby extends Command {
 +
 +    public CommandLobby() {
@@ -191,5 +169,5 @@ index 00000000..2086429c
 +    }
 +}
 -- 
-2.34.1.windows.1
+2.35.1
 

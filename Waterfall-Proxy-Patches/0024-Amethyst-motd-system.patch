@@ -1,15 +1,14 @@
-From e81d7b3c2a8f61310ec0368189592cdfd1a5da3d Mon Sep 17 00:00:00 2001
+From a6854999cfcc8c354cb8addb9a110fd6b52e217b Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 10 Jan 2022 02:59:49 +0500
 Subject: [PATCH] Amethyst motd system
 
 
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-index 513a9079..b8cc9107 100644
+index 1c6be170..c259c7be 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-@@ -17,9 +17,11 @@
-  */
+@@ -1,8 +1,10 @@
  package io.sapphiremc.amethyst.conf;
  
 +import java.util.Arrays;
@@ -20,7 +19,7 @@ index 513a9079..b8cc9107 100644
  import net.md_5.bungee.config.ConfigurationProvider;
  
  /**
-@@ -106,6 +108,41 @@ public class AmethystConfig extends AbstractYamlConfig {
+@@ -85,6 +87,41 @@ public class AmethystConfig extends AbstractYamlConfig {
       */
      public boolean logHaProxy = false;
  
@@ -62,7 +61,7 @@ index 513a9079..b8cc9107 100644
      public AmethystConfig(ConfigurationProvider provider) {
          super(provider, "amethyst.yml");
          init();
-@@ -115,6 +152,13 @@ public class AmethystConfig extends AbstractYamlConfig {
+@@ -94,6 +131,13 @@ public class AmethystConfig extends AbstractYamlConfig {
      @Override
      protected void loadContent()
      {
@@ -120,10 +119,10 @@ index 1aa3c837..57e54ac5 100644
  # In this section, you can configure the minimum and maximum supported versions
  versions:
 diff --git a/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java b/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java
-index 7550d6a1..49f9c607 100644
+index 7e0fedb3..e8c575c3 100644
 --- a/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java
 +++ b/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java
-@@ -18,6 +18,7 @@
+@@ -1,6 +1,7 @@
  package io.sapphiremc.amethyst;
  
  import io.sapphiremc.amethyst.conf.AmethystConfig;
@@ -131,9 +130,9 @@ index 7550d6a1..49f9c607 100644
  import io.sapphiremc.amethyst.module.CommandAlert;
  import io.sapphiremc.amethyst.module.CommandAlertRaw;
  import io.sapphiremc.amethyst.module.CommandFind;
-@@ -40,10 +41,13 @@ import net.md_5.bungee.command.CommandReload;
-  * @author DenaryDev
-  */
+@@ -18,10 +19,13 @@ import net.md_5.bungee.command.CommandEnd;
+ import net.md_5.bungee.command.CommandReload;
+ 
  public class AmethystModulesManager {
 +    private static final PingListener PING_LISTENER = new PingListener();
 +
@@ -145,7 +144,7 @@ index 7550d6a1..49f9c607 100644
  
          manager.registerCommand(null, new CommandBungee());
          manager.registerCommand(null, new CommandEnd());
-@@ -70,5 +74,8 @@ public class AmethystModulesManager {
+@@ -48,5 +52,8 @@ public class AmethystModulesManager {
                  }
              }
          }
@@ -156,27 +155,10 @@ index 7550d6a1..49f9c607 100644
  }
 diff --git a/proxy/src/main/java/io/sapphiremc/amethyst/listeners/PingListener.java b/proxy/src/main/java/io/sapphiremc/amethyst/listeners/PingListener.java
 new file mode 100644
-index 00000000..bb7a5b91
+index 00000000..f566f10c
 --- /dev/null
 +++ b/proxy/src/main/java/io/sapphiremc/amethyst/listeners/PingListener.java
-@@ -0,0 +1,97 @@
-+/*
-+ * Copyright (c) 2022 DenaryDev
-+ *
-+ * This program is free software: you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as
-+ * published by the Free Software Foundation, either version 3 of the
-+ * License, or (at your option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public
-+ * License along with this program.  If not, see
-+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
-+ */
+@@ -0,0 +1,75 @@
 +package io.sapphiremc.amethyst.listeners;
 +
 +import io.sapphiremc.amethyst.conf.AmethystConfig;
@@ -193,11 +175,6 @@ index 00000000..bb7a5b91
 +import net.md_5.bungee.api.plugin.Listener;
 +import net.md_5.bungee.event.EventHandler;
 +
-+/**
-+ * Created 10.01.2022
-+ *
-+ * @author DenaryDev
-+ */
 +public class PingListener implements Listener {
 +
 +    @EventHandler
@@ -258,5 +235,5 @@ index 00000000..bb7a5b91
 +    }
 +}
 -- 
-2.34.1.windows.1
+2.35.1
 
