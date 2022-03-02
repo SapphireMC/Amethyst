@@ -1,0 +1,79 @@
+From 45de4a80e6088c7ccd88b1d5ab9314f9f4017a63 Mon Sep 17 00:00:00 2001
+From: DenaryDev <denaryplanet@gmail.com>
+Date: Thu, 3 Mar 2022 00:54:41 +0500
+Subject: [PATCH] TCP Fast Open
+
+
+diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
+index 8e1ccc4e..196baa69 100644
+--- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
++++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
+@@ -74,6 +74,17 @@ public class AmethystConfig extends AbstractYamlConfig {
+      */
+     public Collection<String> firewallNames = Arrays.asList("mcspam", "mcbot", "mcstorm", "dropbot", "theresabot");
+ 
++    /**
++     * Enable TCP fast open netty feature.
++     * For more information see https://netty.io/wiki/tcp-fast-open.html
++     */
++    public boolean connectionTFOEnable = true;
++
++    /**
++     * Max pending fast open
++     */
++    public int connectionTFOMaxPending = 3;
++
+     /**
+      * Enable or disable InitialHandler logging.
+      */
+@@ -169,6 +180,9 @@ public class AmethystConfig extends AbstractYamlConfig {
+         firewallClearInterval = getInt("firewall.clear-interval", firewallClearInterval);
+         firewallNames = getStringList("firewall.names", (List<String>) firewallNames);
+ 
++        connectionTFOEnable = getBoolean("connection.tfo.enable", connectionTFOEnable);
++        connectionTFOMaxPending = getInt("connection.tfo.max-pending", connectionTFOMaxPending);
++
+         logInitialHandler = getBoolean("logger.initialHandler", logInitialHandler);
+         logExceptions = getBoolean("logger.exceptions", logExceptions);
+         logHaProxy = getBoolean("logger.haProxy", logHaProxy);
+diff --git a/flame/src/main/resources/amethyst.yml b/flame/src/main/resources/amethyst.yml
+index a96f6b96..3d52ff55 100644
+--- a/flame/src/main/resources/amethyst.yml
++++ b/flame/src/main/resources/amethyst.yml
+@@ -80,6 +80,17 @@ firewall:
+     - "dropbot"
+     - "theresabot"
+ 
++# Connection settings
++connection:
++  # TCP Fast open
++  tfo:
++    # Enable TCP fast open netty feature.
++    # For more information see https://netty.io/wiki/tcp-fast-open.html
++    enable: true
++
++    # Max pending fast open
++    max-pending: 3
++
+ # Logger configuration
+ logger:
+   # Enable or disable InitialHandler logging.
+diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
+index 454c57b1..ca0fb9f8 100644
+--- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
++++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
+@@ -206,6 +206,11 @@ public class PipelineUtils
+                 // IP_TOS is not supported (Windows XP / Windows Server 2003)
+             }
+             ch.config().setOption( ChannelOption.TCP_NODELAY, true );
++            // Amethyst start - TFO settings
++            if ( ProxyServer.getInstance().getAmethyst().getConfig().connectionTFOEnable )
++            {
++                ch.config().setOption( ChannelOption.TCP_FASTOPEN, ProxyServer.getInstance().getAmethyst().getConfig().connectionTFOMaxPending );
++            }
+             ch.config().setAllocator( PooledByteBufAllocator.DEFAULT );
+             ch.config().setWriteBufferWaterMark( MARK );
+ 
+-- 
+2.35.1
+
