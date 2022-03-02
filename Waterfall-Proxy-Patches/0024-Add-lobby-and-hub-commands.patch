@@ -1,11 +1,11 @@
-From c8b4d8cdd80e837ee9bc42ffe412549ae590d5df Mon Sep 17 00:00:00 2001
+From 0f0919a23e4d18147499e4429bee70c21d3d1833 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 10 Jan 2022 18:39:08 +0500
 Subject: [PATCH] Add lobby and hub commands
 
 
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-index f19b7192..ad7e1767 100644
+index f534dd2c..d242d187 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 @@ -100,6 +100,28 @@ public class AmethystConfig extends AbstractYamlConfig {
@@ -63,7 +63,7 @@ index 835888c3..bebfa299 100644
          getString("command.perms.permissions", "=&9- {0}");
          getString("command.reload.success", "&c&lAmethyst has been reloaded. This is NOT advisable and you will not be supported with any issues that arise! Please restart Amethyst ASAP.");
 diff --git a/flame/src/main/resources/amethyst.yml b/flame/src/main/resources/amethyst.yml
-index ea2a016d..48a7c82d 100644
+index ca82d370..c584a6d1 100644
 --- a/flame/src/main/resources/amethyst.yml
 +++ b/flame/src/main/resources/amethyst.yml
 @@ -48,6 +48,19 @@ versions:

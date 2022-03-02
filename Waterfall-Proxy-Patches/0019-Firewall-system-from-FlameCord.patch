@@ -1,4 +1,4 @@
-From f52402b21d80851bbdd531bad72d36bb750623cc Mon Sep 17 00:00:00 2001
+From 4ea97456ef06302534951b93ad730356704b5410 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 10 Jan 2022 00:39:35 +0500
 Subject: [PATCH] Firewall system from FlameCord
@@ -440,7 +440,7 @@ index 1c696a7d..083bc116 100644
          ProtocolVersion.register(); // Amethyst - register min and max supported versions
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index e4c927f1..5ec67c48 100644
+index 2c46ba9b..7b89285a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -344,7 +344,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection

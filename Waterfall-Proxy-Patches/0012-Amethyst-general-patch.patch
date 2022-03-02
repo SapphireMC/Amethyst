@@ -1,4 +1,4 @@
-From 2651bcc74eaadb4e563d002bde717af037797798 Mon Sep 17 00:00:00 2001
+From e094b15ef03762f4252e426c7d03a399a1b8c6d4 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 3 Jan 2022 01:19:36 +0500
 Subject: [PATCH] Amethyst general patch
@@ -713,7 +713,7 @@ index 10ccb6b7..787172e4 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index f8081506..0babc2a5 100644
+index 316a50a0..6e86def8 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -154,7 +154,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection

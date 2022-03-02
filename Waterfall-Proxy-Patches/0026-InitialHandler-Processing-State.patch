@@ -1,0 +1,85 @@
+From 2e601c549e6a0ea58595774fd0990505bf9983d6 Mon Sep 17 00:00:00 2001
+From: DenaryDev <denaryplanet@gmail.com>
+Date: Thu, 3 Mar 2022 01:31:49 +0500
+Subject: [PATCH] InitialHandler Processing State
+
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index 7b89285a..fb856dd1 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -123,12 +123,12 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     private enum State
+     {
+ 
+-        HANDSHAKE, STATUS, PING, USERNAME, ENCRYPT, FINISHING;
++        PROCESSING, PROCESSING_USERNAME, HANDSHAKE, STATUS, PING, USERNAME, ENCRYPT, FINISHING; // Amethyst
+     }
+ 
+     private boolean canSendKickMessage()
+     {
+-        return thisState == State.USERNAME || thisState == State.ENCRYPT || thisState == State.FINISHING;
++        return thisState == State.PROCESSING_USERNAME || thisState == State.USERNAME || thisState == State.ENCRYPT || thisState == State.FINISHING; // Amethyst
+     }
+ 
+     @Override
+@@ -243,6 +243,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     public void handle(StatusRequest statusRequest) throws Exception
+     {
+         Preconditions.checkState( thisState == State.STATUS, "Not expecting STATUS" );
++        thisState = State.PROCESSING; // Amethyst
+ 
+         ServerInfo forced = AbstractReconnectHandler.getForcedHost( this );
+         final String motd = ( forced != null ) ? forced.getMotd() : listener.getMotd();
+@@ -303,6 +304,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     {
+        // if (!ACCEPT_INVALID_PACKETS) { // Amethyst - Never accept invalid packets
+             Preconditions.checkState(thisState == State.PING, "Not expecting PING");
++            thisState = State.PROCESSING; // Amethyst
+        // }
+         unsafe.sendPacket( ping );
+         // Amethyst start - Close instead of disconnect
+@@ -315,6 +317,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     public void handle(Handshake handshake) throws Exception
+     {
+         Preconditions.checkState( thisState == State.HANDSHAKE, "Not expecting HANDSHAKE" );
++        thisState = State.PROCESSING; // Amethyst
+         this.handshake = handshake;
+         ch.setVersion( handshake.getProtocolVersion() );
+ 
+@@ -381,6 +384,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     public void handle(LoginRequest loginRequest) throws Exception
+     {
+         Preconditions.checkState( thisState == State.USERNAME, "Not expecting USERNAME" );
++        thisState = State.PROCESSING_USERNAME; // Amethyst
+ 
+         if ( !AllowedCharacters.isValidName( loginRequest.getData(), onlineMode ) )
+         {
+@@ -449,6 +453,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     public void handle(final EncryptionResponse encryptResponse) throws Exception
+     {
+         Preconditions.checkState( thisState == State.ENCRYPT, "Not expecting ENCRYPT" );
++        thisState = State.PROCESSING; // Amethyst
+ 
+         SecretKey sharedKey = EncryptionUtil.getSecret( encryptResponse, request );
+         // Waterfall start
+@@ -686,14 +691,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     @Override
+     public void setOnlineMode(boolean onlineMode)
+     {
+-        Preconditions.checkState( thisState == State.USERNAME, "Can only set online mode status whilst state is username" );
++        Preconditions.checkState( thisState == State.USERNAME || thisState == State.PROCESSING_USERNAME, "Can only set online mode status whilst state is username" ); // Amethyst
+         this.onlineMode = onlineMode;
+     }
+ 
+     @Override
+     public void setUniqueId(UUID uuid)
+     {
+-        Preconditions.checkState( thisState == State.USERNAME, "Can only set uuid while state is username" );
++        Preconditions.checkState( thisState == State.USERNAME || thisState == State.PROCESSING_USERNAME, "Can only set uuid while state is username" ); // Amethyst
+         Preconditions.checkState( !onlineMode, "Can only set uuid when online mode is false" );
+         this.uniqueId = uuid;
+     }
+-- 
+2.35.1
+

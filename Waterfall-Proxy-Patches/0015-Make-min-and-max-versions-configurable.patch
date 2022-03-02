@@ -1,4 +1,4 @@
-From 86df6916a539147610586abd79142fde1505f605 Mon Sep 17 00:00:00 2001
+From 0ad70616f13c04d6def6df0eb8fea7574cb07955 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Wed, 5 Jan 2022 01:24:39 +0500
 Subject: [PATCH] Make min and max versions configurable

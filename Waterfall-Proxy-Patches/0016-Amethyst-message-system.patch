@@ -1,4 +1,4 @@
-From 6918226813c4eee1a69ed287839c66229e18c9cd Mon Sep 17 00:00:00 2001
+From acb671b775f51e45e7d94717a3ff12e1c0a16f7f Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Thu, 6 Jan 2022 18:32:40 +0500
 Subject: [PATCH] Amethyst message system
@@ -581,7 +581,7 @@ index c3116ac0..23ae15bb 100644
              {
                  player.connect( server, ServerConnectEvent.Reason.COMMAND );
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index a13971af..0beb914f 100644
+index ca29641b..7b7e42b5 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -111,8 +111,8 @@ public class BungeeCord extends ProxyServer
@@ -822,7 +822,7 @@ index dd1afc0d..a5ae8ebc 100644
              {
                  server.setObsolete( true );
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index c492bb08..e4c927f1 100644
+index 3eed5043..2c46ba9b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -168,7 +168,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -883,7 +883,7 @@ index c492bb08..e4c927f1 100644
              return;
          }
  
-@@ -492,10 +492,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -491,10 +491,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                          finish();
                          return;
                      }
@@ -896,7 +896,7 @@ index c492bb08..e4c927f1 100644
                      bungee.getLogger().log( Level.SEVERE, "Error authenticating " + getName() + " with minecraft.net", error );
                  }
              }
-@@ -515,14 +515,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -513,14 +513,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              if ( oldName != null )
              {
                  // TODO See #1218
@@ -913,7 +913,7 @@ index c492bb08..e4c927f1 100644
              }
          } else
          {
-@@ -531,7 +531,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -529,7 +529,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              if ( oldName != null )
              {
                  // TODO See #1218

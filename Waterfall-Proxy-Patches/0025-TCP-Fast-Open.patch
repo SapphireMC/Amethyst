@@ -1,11 +1,11 @@
-From 45de4a80e6088c7ccd88b1d5ab9314f9f4017a63 Mon Sep 17 00:00:00 2001
+From a804ce6f493244829b540c32fb95cc18d23e4237 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Thu, 3 Mar 2022 00:54:41 +0500
 Subject: [PATCH] TCP Fast Open
 
 
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-index 8e1ccc4e..196baa69 100644
+index d242d187..48fd96d1 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 @@ -74,6 +74,17 @@ public class AmethystConfig extends AbstractYamlConfig {
@@ -37,7 +37,7 @@ index 8e1ccc4e..196baa69 100644
          logExceptions = getBoolean("logger.exceptions", logExceptions);
          logHaProxy = getBoolean("logger.haProxy", logHaProxy);
 diff --git a/flame/src/main/resources/amethyst.yml b/flame/src/main/resources/amethyst.yml
-index a96f6b96..3d52ff55 100644
+index c584a6d1..13245e9c 100644
 --- a/flame/src/main/resources/amethyst.yml
 +++ b/flame/src/main/resources/amethyst.yml
 @@ -80,6 +80,17 @@ firewall:

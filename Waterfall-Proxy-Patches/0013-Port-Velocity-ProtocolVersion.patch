@@ -1,4 +1,4 @@
-From 9b982fc4d0c1c3634a37147b9da5ae4b4e489902 Mon Sep 17 00:00:00 2001
+From e4288ca760dd78712f3ef7ac494c7b1c0c6ac04f Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 3 Jan 2022 17:46:53 +0500
 Subject: [PATCH] Port Velocity ProtocolVersion
@@ -2784,7 +2784,7 @@ index 97c4b210..dd1afc0d 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 0babc2a5..c492bb08 100644
+index 6e86def8..3eed5043 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -3,6 +3,7 @@ package net.md_5.bungee.connection;
@@ -2821,7 +2821,7 @@ index 0babc2a5..c492bb08 100644
                  {
                      if ( handshake.getProtocolVersion() > bungee.getProtocolVersion() )
                      {
-@@ -652,6 +652,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -650,6 +650,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          return ( handshake == null ) ? -1 : handshake.getProtocolVersion();
      }
  
@@ -2833,7 +2833,7 @@ index 0babc2a5..c492bb08 100644
      @Override
      public InetSocketAddress getAddress()
      {
-@@ -694,7 +699,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -692,7 +697,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      @Override
      public String toString()
      {
