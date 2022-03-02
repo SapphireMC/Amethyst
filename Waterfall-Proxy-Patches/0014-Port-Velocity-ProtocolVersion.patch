@@ -1,4 +1,4 @@
-From 4b17d420a8062179528755326a08f4a401f62393 Mon Sep 17 00:00:00 2001
+From ec2f86ee1da74c59edc18ead0c6a1059cb0ce5a0 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 3 Jan 2022 17:46:53 +0500
 Subject: [PATCH] Port Velocity ProtocolVersion
@@ -67,10 +67,10 @@ index 00000000..7c74af73
 +}
 diff --git a/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java b/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java
 new file mode 100644
-index 00000000..7793437a
+index 00000000..6bb3ed66
 --- /dev/null
 +++ b/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java
-@@ -0,0 +1,308 @@
+@@ -0,0 +1,305 @@
 +/*
 + * Copyright (c) 2022 DenaryDev
 + *
@@ -101,10 +101,6 @@ index 00000000..7793437a
 +
 +/**
 + * Represents each Minecraft protocol version.
-+ *
-+ * Created 03.01.2022
-+ *
-+ * @author Velocity Team, DenaryDev
 + */
 +public enum ProtocolVersion {
 +    UNKNOWN(-1, "Unknown"),
@@ -143,7 +139,8 @@ index 00000000..7793437a
 +    MINECRAFT_1_16_4(754, "1.16.4", "1.16.5"),
 +    MINECRAFT_1_17(755, "1.17"),
 +    MINECRAFT_1_17_1(756, "1.17.1"),
-+    MINECRAFT_1_18(757, "1.18", "1.18.1");
++    MINECRAFT_1_18(757, "1.18", "1.18.1"),
++    MINECRAFT_1_18_2(758, "1.18.2");
 +
 +    private static final int SNAPSHOT_BIT = 30;
 +
@@ -1216,7 +1213,7 @@ index 7f0b71c9..9d2c3ed2 100644
  
              ProtocolData protocolData = getProtocolData( version );
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
-index eef72175..2dbfb161 100644
+index 21329e93..5e170fbb 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 @@ -2,7 +2,14 @@ package net.md_5.bungee.protocol;
@@ -1234,7 +1231,7 @@ index eef72175..2dbfb161 100644
  public class ProtocolConstants
  {
  
-@@ -112,6 +119,11 @@ public class ProtocolConstants
+@@ -114,6 +121,11 @@ public class ProtocolConstants
              return after >= other;
      }
  
@@ -2923,7 +2920,7 @@ index 9537208e..9002d79b 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index 99ad8b9c..fdfb8f4f 100644
+index cda6451d..3d397bd6 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 @@ -3,12 +3,13 @@ package net.md_5.bungee.entitymap;
@@ -2941,7 +2938,7 @@ index 99ad8b9c..fdfb8f4f 100644
  import se.llbit.nbt.NamedTag;
  import se.llbit.nbt.Tag;
  
-@@ -25,67 +26,77 @@ public abstract class EntityMap
+@@ -25,68 +26,78 @@ public abstract class EntityMap
      private final boolean[] serverboundInts = new boolean[ 256 ];
      private final boolean[] serverboundVarInts = new boolean[ 256 ];
  
@@ -3039,7 +3036,9 @@ index 99ad8b9c..fdfb8f4f 100644
 +            case MINECRAFT_1_17_1:
                  return EntityMap_1_16_2.INSTANCE_1_17;
 -            case ProtocolConstants.MINECRAFT_1_18:
+-            case ProtocolConstants.MINECRAFT_1_18_2:
 +            case MINECRAFT_1_18:
++            case MINECRAFT_1_18_2:
                  return EntityMap_1_16_2.INSTANCE_1_18;
          }
 -        throw new RuntimeException( "Version " + version + " has no entity map" );
@@ -3054,7 +3053,7 @@ index 99ad8b9c..fdfb8f4f 100644
          {
              if ( varint )
              {
-@@ -165,7 +176,7 @@ public abstract class EntityMap
+@@ -166,7 +177,7 @@ public abstract class EntityMap
          while ( ( index = packet.readUnsignedByte() ) != 0xFF )
          {
              int type = DefinedPacket.readVarInt( packet );
@@ -3063,7 +3062,7 @@ index 99ad8b9c..fdfb8f4f 100644
              {
                  switch ( type )
                  {
-@@ -178,7 +189,7 @@ public abstract class EntityMap
+@@ -179,7 +190,7 @@ public abstract class EntityMap
                      case 15: // particle
                          int particleId = DefinedPacket.readVarInt( packet );
  
@@ -3072,7 +3071,7 @@ index 99ad8b9c..fdfb8f4f 100644
                          {
                              switch ( particleId )
                              {
-@@ -296,7 +307,7 @@ public abstract class EntityMap
+@@ -297,7 +308,7 @@ public abstract class EntityMap
                      break;
                  default:
                      // Waterfall start - Don't lie
@@ -3081,7 +3080,7 @@ index 99ad8b9c..fdfb8f4f 100644
                      {
                          type++;
                      }
-@@ -310,13 +321,13 @@ public abstract class EntityMap
+@@ -311,13 +322,13 @@ public abstract class EntityMap
  
      private static void readSkipSlot(ByteBuf packet, int protocolVersion)
      {
@@ -4033,5 +4032,5 @@ index faca17fa..25e167e8 100644
              for ( int i = 0; i < components.length; i++ )
              {
 -- 
-2.35.1.windows.2
+2.35.1
 

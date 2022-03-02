@@ -1,4 +1,4 @@
-From 5b523bad024107ba7d096e5db219c7a1c832bf21 Mon Sep 17 00:00:00 2001
+From eff333f7e49b9d957cefb15705be22b9d79f8675 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Wed, 5 Jan 2022 01:24:39 +0500
 Subject: [PATCH] Make min and max versions configurable
@@ -62,7 +62,7 @@ index e8da947f..922dbf31 100644
  # In this section you can enable or disable certain proxy modules
  modules:
 diff --git a/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java b/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java
-index 7793437a..ed13979a 100644
+index 6bb3ed66..5b971947 100644
 --- a/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java
 +++ b/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java
 @@ -20,6 +20,7 @@ package io.sapphiremc.amethyst.api.protocol;
@@ -73,7 +73,7 @@ index 7793437a..ed13979a 100644
  import java.util.EnumSet;
  import java.util.HashMap;
  import java.util.List;
-@@ -81,18 +82,16 @@ public enum ProtocolVersion {
+@@ -78,18 +79,16 @@ public enum ProtocolVersion {
      /**
       * Represents the lowest supported version.
       */
@@ -95,7 +95,7 @@ index 7793437a..ed13979a 100644
  
      /**
       * A map linking the protocol version number to its {@link ProtocolVersion} representation.
-@@ -114,6 +113,28 @@ public enum ProtocolVersion {
+@@ -111,6 +110,28 @@ public enum ProtocolVersion {
          ID_TO_PROTOCOL_CONSTANT = ImmutableMap.copyOf(versions);
      }
  
@@ -124,7 +124,7 @@ index 7793437a..ed13979a 100644
      /**
       * A set containing all the protocols that the proxy actually supports, excluding special-purpose
       * "versions" like {@link #LEGACY} and {@link #UNKNOWN}.
-@@ -206,6 +227,16 @@ public enum ProtocolVersion {
+@@ -203,6 +224,16 @@ public enum ProtocolVersion {
          return ID_TO_PROTOCOL_CONSTANT.getOrDefault(protocol, UNKNOWN);
      }
  
@@ -233,5 +233,5 @@ index 431f268a..f3496558 100644
          sender.sendMessage( ChatColor.BOLD.toString() + ChatColor.RED.toString() + "Amethyst has been reloaded."
                  + " This is NOT advisable and you will not be supported with any issues that arise! Please restart Amethyst ASAP." );
 -- 
-2.34.1.windows.1
+2.35.1
 

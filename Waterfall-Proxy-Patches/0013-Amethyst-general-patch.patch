@@ -1,4 +1,4 @@
-From 7c607fadc7b4d22fb2c9d518c1cd3bf6a682f115 Mon Sep 17 00:00:00 2001
+From a6b0f2b61986c03b788c580fe5a1240015564194 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 3 Jan 2022 01:19:36 +0500
 Subject: [PATCH] Amethyst general patch
@@ -544,7 +544,7 @@ index fa8f6511..5c908a10 100644
      </dependencies>
  </project>
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
-index 0768e3b7..eef72175 100644
+index 6360818c..21329e93 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 @@ -6,7 +6,7 @@ import java.util.List;
@@ -556,8 +556,8 @@ index 0768e3b7..eef72175 100644
      public static final int MINECRAFT_1_8 = 47;
      public static final int MINECRAFT_1_9 = 107;
      public static final int MINECRAFT_1_9_1 = 108;
-@@ -88,22 +88,26 @@ public class ProtocolConstants
-                 ProtocolConstants.MINECRAFT_1_18
+@@ -90,22 +90,26 @@ public class ProtocolConstants
+                 ProtocolConstants.MINECRAFT_1_18_2
          );
  
 +        // Amethyst start - remove this because its no longer needed
@@ -789,5 +789,5 @@ index f8081506..0babc2a5 100644
      }
  
 -- 
-2.35.1.windows.2
+2.35.1
 

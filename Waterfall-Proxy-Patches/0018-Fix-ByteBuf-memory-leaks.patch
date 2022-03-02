@@ -1,14 +1,14 @@
-From c8d2cfe7f1a3c1314b3117f7c8a445d9dcf8dcbe Mon Sep 17 00:00:00 2001
+From 4cc2667b438766117faa2fd305a5c5b9b3a79749 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Fri, 7 Jan 2022 01:06:53 +0500
 Subject: [PATCH] Fix ByteBuf memory leaks
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index fdfb8f4f..3909d430 100644
+index 3d397bd6..2695b6e0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-@@ -151,15 +151,20 @@ public abstract class EntityMap
+@@ -152,15 +152,20 @@ public abstract class EntityMap
      {
          // Need to rewrite the packet because VarInts are variable length
          int readId = DefinedPacket.readVarInt( packet );
@@ -68,5 +68,5 @@ index cefa0206..2ea38ac5 100644
          return modTags;
      }
 -- 
-2.34.1.windows.1
+2.35.1
 
