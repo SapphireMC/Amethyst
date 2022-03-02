@@ -1,4 +1,4 @@
-From ee8beda9db69a502967e67bee4bd639b3313c815 Mon Sep 17 00:00:00 2001
+From ed11df9238cd894507d1e8cfe80c97c4dc84d05f Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 10 Jan 2022 00:39:35 +0500
 Subject: [PATCH] Firewall system from FlameCord
@@ -91,7 +91,7 @@ index 934c0ccf..74dec507 100644
      }
  }
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-index 309a26d8..1c6be170 100644
+index e567be66..28688145 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 @@ -1,5 +1,8 @@
@@ -105,7 +105,7 @@ index 309a26d8..1c6be170 100644
  /**
 @@ -51,6 +54,37 @@ public class AmethystConfig extends AbstractYamlConfig {
       */
-     public String maxVersion = "1.18.1";
+     public String maxVersion = "1.18.2";
  
 +    /**
 +     * Firewall status.
@@ -325,12 +325,12 @@ index 00000000..6705414b
 +    }
 +}
 diff --git a/flame/src/main/resources/amethyst.yml b/flame/src/main/resources/amethyst.yml
-index 922dbf31..1aa3c837 100644
+index 8b2bffc3..402a0d86 100644
 --- a/flame/src/main/resources/amethyst.yml
 +++ b/flame/src/main/resources/amethyst.yml
 @@ -16,6 +16,28 @@ versions:
-   # Default: 1.18.1
-   max: "1.18.1"
+   # Default: 1.18.2
+   max: "1.18.2"
  
 +# Firewall configuration
 +firewall:
@@ -390,7 +390,7 @@ index fab61368..ce954f3a 100644
          } finally
          {
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 0beb914f..d2ba2177 100644
+index 7b7e42b5..131003a9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -25,6 +25,7 @@ import io.sapphiremc.amethyst.BuildData;

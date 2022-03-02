@@ -1,11 +1,11 @@
-From 0c874579230c60c140e24aacc4c8d49dc4410680 Mon Sep 17 00:00:00 2001
+From 86df6916a539147610586abd79142fde1505f605 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Wed, 5 Jan 2022 01:24:39 +0500
 Subject: [PATCH] Make min and max versions configurable
 
 
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-index 84f940ca..309a26d8 100644
+index 84f940ca..e567be66 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 @@ -40,6 +40,17 @@ public class AmethystConfig extends AbstractYamlConfig {
@@ -14,14 +14,14 @@ index 84f940ca..309a26d8 100644
  
 +    /**
 +     * Minimum supported version.
-+     * Example: 1.12.2
++     * Default: 1.8
 +     */
 +    public String minVersion = "1.8";
 +    /**
 +     * Maximum supported version.
-+     * Example: 1.16.5
++     * Default: 1.18.2
 +     */
-+    public String maxVersion = "1.18.1";
++    public String maxVersion = "1.18.2";
 +
      public AmethystConfig(ConfigurationProvider provider) {
          super(provider, "amethyst.yml");
@@ -36,7 +36,7 @@ index 84f940ca..309a26d8 100644
      }
  }
 diff --git a/flame/src/main/resources/amethyst.yml b/flame/src/main/resources/amethyst.yml
-index e8da947f..922dbf31 100644
+index e8da947f..8b2bffc3 100644
 --- a/flame/src/main/resources/amethyst.yml
 +++ b/flame/src/main/resources/amethyst.yml
 @@ -1,6 +1,21 @@
@@ -55,8 +55,8 @@ index e8da947f..922dbf31 100644
 +  # Maximum supported version
 +  # Players with a version above than this will not be able to log into the server
 +  # Examples: 1.9, 1.12, 1.15.2
-+  # Default: 1.18.1
-+  max: "1.18.1"
++  # Default: 1.18.2
++  max: "1.18.2"
 +
  # Modules configuration
  # In this section you can enable or disable certain proxy modules
@@ -180,7 +180,7 @@ index 7d3220f9..5e4ff7f4 100644
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 3a1a16c1..a13971af 100644
+index d0bb5c37..ca29641b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -291,6 +291,7 @@ public class BungeeCord extends ProxyServer

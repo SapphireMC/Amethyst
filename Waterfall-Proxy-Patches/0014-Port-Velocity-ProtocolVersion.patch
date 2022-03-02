@@ -1,4 +1,4 @@
-From 3a927504c2942035c9a476fd9d07aa0434390e5a Mon Sep 17 00:00:00 2001
+From 9b982fc4d0c1c3634a37147b9da5ae4b4e489902 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 3 Jan 2022 17:46:53 +0500
 Subject: [PATCH] Port Velocity ProtocolVersion
@@ -2572,7 +2572,7 @@ index 32be5c3c..7d3220f9 100644
          // Throttling options
          tabThrottle = config.getInt("throttling.tab_complete", tabThrottle);
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 64e771f8..982f540f 100644
+index cfcf39ee..1377c401 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -23,6 +23,7 @@ import io.netty.channel.EventLoopGroup;
@@ -2595,19 +2595,28 @@ index 64e771f8..982f540f 100644
          logger = io.github.waterfallmc.waterfall.log4j.WaterfallLogger.create();
          // Waterfall end
  
--        logger.info("Booting up proxy server for minecraft 1.8 - 1.18.1"); // Amethyst - add logging on startup
+-        logger.info("Booting up proxy server for minecraft 1.8 - 1.18.2"); // Amethyst - add logging on startup
 +        String min = ProtocolVersion.MINECRAFT_1_8.getVersionIntroducedIn();
 +        String max = ProtocolVersion.values()[ProtocolVersion.values().length - 1].getMostRecentSupportedVersion();
 +        logger.info("Booting up proxy server for minecraft " + min + " - " + max); // Amethyst - add logging on startup
          serverStartTime = System.nanoTime(); // Amethyst - add logging on startup
  
          pluginManager = new PluginManager( this );
+@@ -254,7 +256,7 @@ public class BungeeCord extends ProxyServer
+             }
+         }
+ 
+-        logger.info("This proxy is running " + getName() + " version " + getGitInfo() + " (MC: 1.8-1.18.2) (Implementing API version " + getVersion() + ")"); // Amethyst - add logging on startup
++        logger.info("This proxy is running " + getName() + " version " + getGitInfo() + " (MC: " + min + "-" + max + ") (Implementing API version " + getVersion() + ")"); // Amethyst - add logging on startup
+     }
+ 
+     /**
 @@ -702,7 +704,7 @@ public class BungeeCord extends ProxyServer
  
      public PluginMessage registerChannels(int protocolVersion)
      {
 -        if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_13 )
-+        if ( protocolVersion >= ProtocolVersion.MINECRAFT_1_13.getProtocol() )
++        if ( ProtocolVersion.MINECRAFT_1_13.isBeforeOrEq( protocolVersion ) )
          {
              return new PluginMessage( "minecraft:register", Util.format( Iterables.transform( pluginChannels, PluginMessage.MODERNISE ), "\00" ).getBytes( Charsets.UTF_8 ), false );
          }
@@ -2616,7 +2625,7 @@ index 64e771f8..982f540f 100644
      public int getProtocolVersion()
      {
 -        return ProtocolConstants.SUPPORTED_VERSION_IDS.get( ProtocolConstants.SUPPORTED_VERSION_IDS.size() - 1 );
-+        return ProtocolVersion.MAXIMUM_VERSION.getProtocol();
++        return ProtocolVersion.MAXIMUM_VERSION.getProtocol(); // Amethyst
      }
  
      @Override

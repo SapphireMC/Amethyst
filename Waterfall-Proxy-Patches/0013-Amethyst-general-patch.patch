@@ -1,4 +1,4 @@
-From abe6d86eceacbf9d3164099d4b35d583e33966e2 Mon Sep 17 00:00:00 2001
+From 2651bcc74eaadb4e563d002bde717af037797798 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 3 Jan 2022 01:19:36 +0500
 Subject: [PATCH] Amethyst general patch
@@ -525,7 +525,7 @@ index 6360818c..21329e93 100644
              return after >= other;
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index aa691e2f..64e771f8 100644
+index aa691e2f..cfcf39ee 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -22,6 +22,7 @@ import io.netty.channel.ChannelOption;
@@ -557,7 +557,7 @@ index aa691e2f..64e771f8 100644
          logger = io.github.waterfallmc.waterfall.log4j.WaterfallLogger.create();
          // Waterfall end
  
-+        logger.info("Booting up proxy server for minecraft 1.8 - 1.18.1"); // Amethyst - add logging on startup
++        logger.info("Booting up proxy server for minecraft 1.8 - 1.18.2"); // Amethyst - add logging on startup
 +        serverStartTime = System.nanoTime(); // Amethyst - add logging on startup
 +
          pluginManager = new PluginManager( this );
@@ -568,7 +568,7 @@ index aa691e2f..64e771f8 100644
              }
          }
 +
-+        logger.info("The proxy is running using " + getName() + " version " + getGitInfo() + " (MC: 1.8-1.18.1) (Implementing API version " + getVersion() + ")"); // Amethyst - add logging on startup
++        logger.info("This proxy is running " + getName() + " version " + getGitInfo() + " (MC: 1.8-1.18.2) (Implementing API version " + getVersion() + ")"); // Amethyst - add logging on startup
      }
  
      /**
