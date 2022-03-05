@@ -1,11 +1,11 @@
-From 2e601c549e6a0ea58595774fd0990505bf9983d6 Mon Sep 17 00:00:00 2001
+From 70e6f9ec0bba9f43e56180ce79ca6e13495ca0aa Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Thu, 3 Mar 2022 01:31:49 +0500
 Subject: [PATCH] InitialHandler Processing State
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 7b89285a..fb856dd1 100644
+index 99dd905d..54a72ea1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -123,12 +123,12 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -55,7 +55,7 @@ index 7b89285a..fb856dd1 100644
  
          if ( !AllowedCharacters.isValidName( loginRequest.getData(), onlineMode ) )
          {
-@@ -449,6 +453,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -440,6 +444,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      public void handle(final EncryptionResponse encryptResponse) throws Exception
      {
          Preconditions.checkState( thisState == State.ENCRYPT, "Not expecting ENCRYPT" );
@@ -63,7 +63,7 @@ index 7b89285a..fb856dd1 100644
  
          SecretKey sharedKey = EncryptionUtil.getSecret( encryptResponse, request );
          // Waterfall start
-@@ -686,14 +691,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -677,14 +682,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      @Override
      public void setOnlineMode(boolean onlineMode)
      {

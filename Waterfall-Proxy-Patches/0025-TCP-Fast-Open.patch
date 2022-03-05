@@ -1,16 +1,16 @@
-From a804ce6f493244829b540c32fb95cc18d23e4237 Mon Sep 17 00:00:00 2001
+From 48757fdf2e58314c3b7a80bb7af0de7fc2d60d86 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Thu, 3 Mar 2022 00:54:41 +0500
 Subject: [PATCH] TCP Fast Open
 
 
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-index d242d187..48fd96d1 100644
+index e3ba79b9..66e39af3 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-@@ -74,6 +74,17 @@ public class AmethystConfig extends AbstractYamlConfig {
+@@ -55,6 +55,17 @@ public class AmethystConfig extends AbstractYamlConfig {
       */
-     public Collection<String> firewallNames = Arrays.asList("mcspam", "mcbot", "mcstorm", "dropbot", "theresabot");
+     public String maxVersion = "1.18.2";
  
 +    /**
 +     * Enable TCP fast open netty feature.
@@ -26,9 +26,9 @@ index d242d187..48fd96d1 100644
      /**
       * Enable or disable InitialHandler logging.
       */
-@@ -169,6 +180,9 @@ public class AmethystConfig extends AbstractYamlConfig {
-         firewallClearInterval = getInt("firewall.clear-interval", firewallClearInterval);
-         firewallNames = getStringList("firewall.names", (List<String>) firewallNames);
+@@ -145,6 +156,9 @@ public class AmethystConfig extends AbstractYamlConfig {
+         lobbyMessage = getBoolean("lobby.message", lobbyMessage);
+         lobbyServers = getStringList("lobby.servers", lobbyServers);
  
 +        connectionTFOEnable = getBoolean("connection.tfo.enable", connectionTFOEnable);
 +        connectionTFOMaxPending = getInt("connection.tfo.max-pending", connectionTFOMaxPending);
@@ -37,12 +37,12 @@ index d242d187..48fd96d1 100644
          logExceptions = getBoolean("logger.exceptions", logExceptions);
          logHaProxy = getBoolean("logger.haProxy", logHaProxy);
 diff --git a/flame/src/main/resources/amethyst.yml b/flame/src/main/resources/amethyst.yml
-index c584a6d1..13245e9c 100644
+index 10739f05..24effcbf 100644
 --- a/flame/src/main/resources/amethyst.yml
 +++ b/flame/src/main/resources/amethyst.yml
-@@ -80,6 +80,17 @@ firewall:
-     - "dropbot"
-     - "theresabot"
+@@ -61,6 +61,17 @@ lobby:
+   servers:
+     - "lobby"
  
 +# Connection settings
 +connection:
@@ -59,10 +59,10 @@ index c584a6d1..13245e9c 100644
  logger:
    # Enable or disable InitialHandler logging.
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 454c57b1..ca0fb9f8 100644
+index 3d08e38a..fceea075 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -206,6 +206,11 @@ public class PipelineUtils
+@@ -197,6 +197,11 @@ public class PipelineUtils
                  // IP_TOS is not supported (Windows XP / Windows Server 2003)
              }
              ch.config().setOption( ChannelOption.TCP_NODELAY, true );

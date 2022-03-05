@@ -1,14 +1,14 @@
-From 364ce7b17467f6f2a7eb898b308e00c1e1f48f22 Mon Sep 17 00:00:00 2001
+From 629b9a99a0e0a9845089b7e74132d1799485171d Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Sun, 6 Mar 2022 00:39:45 +0500
 Subject: [PATCH] Customizable bungee name
 
 
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-index 48fd96d1..96ead4a0 100644
+index 66e39af3..e992d378 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-@@ -155,6 +155,11 @@ public class AmethystConfig extends AbstractYamlConfig {
+@@ -136,6 +136,11 @@ public class AmethystConfig extends AbstractYamlConfig {
       */
      public List<String> motdHoverBoxContent = Arrays.asList("&eAmethyst", "", "&7Online: &f%online%", "", "&bServers:", "&8- &7Lobby: &f%online_lobby%", "", "&eexample.net");
  
@@ -20,7 +20,7 @@ index 48fd96d1..96ead4a0 100644
      public AmethystConfig(ConfigurationProvider provider) {
          super(provider, "amethyst.yml");
          init();
-@@ -164,6 +169,8 @@ public class AmethystConfig extends AbstractYamlConfig {
+@@ -145,6 +150,8 @@ public class AmethystConfig extends AbstractYamlConfig {
      @Override
      protected void loadContent()
      {
@@ -30,7 +30,7 @@ index 48fd96d1..96ead4a0 100644
          motdFirstLines = getStringList("motd.firstLines", motdFirstLines);
          motdSecondLines = getStringList("motd.secondLines", motdSecondLines);
 diff --git a/flame/src/main/resources/amethyst.yml b/flame/src/main/resources/amethyst.yml
-index 13245e9c..dd267a11 100644
+index 24effcbf..dcf38c34 100644
 --- a/flame/src/main/resources/amethyst.yml
 +++ b/flame/src/main/resources/amethyst.yml
 @@ -1,6 +1,11 @@
@@ -46,10 +46,10 @@ index 13245e9c..dd267a11 100644
  motd:
    # Enable amethyst custom motd?
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 131003a9..4346c785 100644
+index 28d0c795..cf88443e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -570,7 +570,7 @@ public class BungeeCord extends ProxyServer
+@@ -561,7 +561,7 @@ public class BungeeCord extends ProxyServer
      @Override
      public String getName()
      {

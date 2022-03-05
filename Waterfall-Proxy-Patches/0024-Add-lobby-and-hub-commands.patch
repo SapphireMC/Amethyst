@@ -1,14 +1,14 @@
-From 0f0919a23e4d18147499e4429bee70c21d3d1833 Mon Sep 17 00:00:00 2001
+From 195bfdbff282672ea34e36557bb430c83f24fedd Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 10 Jan 2022 18:39:08 +0500
 Subject: [PATCH] Add lobby and hub commands
 
 
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-index f534dd2c..d242d187 100644
+index 489f0c79..e3ba79b9 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-@@ -100,6 +100,28 @@ public class AmethystConfig extends AbstractYamlConfig {
+@@ -81,6 +81,28 @@ public class AmethystConfig extends AbstractYamlConfig {
       */
      public List<String> motdSecondLines = Collections.singletonList("&eChange me in &6amethyst.yml &efile!");
  
@@ -37,7 +37,7 @@ index f534dd2c..d242d187 100644
      /**
       * Gets random motd line from first or second lines list.
       *
-@@ -138,6 +160,10 @@ public class AmethystConfig extends AbstractYamlConfig {
+@@ -119,6 +141,10 @@ public class AmethystConfig extends AbstractYamlConfig {
          motdHoverBoxEnabled = getBoolean("motd.hoverBox.enabled", motdHoverBoxEnabled);
          motdHoverBoxContent = getStringList("motd.hoverBox.content", motdHoverBoxContent);
  
@@ -45,9 +45,9 @@ index f534dd2c..d242d187 100644
 +        lobbyMessage = getBoolean("lobby.message", lobbyMessage);
 +        lobbyServers = getStringList("lobby.servers", lobbyServers);
 +
-         firewallEnabled = getBoolean("firewall.enabled", firewallEnabled);
-         firewallNotify = getBoolean("firewall.notify", firewallNotify);
-         firewallClearInterval = getInt("firewall.clear-interval", firewallClearInterval);
+         logInitialHandler = getBoolean("logger.initialHandler", logInitialHandler);
+         logExceptions = getBoolean("logger.exceptions", logExceptions);
+         logHaProxy = getBoolean("logger.haProxy", logHaProxy);
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
 index 835888c3..bebfa299 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
@@ -63,7 +63,7 @@ index 835888c3..bebfa299 100644
          getString("command.perms.permissions", "=&9- {0}");
          getString("command.reload.success", "&c&lAmethyst has been reloaded. This is NOT advisable and you will not be supported with any issues that arise! Please restart Amethyst ASAP.");
 diff --git a/flame/src/main/resources/amethyst.yml b/flame/src/main/resources/amethyst.yml
-index ca82d370..c584a6d1 100644
+index e3d54bf4..10739f05 100644
 --- a/flame/src/main/resources/amethyst.yml
 +++ b/flame/src/main/resources/amethyst.yml
 @@ -48,6 +48,19 @@ versions:
@@ -83,9 +83,9 @@ index ca82d370..c584a6d1 100644
 +  servers:
 +    - "lobby"
 +
- # Firewall configuration
- firewall:
-   # Enable firewall system?
+ # Logger configuration
+ logger:
+   # Enable or disable InitialHandler logging.
 diff --git a/flame/src/main/resources/messages.yml b/flame/src/main/resources/messages.yml
 index 071c698f..d4de461c 100644
 --- a/flame/src/main/resources/messages.yml
