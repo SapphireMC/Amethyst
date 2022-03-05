@@ -1,21 +1,9 @@
-From 9b7e70cc00eee461eae5d3fa4dc9311d46028e3a Mon Sep 17 00:00:00 2001
+From 7e75b79335d8107b642c82d1b4cd1c599457f08c Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 10 Jan 2022 00:39:35 +0500
 Subject: [PATCH] Logger options
 
 
-diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-index 7c464176..c79ce72a 100644
---- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-+++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-@@ -2,6 +2,7 @@ package net.md_5.bungee.api;
- 
- import com.google.common.base.Preconditions;
- import io.sapphiremc.amethyst.Amethyst;
-+import io.sapphiremc.amethyst.firewall.FirewallManager;
- import java.io.File;
- import java.net.InetSocketAddress;
- import java.net.SocketAddress;
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 index e567be66..d7de9d03 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
