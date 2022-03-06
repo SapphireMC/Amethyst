@@ -1,4 +1,4 @@
-From 629b9a99a0e0a9845089b7e74132d1799485171d Mon Sep 17 00:00:00 2001
+From 5ef28449d79cb4da539a2b93cbb2b16c39d260a4 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Sun, 6 Mar 2022 00:39:45 +0500
 Subject: [PATCH] Customizable bungee name
@@ -46,7 +46,7 @@ index 24effcbf..dcf38c34 100644
  motd:
    # Enable amethyst custom motd?
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 28d0c795..cf88443e 100644
+index 28d0c795..f7cd772c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -561,7 +561,7 @@ public class BungeeCord extends ProxyServer
@@ -54,7 +54,7 @@ index 28d0c795..cf88443e 100644
      public String getName()
      {
 -        return "Amethyst";
-+        return getAmethyst().getConfig().bungeeName;
++        return (getAmethyst() != null && getAmethyst().getConfig() != null) ? getAmethyst().getConfig().bungeeName : "Amethyst";
      }
  
      @Override
