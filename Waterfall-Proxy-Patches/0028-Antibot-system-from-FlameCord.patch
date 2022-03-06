@@ -1,4 +1,4 @@
-From 33ad4bd08b53f928325d73a92f17fed951dbe327 Mon Sep 17 00:00:00 2001
+From 39583df7800d82fd26d85e44385fca9649411627 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Sun, 6 Mar 2022 02:47:48 +0500
 Subject: [PATCH] Antibot system from FlameCord
@@ -616,7 +616,7 @@ index 00000000..db37cd6e
 +}
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AntibotConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AntibotConfig.java
 new file mode 100644
-index 00000000..1ae241aa
+index 00000000..ac477576
 --- /dev/null
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AntibotConfig.java
 @@ -0,0 +1,89 @@
@@ -671,7 +671,7 @@ index 00000000..1ae241aa
 +    public int reconnectMaxTime = 10000;
 +
 +    public AntibotConfig(ConfigurationProvider provider) {
-+        super(provider, "yml");
++        super(provider, "antibot.yml");
 +        init();
 +        loadContent();
 +    }
