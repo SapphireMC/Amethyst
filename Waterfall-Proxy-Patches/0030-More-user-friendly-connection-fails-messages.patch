@@ -45,7 +45,7 @@ index bfb61dff..61ffcb48 100644
          getString("error.players-only", "&cOnly in game players can use this command");
          getString("error.proxy-full", "Server is full!");
 +        getString("error.timeout", "Server not reachable (timeout). Offline? Incorrectly configured address/port/firewall?");
-+        getString("error.server-unavailable", "Server is unavailable");
++        getString("error.server-unavailable", "This server is unavailable");
          getString("error.username-needed", "&cPlease follow this command by a user name.");
      }
  
