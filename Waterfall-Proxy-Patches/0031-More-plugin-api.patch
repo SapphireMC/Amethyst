@@ -1,0 +1,609 @@
+From 7f6d49872b482083b9d8b532b69028f0236475b4 Mon Sep 17 00:00:00 2001
+From: DenaryDev <denaryplanet@gmail.com>
+Date: Mon, 7 Mar 2022 17:55:13 +0500
+Subject: [PATCH] More plugin api
+
+
+diff --git a/api/src/main/java/io/sapphiremc/amethyst/util/ApiVersionChecker.java b/api/src/main/java/io/sapphiremc/amethyst/util/ApiVersionChecker.java
+new file mode 100644
+index 00000000..edb851d0
+--- /dev/null
++++ b/api/src/main/java/io/sapphiremc/amethyst/util/ApiVersionChecker.java
+@@ -0,0 +1,39 @@
++package io.sapphiremc.amethyst.util;
++
++import net.md_5.bungee.api.ProxyServer;
++import net.md_5.bungee.api.plugin.PluginDescription;
++import net.md_5.bungee.api.plugin.PluginState;
++
++import java.util.Arrays;
++import java.util.List;
++
++public class ApiVersionChecker {
++    private static final List<String> SUPPORTED_API_VERSIONS = Arrays.asList("1.18");
++
++    public static PluginState checkApiVersion(PluginDescription description) {
++        String minimumVersion = ProxyServer.getInstance().getAmethyst().getConfig().minApiVersion;
++        if (minimumVersion.equals("none")) return PluginState.ENABLED;
++
++        int minimumIndex = SUPPORTED_API_VERSIONS.indexOf(minimumVersion);
++
++        if (description.getApiVersion() != null) {
++            int pluginIndex = SUPPORTED_API_VERSIONS.indexOf(description.getApiVersion());
++
++            if (pluginIndex == -1) {
++                ProxyServer.getInstance().getLogger().severe("Plugin " + description.getName() + " v" + description.getVersion() + " has unsupported API version.");
++                return PluginState.INCOMPATIBLE;
++            }
++
++            if ( pluginIndex < minimumIndex) {
++                ProxyServer.getInstance().getLogger().severe("Plugin " + description.getName() + " v" + description.getVersion() + " has an api version lower than the minimum api version.");
++                return PluginState.INCOMPATIBLE;
++            }
++        } else {
++            if (ProxyServer.getInstance().getAmethyst().getConfig().logLegacyPluginWarning) {
++                ProxyServer.getInstance().getLogger().warning("Legacy plugin " + description.getName() + " v" + description.getVersion() + " does not specify an api-version.");
++            }
++            return PluginState.UNKNOWN_API;
++        }
++        return PluginState.ENABLED;
++    }
++}
+diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java b/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
+index 3d1e9a3a..9693158f 100644
+--- a/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
++++ b/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
+@@ -3,14 +3,24 @@ package net.md_5.bungee.api.plugin;
+ import com.google.common.base.Preconditions;
+ import com.google.common.util.concurrent.ThreadFactoryBuilder;
+ import java.io.File;
++import java.io.FileOutputStream;
++import java.io.IOException;
+ import java.io.InputStream;
++import java.io.OutputStream;
++import java.net.URL;
++import java.net.URLConnection;
++import java.nio.file.Files;
+ import java.util.concurrent.ExecutorService;
+ import java.util.concurrent.Executors;
++import java.util.logging.Level;
+ import java.util.logging.Logger;
+-import lombok.Getter;
++
+ import net.md_5.bungee.api.ProxyServer;
+ import net.md_5.bungee.api.config.ConfigurationAdapter;
+ import net.md_5.bungee.api.scheduler.GroupedThreadFactory;
++import net.md_5.bungee.config.Configuration;
++import net.md_5.bungee.config.ConfigurationProvider;
++import net.md_5.bungee.config.YamlConfiguration;
+ 
+ /**
+  * Represents any Plugin that may be loaded at runtime to enhance existing
+@@ -19,14 +29,17 @@ import net.md_5.bungee.api.scheduler.GroupedThreadFactory;
+ public class Plugin
+ {
+ 
+-    @Getter
+     private PluginDescription description;
+-    @Getter
+     private ProxyServer proxy;
+-    @Getter
+     private File file;
+-    @Getter
+     private Logger logger;
++    // Amethyst start
++    private File dataFolder;
++    private PluginState state;
++    private Configuration config;
++    private File configFile;
++    private ConfigurationProvider configProvider;
++    private PluginClassloader pluginClassloader;
+ 
+     public Plugin()
+     {
+@@ -67,6 +80,15 @@ public class Plugin
+     {
+     }
+ 
++    // Amethyst start
++    /**
++     * Called when proxy is reloaded.
++     */
++    public void onReload()
++    {
++    }
++    // Amethyst end
++
+     /**
+      * Called when this plugin is disabled.
+      */
+@@ -82,7 +104,7 @@ public class Plugin
+      */
+     public final File getDataFolder()
+     {
+-        return new File( getProxy().getPluginsFolder(), getDescription().getName() );
++        return dataFolder; // Amethyst
+     }
+ 
+     /**
+@@ -98,16 +120,192 @@ public class Plugin
+         return getClass().getClassLoader().getResourceAsStream( name );
+     }
+ 
++    // Amethyst start
++    /**
++     * Returns the Proxy instance currently running this plugin.
++     *
++     * @return {@link ProxyServer} running this plugin
++     */
++    public ProxyServer getProxy()
++    {
++        return proxy;
++    }
++
++    /**
++     * Returns the bungee.yml file containing the details for this plugin.
++     *
++     * @return {@link PluginDescription} of this plugin
++     */
++    public PluginDescription getDescription()
++    {
++        return description;
++    }
++
++    /**
++     * Returns the file which contains this plugin.
++     *
++     * @return File containing this plugin
++     */
++    public File getFile()
++    {
++        return file;
++    }
++
++    public Logger getLogger()
++    {
++        return logger;
++    }
++
++    public PluginState getState()
++    {
++        return state;
++    }
++
++    public void setState(PluginState state)
++    {
++        this.state = state;
++    }
++
++    public Configuration getConfig()
++    {
++        if (config == null)
++        {
++            reloadConfig();
++        }
++
++        return config;
++    }
++
++    public void reloadConfig()
++    {
++        File configFile = new File(dataFolder, "config.yml");
++        if ( !configFile.exists() )
++        {
++            try ( InputStream in = getResourceAsStream( "config.yml" ) )
++            {
++                Files.copy( in, configFile.toPath() );
++            } catch ( IOException ex )
++            {
++                logger.log( Level.SEVERE, "Unable to create configuration file", ex );
++            }
++        }
++
++        try
++        {
++            config = configProvider.load( configFile );
++        } catch ( IOException ex )
++        {
++            logger.log( Level.SEVERE, "Unable to load configuration file", ex );
++        }
++    }
++
++    public void saveConfig()
++    {
++        try
++        {
++            configProvider.save( config, configFile );
++        } catch ( IOException ex )
++        {
++            logger.log( Level.SEVERE, "Unable to save configuration file", ex );
++        }
++    }
++
++    public void saveResource(String resourcePath)
++    {
++        saveResource( resourcePath, false );
++    }
++
++    public void saveResource(String resourcePath, boolean replace)
++    {
++        if ( resourcePath == null || resourcePath.equals( "" ) )
++        {
++            throw new IllegalArgumentException( "ResourcePath cannot be null or empty" );
++        }
++
++        resourcePath = resourcePath.replace( '\\', '/' );
++        InputStream in = getResource( resourcePath );
++        if ( in == null )
++        {
++            throw new IllegalArgumentException( "The embedded resource '" + resourcePath + "' cannot be found in " + file );
++        }
++
++        File outFile = new File( dataFolder, resourcePath );
++        int lastIndex = resourcePath.lastIndexOf('/' );
++        File outDir = new File( dataFolder, resourcePath.substring( 0, Math.max( lastIndex, 0 ) ) );
++
++        if ( !outDir.exists() )
++        {
++            outDir.mkdirs();
++        }
++
++        try
++        {
++            if ( !outFile.exists() || replace )
++            {
++                OutputStream out = new FileOutputStream( outFile );
++                byte[] buf = new byte[1024];
++                int len;
++                while ( ( len = in.read( buf ) ) > 0 )
++                {
++                    out.write( buf, 0, len );
++                }
++                out.close();
++                in.close();
++            } else
++            {
++                logger.log( Level.WARNING, "Could not save " + outFile.getName() + " to " + outFile + " because " + outFile.getName() + " already exists." );
++            }
++        } catch ( IOException ex )
++        {
++            logger.log( Level.SEVERE, "Could not save " + outFile.getName() + " to " + outFile, ex );
++        }
++    }
++
++    public InputStream getResource(String filename)
++    {
++        if ( filename == null )
++        {
++            throw new IllegalArgumentException( "Filename cannot be null" );
++        }
++
++        try {
++            URL url = pluginClassloader.getResource(filename);
++
++            if ( url == null )
++            {
++                return null;
++            }
++
++            URLConnection connection = url.openConnection();
++            connection.setUseCaches( false );
++            return connection.getInputStream();
++        } catch ( IOException ex )
++        {
++            return null;
++        }
++    }
++
++    public PluginClassloader getClassloader()
++    {
++        return pluginClassloader;
++    }
++    // Amethyst end
++
+     /**
+      * Called by the loader to initialize the fields in this plugin.
+      *
+      * @param proxy current proxy instance
+      * @param description the description that describes this plugin
+      */
+-    final void init(ProxyServer proxy, PluginDescription description)
++    final void init(ProxyServer proxy, PluginDescription description, PluginClassloader pluginClassloader) // Amethist
+     {
+         this.proxy = proxy;
+         this.description = description;
++        // Amethyst start
++        this.pluginClassloader = pluginClassloader;
++        this.dataFolder = new File( getProxy().getPluginsFolder(), getDescription().getName() );
++        this.configProvider = ConfigurationProvider.getProvider( YamlConfiguration.class );
++        // Amethyst end
+         this.file = description.getFile();
+         this.logger = Logger.getLogger(description.getName()); // Waterfall - Handle plugin prefixes in implementation
+     }
+diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginClassloader.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginClassloader.java
+index 68157dd4..a3736a53 100644
+--- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginClassloader.java
++++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginClassloader.java
+@@ -177,6 +177,6 @@ final class PluginClassloader extends URLClassLoader
+         }
+ 
+         this.plugin = plugin;
+-        plugin.init( proxy, desc );
++        plugin.init( proxy, desc, this ); // Amethyst
+     }
+ }
+diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginDescription.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginDescription.java
+index ea5c0d37..4bdaf6ec 100644
+--- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginDescription.java
++++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginDescription.java
+@@ -34,6 +34,11 @@ public class PluginDescription
+      * Plugin author.
+      */
+     private String author;
++    // Amethyst start
++    /**
++     * Minimim api version of this plugin.
++     */
++    private String apiVersion;
+     /**
+      * Plugin hard dependencies.
+      */
+diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
+index 359ce881..590002ef 100644
+--- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
++++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
+@@ -32,6 +32,7 @@ import io.github.waterfallmc.waterfall.exception.ProxyCommandException; // Water
+ import io.github.waterfallmc.waterfall.exception.ProxyEventException; // Waterfall
+ import io.github.waterfallmc.waterfall.exception.ProxyPluginEnableDisableException; // Waterfall
+ import io.github.waterfallmc.waterfall.exception.ProxyTabCompleteException; // Waterfall
++import io.sapphiremc.amethyst.util.ApiVersionChecker; // Amethyst
+ import lombok.RequiredArgsConstructor;
+ import net.md_5.bungee.api.ChatColor;
+ import net.md_5.bungee.api.CommandSender;
+@@ -64,7 +65,6 @@ public final class PluginManager
+     private Map<String, PluginDescription> toLoad = new HashMap<>();
+     private final Multimap<Plugin, Command> commandsByPlugin = ArrayListMultimap.create();
+     private final Multimap<Plugin, Listener> listenersByPlugin = ArrayListMultimap.create();
+-    private final HashMap<String, URLClassLoader> pluginLoaders = new HashMap<>(); // Amethyst
+ 
+     @SuppressWarnings("unchecked")
+     public PluginManager(ProxyServer proxy)
+@@ -299,7 +299,7 @@ public final class PluginManager
+         for ( Map.Entry<String, PluginDescription> entry : toLoad.entrySet() )
+         {
+             PluginDescription plugin = entry.getValue();
+-            if ( !enablePlugin( pluginStatuses, new Stack<PluginDescription>(), plugin ) )
++            if ( !loadPlugin( pluginStatuses, new Stack<PluginDescription>(), plugin ) ) // Amethyst enablePlugin -> loadPlugin
+             {
+                 ProxyServer.getInstance().getLogger().log( Level.WARNING, "Failed to enable {0}", entry.getKey() );
+             }
+@@ -319,8 +319,18 @@ public final class PluginManager
+                 {
+                     plugin.getDescription().getName(), plugin.getDescription().getVersion(), plugin.getDescription().getAuthor()
+                 } );
++                // Amethyst start
++                if ( plugin.getState().equals( PluginState.DISABLED ) )
++                {
++                    plugin.getLogger().warning( plugin.getDescription().getName() + " is disabled." );
++                    unloadPlugin( plugin );
++                } else {
++                    plugin.setState( ApiVersionChecker.checkApiVersion( plugin.getDescription() ) );
++                }
++                // Amethyst end
+             } catch ( Throwable t )
+             {
++                plugin.setState( PluginState.ERROR ); // Amethyst
+                 // Waterfall start - throw exception event
+                 String msg = "Exception encountered when loading plugin: " + plugin.getDescription().getName();
+                 ProxyServer.getInstance().getLogger().log( Level.WARNING, msg, t );
+@@ -330,7 +340,37 @@ public final class PluginManager
+         }
+     }
+ 
+-    private boolean enablePlugin(Map<PluginDescription, Boolean> pluginStatuses, Stack<PluginDescription> dependStack, PluginDescription plugin)
++    // Amethyst start
++    public void reloadPlugins()
++    {
++        for ( Plugin plugin : plugins.values() )
++        {
++            try
++            {
++                plugin.onReload();
++                ProxyServer.getInstance().getLogger().log( Level.INFO, "Reloaded plugin {0} version {1} by {2}", new Object[]
++                {
++                    plugin.getDescription().getName(), plugin.getDescription().getVersion(), plugin.getDescription().getAuthor()
++                });
++                if ( plugin.getState().equals( PluginState.DISABLED ) )
++                {
++                    plugin.getLogger().warning( plugin.getDescription().getName() + " is disabled." );
++                    unloadPlugin( plugin );
++                }
++            } catch ( Throwable t )
++            {
++                plugin.setState( PluginState.ERROR );
++                // Waterfall start - throw exception event
++                String msg = "Exception encountered when reloading plugin: " + plugin.getDescription().getName();
++                ProxyServer.getInstance().getLogger().log( Level.WARNING, msg, t );
++                this.callEvent( new ProxyExceptionEvent( new ProxyPluginEnableDisableException( msg, t, plugin) ) );
++                // Waterfall end
++            }
++        }
++    }
++    // Amethyst end
++
++    private boolean loadPlugin(Map<PluginDescription, Boolean> pluginStatuses, Stack<PluginDescription> dependStack, PluginDescription plugin) // Amethyst enablePlugin -> loadPlugin
+     {
+         if ( pluginStatuses.containsKey( plugin ) )
+         {
+@@ -366,7 +406,7 @@ public final class PluginManager
+                 } else
+                 {
+                     dependStack.push( plugin );
+-                    dependStatus = this.enablePlugin( pluginStatuses, dependStack, depend );
++                    dependStatus = this.loadPlugin( pluginStatuses, dependStack, depend );
+                     dependStack.pop();
+                 }
+             }
+@@ -397,8 +437,8 @@ public final class PluginManager
+                 Plugin clazz = (Plugin) main.getDeclaredConstructor().newInstance();
+ 
+                 plugins.put( plugin.getName(), clazz );
+-                pluginLoaders.put( plugin.getName(), loader ); // Amethyst - cache plugin loaders.
+                 clazz.onLoad();
++                clazz.setState( PluginState.LOADED ); // Amethyst
+                 ProxyServer.getInstance().getLogger().log( Level.INFO, "Loaded plugin {0} version {1} by {2}", new Object[]
+                 {
+                     plugin.getName(), plugin.getVersion(), plugin.getAuthor()
+@@ -422,6 +462,7 @@ public final class PluginManager
+     public void unloadPlugin(Plugin plugin)
+     {
+         plugin.onDisable();
++        plugin.setState( PluginState.DISABLED ); // Amethyst
+         this.unregisterListeners( plugin );
+         this.unregisterCommands( plugin );
+         this.proxy.getScheduler().cancel( plugin );
+@@ -433,7 +474,7 @@ public final class PluginManager
+ 
+         try
+         {
+-            pluginLoaders.get( plugin.getDescription().getName() ).close();
++            plugin.getClassloader().close();
+         }catch (Exception ex)
+         {
+             ex.printStackTrace();
+@@ -443,11 +484,6 @@ public final class PluginManager
+         {
+             this.plugins.remove( plugin.getDescription().getName() );
+         }
+-
+-        if( this.pluginLoaders.containsKey( plugin.getDescription().getName() ) )
+-        {
+-            this.pluginLoaders.remove( plugin.getDescription().getName() );
+-        }
+     }
+     // Amethyst end
+ 
+diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginState.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginState.java
+new file mode 100644
+index 00000000..08c4fa7d
+--- /dev/null
++++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginState.java
+@@ -0,0 +1,34 @@
++package net.md_5.bungee.api.plugin;
++
++public enum PluginState
++{
++    /**
++     * The plugin has been correctly loaded.
++     */
++    LOADED,
++
++    /**
++     * The plugin has been correctly enabled and is now fully working.
++     */
++    ENABLED,
++
++    /**
++     * The plugin is fully disabled.
++     */
++    DISABLED,
++
++    /**
++     * The plugin has not been loaded because it requires a different version of Amethyst.
++     */
++    INCOMPATIBLE,
++
++    /**
++     * The plugin doesn't contains api version.
++     */
++    UNKNOWN_API,
++
++    /**
++     * The plugin loading or enabling process has been interrupted by an unhandled error.
++     */
++    ERROR
++}
+diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
+index c3c12a4f..30df577f 100644
+--- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
++++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
+@@ -54,6 +54,11 @@ public class AmethystConfig extends AbstractYamlConfig {
+      * Default: 1.18.2
+      */
+     public String maxVersion = "1.18.2";
++    /**
++     * Minimum api version that required for all plugins.
++     * Default: none
++     */
++    public String minApiVersion = "none";
+ 
+     /**
+      * Enable TCP fast open netty feature.
+@@ -82,6 +87,10 @@ public class AmethystConfig extends AbstractYamlConfig {
+      * Log exception when connection to backend server failed
+      */
+     public boolean logBackendConnectionFailed = true;
++    /**
++     * Log legacy plugin warnings.
++     */
++    public boolean logLegacyPluginWarning = false;
+ 
+     /**
+      * Enable or disable custom motd.
+@@ -178,6 +187,7 @@ public class AmethystConfig extends AbstractYamlConfig {
+         logExceptions = getBoolean("logger.exceptions", logExceptions);
+         logHaProxy = getBoolean("logger.haProxy", logHaProxy);
+         logBackendConnectionFailed = getBoolean("logger.backendConnectionFailed", logBackendConnectionFailed);
++        logLegacyPluginWarning = getBoolean("logger.legacyPluginWarning", logLegacyPluginWarning);
+ 
+         alertEnabled = getBoolean( "modules.alert", alertEnabled );
+         findEnabled = getBoolean( "modules.find", findEnabled );
+@@ -190,5 +200,6 @@ public class AmethystConfig extends AbstractYamlConfig {
+ 
+         minVersion = getString( "versions.min", minVersion );
+         maxVersion = getString( "versions.max", maxVersion );
++        minApiVersion = getString("versions.minApi", minApiVersion);
+     }
+ }
+diff --git a/flame/src/main/resources/amethyst.yml b/flame/src/main/resources/amethyst.yml
+index 883b3999..784f6790 100644
+--- a/flame/src/main/resources/amethyst.yml
++++ b/flame/src/main/resources/amethyst.yml
+@@ -56,6 +56,12 @@ versions:
+   # Default: 1.18.2
+   max: "1.18.2"
+ 
++  # Minimum api version that required for all plugins
++  # If you set this to 'none', plugins with any api version can be loaded
++  # Supported api versions: 1.18
++  # Default: none
++  minApi: "none"
++
+ # Lobby module configuration
+ lobby:
+   # Enable lobby module?
+@@ -94,6 +100,9 @@ logger:
+   # Enable or disable logging when connection to any backend server failed.
+   backendConnectionFailed: true
+ 
++  # Enable or disable warnings for legacy plugins.
++  legacyPluginWarning: false
++
+ # Modules configuration
+ # In this section you can enable or disable certain proxy modules
+ modules:
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
+index 5e0a3e27..6ae95a2e 100644
+--- a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
++++ b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
+@@ -29,6 +29,7 @@ public class CommandReload extends Command
+        // proxy.reloadMessages(); // Amethyst
+         proxy.stopListeners();
+         proxy.startListeners();
++        proxy.getPluginManager().reloadPlugins(); // Amethyst
+         proxy.getPluginManager().callEvent( new ProxyReloadEvent( sender ) );
+ 
+         Amethyst.getInstance().load( BungeeCord.getInstance().getLogger()); // Amethyst - load our configs
+-- 
+2.35.1
+
