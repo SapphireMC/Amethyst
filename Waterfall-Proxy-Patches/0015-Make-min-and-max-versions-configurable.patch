@@ -1,4 +1,4 @@
-From 0ad70616f13c04d6def6df0eb8fea7574cb07955 Mon Sep 17 00:00:00 2001
+From c819509da7acea4b4e77964974e02417fb2f4d78 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Wed, 5 Jan 2022 01:24:39 +0500
 Subject: [PATCH] Make min and max versions configurable
@@ -192,7 +192,7 @@ index d0bb5c37..ca29641b 100644
          if ( config.isForgeSupport() )
          {
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
-index 431f268a..f3496558 100644
+index 431f268a..9915b800 100644
 --- a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
 +++ b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
 @@ -2,9 +2,12 @@ package net.md_5.bungee.command;
@@ -219,10 +219,10 @@ index 431f268a..f3496558 100644
 +            for ( ProxiedPlayer player : proxy.getPlayers() )
 +            {
 +                PendingConnection connection = player.getPendingConnection();
-+                if ( connection.getVersion() > proxy.getProtocolVersion() )
++                if ( connection.getProtocol().isAfter( ProtocolVersion.MAXIMUM_VERSION.getProtocol() ) )
 +                {
 +                    connection.disconnect( proxy.getTranslation( "outdated_server", proxy.getGameVersion() ) );
-+                } else
++                } else if ( connection.getProtocol().isBefore( ProtocolVersion.MINIMUM_VERSION.getProtocol() ) )
 +                {
 +                    connection.disconnect( proxy.getTranslation( "outdated_client", proxy.getGameVersion() ) );
 +                }

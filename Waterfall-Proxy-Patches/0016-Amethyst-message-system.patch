@@ -1,4 +1,4 @@
-From acb671b775f51e45e7d94717a3ff12e1c0a16f7f Mon Sep 17 00:00:00 2001
+From dd71f6f4662a4d795420712dbbcbb9f15c5266b5 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Thu, 6 Jan 2022 18:32:40 +0500
 Subject: [PATCH] Amethyst message system
@@ -739,7 +739,7 @@ index a8215b7c..34236cbd 100644
                  }
              }
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
-index f3496558..1c696a7d 100644
+index 9915b800..7887c5e6 100644
 --- a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
 +++ b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
 @@ -4,7 +4,6 @@ import io.sapphiremc.amethyst.Amethyst;
@@ -761,11 +761,11 @@ index f3496558..1c696a7d 100644
          proxy.getPluginManager().callEvent( new ProxyReloadEvent( sender ) );
 @@ -40,16 +39,15 @@ public class CommandReload extends Command
                  PendingConnection connection = player.getPendingConnection();
-                 if ( connection.getVersion() > proxy.getProtocolVersion() )
+                 if ( connection.getProtocol().isAfter( ProtocolVersion.MAXIMUM_VERSION.getProtocol() ) )
                  {
 -                    connection.disconnect( proxy.getTranslation( "outdated_server", proxy.getGameVersion() ) );
 +                    connection.disconnect( proxy.getTranslationComponent( "error.outdated.server", proxy.getGameVersion() ) );
-                 } else
+                 } else if ( connection.getProtocol().isBefore( ProtocolVersion.MINIMUM_VERSION.getProtocol() ) )
                  {
 -                    connection.disconnect( proxy.getTranslation( "outdated_client", proxy.getGameVersion() ) );
 +                    connection.disconnect( proxy.getTranslationComponent( "error.outdated.client", proxy.getGameVersion() ) );
