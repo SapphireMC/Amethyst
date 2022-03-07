@@ -23,3 +23,13 @@ jobs:
         run: git config --global user.email "actions@github.com" && git config --global user.name "Github Actions"
       - name: Apply Patches and Build
         run: ./amethyst build
+      - name: Publish release
+        if: ${{ runner.os == 'Linux' && matrix.java == '17' }} # Only upload artifacts built from latest java on one OS
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          automatic_release_tag: 1.18.2
+          prerelease: false
+          title: Latest Build
+          files: |
+            Amethyst-Proxy/bootstrap/target/Amethyst-1.18-R0.1-SNAPSHOT.jar
