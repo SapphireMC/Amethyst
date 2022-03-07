@@ -1,4 +1,4 @@
-From 6791ed9588379024b8dd36fff478061b10d7eef1 Mon Sep 17 00:00:00 2001
+From 1c48133c836cbf8751aee7ff40a50a457840a105 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Sun, 6 Mar 2022 02:47:48 +0500
 Subject: [PATCH] Antibot system from FlameCord
@@ -108,10 +108,10 @@ index 00000000..0db37678
 +}
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/antibot/address/AddressData.java b/flame/src/main/java/io/sapphiremc/amethyst/antibot/address/AddressData.java
 new file mode 100644
-index 00000000..76bd8fa6
+index 00000000..dd91c494
 --- /dev/null
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/antibot/address/AddressData.java
-@@ -0,0 +1,116 @@
+@@ -0,0 +1,117 @@
 +/*
 + * Copyright (c) 2022 DenaryDev
 + *
@@ -122,15 +122,18 @@ index 00000000..76bd8fa6
 +package io.sapphiremc.amethyst.antibot.address;
 +
 +import io.sapphiremc.amethyst.Amethyst;
++import lombok.Getter;
 +
 +import java.util.Collection;
 +import java.util.HashSet;
 +
 +public class AddressData {
 +
-+    private final Collection<String> accounts = new HashSet<>();
++    @Getter
++    private final Collection<String> nicknames = new HashSet<>();
 +
-+    private String lastAccount = "";
++    @Getter
++    private String lastNickname = "";
 +    private long lastPing = 0;
 +    private long penUltimateConnection = 0;
 +    private long lastConnection = 0;
@@ -140,17 +143,15 @@ index 00000000..76bd8fa6
 +    private int connectionsSecond = 0;
 +    private int totalConnections = 0;
 +
-+    public Collection<String> getAccounts() {
-+        return accounts;
-+    }
++    public void addNickname(String nickname) {
++        if (!lastNickname.equals(nickname)) {
++            this.lastNickname = nickname;
++            this.totalConnections = 1;
++        }
 +
-+    public String getLastAccount() {
-+        return lastAccount;
-+    }
-+
-+    public void addAccount(String account) {
-+        this.lastAccount = account;
-+        this.accounts.add(account);
++        if (!this.nicknames.contains(nickname)) {
++            this.nicknames.add(nickname);
++        }
 +    }
 +
 +    public long getPenUltimateConnection() {
@@ -267,7 +268,7 @@ index 00000000..38b8639c
 +}
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/antibot/checks/AccountsCheck.java b/flame/src/main/java/io/sapphiremc/amethyst/antibot/checks/AccountsCheck.java
 new file mode 100644
-index 00000000..5e20a35c
+index 00000000..13b37f31
 --- /dev/null
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/antibot/checks/AccountsCheck.java
 @@ -0,0 +1,37 @@
@@ -298,7 +299,7 @@ index 00000000..5e20a35c
 +        if (config.accountsEnabled) {
 +            AddressData data = dataManager.getAddressData(address);
 +
-+            if (data.getAccounts().size() >= config.accountsLimit) {
++            if (data.getNicknames().size() >= config.accountsLimit) {
 +                if (config.accountsFirewall) data.firewall();
 +
 +                return true;
@@ -385,7 +386,7 @@ index 00000000..e134da60
 +}
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/antibot/checks/NicknameCheck.java b/flame/src/main/java/io/sapphiremc/amethyst/antibot/checks/NicknameCheck.java
 new file mode 100644
-index 00000000..7f909eff
+index 00000000..59de8b2d
 --- /dev/null
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/antibot/checks/NicknameCheck.java
 @@ -0,0 +1,74 @@
@@ -443,7 +444,7 @@ index 00000000..7f909eff
 +
 +        if (config.nicknameEnabled) {
 +            AddressData data = dataManager.getAddressData(address);
-+            String nickname = data.getLastAccount();
++            String nickname = data.getLastNickname();
 +
 +            if (isBlacklisted(config, nickname)) {
 +                if (config.nicknameFirewall) data.firewall();
@@ -465,7 +466,7 @@ index 00000000..7f909eff
 +}
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/antibot/checks/PasswordCheck.java b/flame/src/main/java/io/sapphiremc/amethyst/antibot/checks/PasswordCheck.java
 new file mode 100644
-index 00000000..6fac365f
+index 00000000..f9bd0dfb
 --- /dev/null
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/antibot/checks/PasswordCheck.java
 @@ -0,0 +1,64 @@
@@ -518,7 +519,7 @@ index 00000000..6fac365f
 +                (passwordMessage.contains("/login ") || passwordMessage.contains("/l ")
 +                || passwordMessage.contains("/register ") || passwordMessage.contains("/reg "))) {
 +            AddressData data = dataManager.getAddressData(address);
-+            String nickname = data.getLastAccount();
++            String nickname = data.getLastNickname();
 +            String password = passwordMessage.split(" ")[1];
 +
 +            updatePassword(config, nickname, password);
@@ -820,7 +821,7 @@ index d4de461c..671c6550 100644
    fallback:
      kick: "&cCould not connect to a default or fallback server. Incorrectly configured address/port/firewall? {0}"
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 54a72ea1..78ab7a92 100644
+index 54a72ea1..4f17bbe6 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -3,6 +3,8 @@ package net.md_5.bungee.connection;
@@ -844,13 +845,14 @@ index 54a72ea1..78ab7a92 100644
          switch ( handshake.getRequestedProtocol() )
          {
              case 1:
-@@ -353,6 +360,15 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -353,6 +360,16 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  }
                  thisState = State.STATUS;
                  ch.setProtocol( Protocol.STATUS );
 +
 +                // Amethyst start - Antibot system
 +                data.addPing();
++
 +                if ( checkManager.getRateLimitCheck().check( ch.getRemoteAddress() ) )
 +                {
 +                    disconnect( bungee.getTranslationComponent( "event.antibot.rate-limit", data.getPingsSecond() ) );
@@ -860,7 +862,7 @@ index 54a72ea1..78ab7a92 100644
                  break;
              case 2:
                  // Login
-@@ -363,6 +379,16 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -363,6 +380,16 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  thisState = State.USERNAME;
                  ch.setProtocol( Protocol.LOGIN );
  
@@ -877,13 +879,15 @@ index 54a72ea1..78ab7a92 100644
                  if ( !ProtocolVersion.isSupported( handshake.getProtocolVersion() ) )
                  {
                      if ( handshake.getProtocolVersion() > bungee.getProtocolVersion() )
-@@ -401,6 +427,30 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -401,6 +428,32 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              return;
          }
  
 +        // Amethyst start - Antibot system
 +        AddressData data = bungee.getAmethyst().getAddressDataManager().getAddressData( ch.getRemoteAddress() );
 +        CheckManager checkManager = bungee.getAmethyst().getCheckManager();
++
++        data.addNickname( loginRequest.getData() );
 +
 +        // Check nickname
 +        if ( checkManager.getNicknameCheck().check( ch.getRemoteAddress() ) )
@@ -894,7 +898,7 @@ index 54a72ea1..78ab7a92 100644
 +        // Check account
 +        if ( checkManager.getAccountsCheck().check( ch.getRemoteAddress() ) )
 +        {
-+            disconnect( bungee.getTranslationComponent( "event.antibot.accounts", data.getAccounts().size() ) );
++            disconnect( bungee.getTranslationComponent( "event.antibot.accounts", data.getNicknames().size() ) );
 +            return;
 +        }
 +        // Check reconnect
