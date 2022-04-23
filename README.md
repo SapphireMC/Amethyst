@@ -23,13 +23,13 @@ Waterfall fort that is used on our server
 </repository>
 ```
 ```xml
-<depencency>
+<dependency>
     <groupId>io.sapphiremc.amethyst</groupId>
     <!-- For any other modules use amethyst-<modulename> Example: amethyst-chat -->
     <artifactId>amethyst-api</artifactId>
     <version>1.18-R0.1-SNAPSHOT</version>
     <scope>provided</scope>
-</depencency>
+</dependency>
 ```
 
 #### Gradle groovy
