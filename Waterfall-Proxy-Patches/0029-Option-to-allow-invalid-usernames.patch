@@ -1,4 +1,4 @@
-From e27d8919b43e6f605e37b3ae02284d88d864866b Mon Sep 17 00:00:00 2001
+From c97e2cb9797c830ce05235e7b14afd8f19ca83ee Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Sun, 6 Mar 2022 02:54:51 +0500
 Subject: [PATCH] Option to allow invalid usernames
@@ -34,10 +34,10 @@ index dcf38c34..90e3a6a4 100644
  motd:
    # Enable amethyst custom motd?
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 4f17bbe6..86e53912 100644
+index 283322a4..b30d8bb3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -413,7 +413,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -421,7 +421,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          Preconditions.checkState( thisState == State.USERNAME, "Not expecting USERNAME" );
          thisState = State.PROCESSING_USERNAME; // Amethyst
  
@@ -47,5 +47,5 @@ index 4f17bbe6..86e53912 100644
              disconnect( bungee.getTranslationComponent( "error.name-invalid" ) );
              return;
 -- 
-2.35.1
+2.36.0
 

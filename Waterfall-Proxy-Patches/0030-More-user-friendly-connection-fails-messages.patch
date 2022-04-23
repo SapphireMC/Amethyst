@@ -1,4 +1,4 @@
-From d2c0c722b3af350826e166774e87e0a816ccbac6 Mon Sep 17 00:00:00 2001
+From 6ffa5a48ee908c37f4c8eac1facada6c304f12f5 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Sun, 6 Mar 2022 23:35:34 +0500
 Subject: [PATCH] More user-friendly connection fails messages
@@ -28,10 +28,10 @@ index b67b2aab..c3c12a4f 100644
          alertEnabled = getBoolean( "modules.alert", alertEnabled );
          findEnabled = getBoolean( "modules.find", findEnabled );
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
-index bfb61dff..7b42c917 100644
+index 39425bde..318b7c6d 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
-@@ -44,7 +44,7 @@ public class MessagesConfig extends AbstractYamlConfig {
+@@ -45,7 +45,7 @@ public class MessagesConfig extends AbstractYamlConfig {
          getString("event.antibot.rate-limit", "&cYou are connecting too fast! ({0})");
          getString("event.antibot.reconnect", "&cReconnect {0} more times to enter!");
  
@@ -40,7 +40,7 @@ index bfb61dff..7b42c917 100644
          getString("event.fallback.lobby", "&cCould not connect to target server, you have been moved to a fallback server.");
          getString("event.restart", "[Proxy] Proxy restarting.");
          getString("event.server-down", "&cThe server you were previously on went down, you have been connected to a fallback server");
-@@ -71,6 +71,8 @@ public class MessagesConfig extends AbstractYamlConfig {
+@@ -72,6 +72,8 @@ public class MessagesConfig extends AbstractYamlConfig {
          getString("error.ping-cannot-connect", "&c[Bungee] Can't connect to server.");
          getString("error.players-only", "&cOnly in game players can use this command");
          getString("error.proxy-full", "Server is full!");
@@ -64,10 +64,10 @@ index 90e3a6a4..883b3999 100644
  # In this section you can enable or disable certain proxy modules
  modules:
 diff --git a/flame/src/main/resources/messages.yml b/flame/src/main/resources/messages.yml
-index 671c6550..7a60777e 100644
+index 6fbac725..57641e87 100644
 --- a/flame/src/main/resources/messages.yml
 +++ b/flame/src/main/resources/messages.yml
-@@ -68,7 +68,7 @@ event:
+@@ -69,7 +69,7 @@ event:
  
    # Fallback
    fallback:
@@ -76,7 +76,7 @@ index 671c6550..7a60777e 100644
      lobby: "&cCould not connect to target server, you have been moved to a fallback server."
  
    # Restart
-@@ -115,4 +115,6 @@ error:
+@@ -116,4 +116,6 @@ error:
    ping-cannot-connect: "&c[Bungee] Can't connect to server."
    players-only: "&cOnly in game players can use this command"
    proxy-full: "Server is full!"

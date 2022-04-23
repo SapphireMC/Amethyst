@@ -1,11 +1,27 @@
-From 334927f2ceda50131e4ef1724cbae98c2717634f Mon Sep 17 00:00:00 2001
+From bc5eca71fc4ca4089d40d33361045fd9769f52e8 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Sun, 6 Mar 2022 02:47:48 +0500
 Subject: [PATCH] Antibot system from FlameCord
 
 
+diff --git a/flame/pom.xml b/flame/pom.xml
+index ff4d2d85..2a1745c4 100644
+--- a/flame/pom.xml
++++ b/flame/pom.xml
+@@ -31,6 +31,11 @@
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
++        <dependency>
++            <groupId>com.maxmind.db</groupId>
++            <artifactId>maxmind-db</artifactId>
++            <version>2.0.0</version>
++        </dependency>
+     </dependencies>
+ 
+     <build>
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/Amethyst.java b/flame/src/main/java/io/sapphiremc/amethyst/Amethyst.java
-index 934c0ccf..0f9d6ea0 100644
+index 934c0ccf..076515a7 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/Amethyst.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/Amethyst.java
 @@ -1,6 +1,9 @@
@@ -49,24 +65,26 @@ index 934c0ccf..0f9d6ea0 100644
      /**
       * This method is used by the proxy to initialize this
       * Doesn't use this if you don't know what you are doing
-@@ -54,7 +74,11 @@ public class Amethyst {
+@@ -54,7 +74,13 @@ public class Amethyst {
      public void load(Logger logger) {
          this.provider = ConfigurationProvider.getProvider(YamlConfiguration.class);
          this.logger = logger;
 +
-+        this.addressDataManager = new AddressDataManager();
-+        this.checkManager = new CheckManager(addressDataManager);
          this.config = new AmethystConfig(provider);
 +        this.antibotConfig = new AntibotConfig(provider);
          this.messages = new MessagesConfig(provider);
++
++        this.addressDataManager = new AddressDataManager();
++        if (this.checkManager != null) this.checkManager.unload();
++        this.checkManager = new CheckManager(addressDataManager, antibotConfig);
      }
  }
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/antibot/CheckManager.java b/flame/src/main/java/io/sapphiremc/amethyst/antibot/CheckManager.java
 new file mode 100644
-index 00000000..0db37678
+index 00000000..7bee37db
 --- /dev/null
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/antibot/CheckManager.java
-@@ -0,0 +1,39 @@
+@@ -0,0 +1,50 @@
 +/*
 + * Copyright (c) 2022 DenaryDev
 + *
@@ -78,17 +96,20 @@ index 00000000..0db37678
 +
 +import io.sapphiremc.amethyst.antibot.address.AddressDataManager;
 +import io.sapphiremc.amethyst.antibot.checks.AccountsCheck;
++import io.sapphiremc.amethyst.antibot.checks.CountryCheck;
 +import io.sapphiremc.amethyst.antibot.checks.FastChatCheck;
 +import io.sapphiremc.amethyst.antibot.checks.FirewallCheck;
 +import io.sapphiremc.amethyst.antibot.checks.NicknameCheck;
 +import io.sapphiremc.amethyst.antibot.checks.PasswordCheck;
 +import io.sapphiremc.amethyst.antibot.checks.RateLimitCheck;
 +import io.sapphiremc.amethyst.antibot.checks.ReconnectCheck;
++import io.sapphiremc.amethyst.conf.AntibotConfig;
 +import lombok.Getter;
 +
 +@Getter
 +public class CheckManager {
 +    private final AccountsCheck accountsCheck;
++    private final CountryCheck countryCheck;
 +    private final FastChatCheck fastChatCheck;
 +    private final FirewallCheck firewallCheck;
 +    private final NicknameCheck nicknameCheck;
@@ -96,22 +117,30 @@ index 00000000..0db37678
 +    private final RateLimitCheck rateLimitCheck;
 +    private final ReconnectCheck reconnectCheck;
 +
-+    public CheckManager(AddressDataManager dataManager) {
-+        this.accountsCheck = new AccountsCheck(dataManager);
-+        this.fastChatCheck = new FastChatCheck(dataManager);
-+        this.firewallCheck = new FirewallCheck(dataManager);
-+        this.nicknameCheck = new NicknameCheck(dataManager);
-+        this.passwordCheck = new PasswordCheck(dataManager);
-+        this.rateLimitCheck = new RateLimitCheck(dataManager);
-+        this.reconnectCheck = new ReconnectCheck(dataManager);
++    public CheckManager(AddressDataManager dataManager, AntibotConfig config) {
++        this.accountsCheck = new AccountsCheck(dataManager, config);
++        this.countryCheck = new CountryCheck(dataManager, config);
++        this.fastChatCheck = new FastChatCheck(dataManager, config);
++        this.firewallCheck = new FirewallCheck(dataManager, config);
++        this.nicknameCheck = new NicknameCheck(dataManager, config);
++        this.passwordCheck = new PasswordCheck(dataManager, config);
++        this.rateLimitCheck = new RateLimitCheck(dataManager, config);
++        this.reconnectCheck = new ReconnectCheck(dataManager, config);
++
++        this.countryCheck.load();
++        this.firewallCheck.load();
++    }
++
++    public void unload() {
++        this.countryCheck.unload();
 +    }
 +}
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/antibot/address/AddressData.java b/flame/src/main/java/io/sapphiremc/amethyst/antibot/address/AddressData.java
 new file mode 100644
-index 00000000..dd91c494
+index 00000000..790b01d7
 --- /dev/null
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/antibot/address/AddressData.java
-@@ -0,0 +1,117 @@
+@@ -0,0 +1,126 @@
 +/*
 + * Copyright (c) 2022 DenaryDev
 + *
@@ -123,24 +152,38 @@ index 00000000..dd91c494
 +
 +import io.sapphiremc.amethyst.Amethyst;
 +import lombok.Getter;
++import lombok.RequiredArgsConstructor;
++import lombok.Setter;
 +
++import java.io.IOException;
 +import java.util.Collection;
 +import java.util.HashSet;
 +
++@RequiredArgsConstructor
 +public class AddressData {
 +
 +    @Getter
 +    private final Collection<String> nicknames = new HashSet<>();
 +
 +    @Getter
++    private final String hostString;
++    @Getter
 +    private String lastNickname = "";
++    @Getter
++    @Setter
++    private String country = null;
 +    private long lastPing = 0;
++    @Getter
 +    private long penUltimateConnection = 0;
++    @Getter
 +    private long lastConnection = 0;
 +    private long lastFirewall = 0;
 +    private int pingsSecond = 0;
++    @Getter
 +    private int totalPings = 0;
 +    private int connectionsSecond = 0;
++    @Getter
++    @Setter
 +    private int totalConnections = 0;
 +
 +    public void addNickname(String nickname) {
@@ -154,16 +197,8 @@ index 00000000..dd91c494
 +        }
 +    }
 +
-+    public long getPenUltimateConnection() {
-+        return penUltimateConnection;
-+    }
-+
 +    public long getTimeSincePenUltimateConnection() {
 +        return System.currentTimeMillis() - penUltimateConnection;
-+    }
-+
-+    public long getLastConnection() {
-+        return lastConnection;
 +    }
 +
 +    public long getTimeSinceLastConnection() {
@@ -182,14 +217,10 @@ index 00000000..dd91c494
 +    }
 +
 +    public void addPing() {
-+        lastPing = System.currentTimeMillis();
 +        updatePingsSecond();
++        lastPing = System.currentTimeMillis();
 +        pingsSecond++;
 +        totalPings++;
-+    }
-+
-+    public int getTotalPings() {
-+        return totalPings;
 +    }
 +
 +    private void updateConnectionsSecond() {
@@ -213,25 +244,32 @@ index 00000000..dd91c494
 +        totalConnections++;
 +    }
 +
-+    public int getTotalConnections() {
-+        return totalConnections;
-+    }
-+
 +    public boolean isFirewalled() {
-+        return System.currentTimeMillis() - lastFirewall < Amethyst.getInstance().getAntibotConfig().firewallExpire;
++        return System.currentTimeMillis() - lastFirewall < Amethyst.getInstance().getAntibotConfig().firewallExpire * 1000L;
 +    }
 +
 +    public void firewall() {
++        if ( !hostString.equals("127.0.0.1") && Amethyst.getInstance().getAntibotConfig().firewallIpset )
++        {
++            Runtime runtime = Runtime.getRuntime();
++
++            try {
++                runtime.exec("ipset add amethyst_blacklist " + getHostString());
++            } catch (IOException ex) {
++                ex.printStackTrace();
++            }
++        }
++
 +        this.lastFirewall = System.currentTimeMillis();
 +    }
 +
-+    public void setTotalConnections(final int totalConnections) {
-+        this.totalConnections = totalConnections;
++    public boolean hasNickname(String nickname) {
++        return nicknames.contains(nickname);
 +    }
 +}
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/antibot/address/AddressDataManager.java b/flame/src/main/java/io/sapphiremc/amethyst/antibot/address/AddressDataManager.java
 new file mode 100644
-index 00000000..38b8639c
+index 00000000..c971c858
 --- /dev/null
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/antibot/address/AddressDataManager.java
 @@ -0,0 +1,31 @@
@@ -258,7 +296,7 @@ index 00000000..38b8639c
 +        if (addresses.containsKey(host)) {
 +            return addresses.get(host);
 +        } else {
-+            AddressData data = new AddressData();
++            AddressData data = new AddressData(host);
 +
 +            addresses.put(host, data);
 +
@@ -268,10 +306,10 @@ index 00000000..38b8639c
 +}
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/antibot/checks/AccountsCheck.java b/flame/src/main/java/io/sapphiremc/amethyst/antibot/checks/AccountsCheck.java
 new file mode 100644
-index 00000000..13b37f31
+index 00000000..58814a3c
 --- /dev/null
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/antibot/checks/AccountsCheck.java
-@@ -0,0 +1,37 @@
+@@ -0,0 +1,39 @@
 +/*
 + * Copyright (c) 2022 DenaryDev
 + *
@@ -281,25 +319,27 @@ index 00000000..13b37f31
 + */
 +package io.sapphiremc.amethyst.antibot.checks;
 +
-+import io.sapphiremc.amethyst.Amethyst;
 +import io.sapphiremc.amethyst.antibot.address.AddressData;
 +import io.sapphiremc.amethyst.antibot.address.AddressDataManager;
 +import io.sapphiremc.amethyst.conf.AntibotConfig;
 +import lombok.RequiredArgsConstructor;
 +
 +import java.net.SocketAddress;
++import java.util.Collection;
 +
 +@RequiredArgsConstructor
 +public class AccountsCheck {
 +    private final AddressDataManager dataManager;
++    private final AntibotConfig config;
 +
-+    public boolean check(SocketAddress address) {
-+        AntibotConfig config = Amethyst.getInstance().getAntibotConfig();
-+
++    public boolean check(SocketAddress address, String nickname) {
 +        if (config.accountsEnabled) {
 +            AddressData data = dataManager.getAddressData(address);
++            Collection<String> nicknames = data.getNicknames();
 +
-+            if (data.getNicknames().size() >= config.accountsLimit) {
++            if (nicknames.size() > config.accountsLimit) {
++                nicknames.remove(nickname);
++
 +                if (config.accountsFirewall) data.firewall();
 +
 +                return true;
@@ -309,12 +349,12 @@ index 00000000..13b37f31
 +        return false;
 +    }
 +}
-diff --git a/flame/src/main/java/io/sapphiremc/amethyst/antibot/checks/FastChatCheck.java b/flame/src/main/java/io/sapphiremc/amethyst/antibot/checks/FastChatCheck.java
+diff --git a/flame/src/main/java/io/sapphiremc/amethyst/antibot/checks/CountryCheck.java b/flame/src/main/java/io/sapphiremc/amethyst/antibot/checks/CountryCheck.java
 new file mode 100644
-index 00000000..8bf6a9b0
+index 00000000..6fa13d4f
 --- /dev/null
-+++ b/flame/src/main/java/io/sapphiremc/amethyst/antibot/checks/FastChatCheck.java
-@@ -0,0 +1,37 @@
++++ b/flame/src/main/java/io/sapphiremc/amethyst/antibot/checks/CountryCheck.java
+@@ -0,0 +1,140 @@
 +/*
 + * Copyright (c) 2022 DenaryDev
 + *
@@ -324,7 +364,152 @@ index 00000000..8bf6a9b0
 + */
 +package io.sapphiremc.amethyst.antibot.checks;
 +
-+import io.sapphiremc.amethyst.Amethyst;
++import com.maxmind.db.CHMCache;
++import com.maxmind.db.MaxMindDbConstructor;
++import com.maxmind.db.MaxMindDbParameter;
++import com.maxmind.db.Reader;
++import io.sapphiremc.amethyst.antibot.address.AddressData;
++import io.sapphiremc.amethyst.antibot.address.AddressDataManager;
++import io.sapphiremc.amethyst.conf.AntibotConfig;
++import lombok.Getter;
++import lombok.RequiredArgsConstructor;
++
++import java.io.File;
++import java.io.IOException;
++import java.io.InputStream;
++import java.net.InetAddress;
++import java.net.InetSocketAddress;
++import java.net.SocketAddress;
++import java.net.URL;
++import java.nio.file.Files;
++
++@RequiredArgsConstructor
++public class CountryCheck {
++
++    private final AddressDataManager dataManager;
++    private final AntibotConfig config;
++    private Reader maxMindReader;
++
++    public void download(URL url, File file) throws IOException {
++        try (InputStream in = url.openStream()) {
++            Files.copy(in, file.toPath());
++        }
++    }
++
++    public void load() {
++        final File file = new File("GeoLite2-Country.mmdb");
++
++        try {
++            if (!file.exists()) {
++                System.out.println("Starting download of MaxMindDB (This will take some seconds...)");
++                download(new URL("https://git.io/GeoLite2-Country.mmdb"), file);
++            }
++
++            this.maxMindReader = new Reader(file, new CHMCache());
++        } catch (IOException ex) {
++            ex.printStackTrace();
++        }
++    }
++
++    public void unload() {
++        try {
++            if (this.maxMindReader != null) {
++                this.maxMindReader.close();
++            }
++        } catch (IOException ex) {
++            ex.printStackTrace();
++        }
++    }
++
++    private boolean isBlacklisted(String isoCode) {
++        for (String blacklisted : config.countryBlacklist) {
++            if (isoCode.contains(blacklisted)) {
++                return true;
++            }
++        }
++
++        return false;
++    }
++
++    private String getIsoCode(InetAddress address) {
++        try {
++            LookupResult result = maxMindReader.get(address, LookupResult.class);
++
++            if (result == null) {
++                return "LOCAL";
++            } else {
++                Country country = result.getCountry();
++                String isoCode = country.getIsoCode();
++
++                return isoCode;
++            }
++        } catch (IOException ex) {
++            ex.printStackTrace();
++        }
++
++        return null;
++    }
++
++    public boolean check(SocketAddress address) {
++        if (config.countryEnabled) {
++            AddressData data = dataManager.getAddressData(address);
++            String addressCountry = data.getCountry();
++            String country;
++
++            if (addressCountry != null) {
++                country = addressCountry;
++            } else {
++                country = getIsoCode(((InetSocketAddress) address).getAddress());
++                data.setCountry(country);
++            }
++
++            if (country != null && isBlacklisted(country)) {
++                if (config.countryFirewall) {
++                    data.firewall();
++                }
++
++                return true;
++            }
++        }
++
++        return false;
++    }
++
++    public static class LookupResult {
++        @Getter
++        private final Country country;
++
++        @MaxMindDbConstructor
++        public LookupResult(@MaxMindDbParameter(name = "country") Country country) {
++            this.country = country;
++        }
++    }
++
++    public static class Country {
++        @Getter
++        private final String isoCode;
++
++        @MaxMindDbConstructor
++        public Country(@MaxMindDbParameter(name = "iso_code") final String isoCode) {
++            this.isoCode = isoCode;
++        }
++    }
++}
+diff --git a/flame/src/main/java/io/sapphiremc/amethyst/antibot/checks/FastChatCheck.java b/flame/src/main/java/io/sapphiremc/amethyst/antibot/checks/FastChatCheck.java
+new file mode 100644
+index 00000000..b4c3cb88
+--- /dev/null
++++ b/flame/src/main/java/io/sapphiremc/amethyst/antibot/checks/FastChatCheck.java
+@@ -0,0 +1,35 @@
++/*
++ * Copyright (c) 2022 DenaryDev
++ *
++ * Use of this source code is governed by an MIT-style
++ * license that can be found in the LICENSE file or at
++ * https://opensource.org/licenses/MIT.
++ */
++package io.sapphiremc.amethyst.antibot.checks;
++
 +import io.sapphiremc.amethyst.antibot.address.AddressData;
 +import io.sapphiremc.amethyst.antibot.address.AddressDataManager;
 +import io.sapphiremc.amethyst.conf.AntibotConfig;
@@ -335,10 +520,9 @@ index 00000000..8bf6a9b0
 +@RequiredArgsConstructor
 +public class FastChatCheck {
 +    private final AddressDataManager dataManager;
++    private final AntibotConfig config;
 +
 +    public boolean check(SocketAddress address) {
-+        AntibotConfig config = Amethyst.getInstance().getAntibotConfig();
-+
 +        if (config.fastChatEnabled) {
 +            AddressData data = dataManager.getAddressData(address);
 +
@@ -354,10 +538,10 @@ index 00000000..8bf6a9b0
 +}
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/antibot/checks/FirewallCheck.java b/flame/src/main/java/io/sapphiremc/amethyst/antibot/checks/FirewallCheck.java
 new file mode 100644
-index 00000000..e134da60
+index 00000000..e649984c
 --- /dev/null
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/antibot/checks/FirewallCheck.java
-@@ -0,0 +1,26 @@
+@@ -0,0 +1,44 @@
 +/*
 + * Copyright (c) 2022 DenaryDev
 + *
@@ -367,18 +551,36 @@ index 00000000..e134da60
 + */
 +package io.sapphiremc.amethyst.antibot.checks;
 +
-+import io.sapphiremc.amethyst.Amethyst;
 +import io.sapphiremc.amethyst.antibot.address.AddressDataManager;
++import io.sapphiremc.amethyst.conf.AntibotConfig;
 +import lombok.RequiredArgsConstructor;
 +
++import java.io.IOException;
 +import java.net.SocketAddress;
 +
 +@RequiredArgsConstructor
 +public class FirewallCheck {
 +    private final AddressDataManager dataManager;
++    private final AntibotConfig config;
++
++    public void load() {
++        if (config.firewallIpset) {
++            Runtime runtime = Runtime.getRuntime();
++
++            try {
++                runtime.exec("iptables -D INPUT -p tcp -m set --match-set amethyst_blacklist src -j DROP");
++                runtime.exec("ipset flush flamecord_blacklist");
++                runtime.exec("ipset destroy flamecord_blacklist");
++                runtime.exec("ipset create amethyst_blacklist hash:ip timeout " + config.firewallExpire);
++                runtime.exec("iptables -I INPUT -p tcp -m set --match-set amethyst_blacklist src -j DROP");
++            } catch (IOException ex) {
++                ex.printStackTrace();
++            }
++        }
++    }
 +
 +    public boolean check(SocketAddress address) {
-+        if (Amethyst.getInstance().getAntibotConfig().firewallEnabled)
++        if (config.firewallEnabled)
 +            return dataManager.getAddressData(address).isFirewalled();
 +
 +        return false;
@@ -386,10 +588,10 @@ index 00000000..e134da60
 +}
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/antibot/checks/NicknameCheck.java b/flame/src/main/java/io/sapphiremc/amethyst/antibot/checks/NicknameCheck.java
 new file mode 100644
-index 00000000..59de8b2d
+index 00000000..ea222f50
 --- /dev/null
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/antibot/checks/NicknameCheck.java
-@@ -0,0 +1,74 @@
+@@ -0,0 +1,45 @@
 +/*
 + * Copyright (c) 2022 DenaryDev
 + *
@@ -399,7 +601,6 @@ index 00000000..59de8b2d
 + */
 +package io.sapphiremc.amethyst.antibot.checks;
 +
-+import io.sapphiremc.amethyst.Amethyst;
 +import io.sapphiremc.amethyst.antibot.address.AddressData;
 +import io.sapphiremc.amethyst.antibot.address.AddressDataManager;
 +import io.sapphiremc.amethyst.conf.AntibotConfig;
@@ -410,29 +611,11 @@ index 00000000..59de8b2d
 +@RequiredArgsConstructor
 +public class NicknameCheck {
 +    private final AddressDataManager dataManager;
++    private final AntibotConfig config;
 +
-+    private String lastNickname = "";
-+    private int lastLength = 0;
-+    private int lengthRepeatCount = 0;
-+
-+    private void updateNickname(AntibotConfig config, String nickname) {
-+        int length = nickname.length();
-+
-+        if (lastLength == length) {
-+            if (lengthRepeatCount < config.nicknameLimit && !nickname.equals(lastNickname)) {
-+                lengthRepeatCount++;
-+            }
-+        } else if (lengthRepeatCount > 0) {
-+            lengthRepeatCount--;
-+        }
-+
-+        lastLength = length;
-+        lastNickname = nickname;
-+    }
-+
-+    private boolean isBlacklisted(AntibotConfig config, String nickname) {
++    private boolean isBlacklisted(String nickname) {
 +        for (String blacklisted : config.nicknameBlacklist) {
-+            if (nickname.startsWith(blacklisted)) {
++            if (nickname.toLowerCase().contains(blacklisted)) {
 +                return true;
 +            }
 +        }
@@ -440,21 +623,11 @@ index 00000000..59de8b2d
 +    }
 +
 +    public boolean check(SocketAddress address) {
-+        AntibotConfig config = Amethyst.getInstance().getAntibotConfig();
-+
 +        if (config.nicknameEnabled) {
 +            AddressData data = dataManager.getAddressData(address);
 +            String nickname = data.getLastNickname();
 +
-+            if (isBlacklisted(config, nickname)) {
-+                if (config.nicknameFirewall) data.firewall();
-+
-+                return true;
-+            }
-+
-+            updateNickname(config, nickname);
-+
-+            if (isBlacklisted(config, nickname) || lengthRepeatCount >= config.nicknameLimit) {
++            if (isBlacklisted(nickname)) {
 +                if (config.nicknameFirewall) data.firewall();
 +
 +                return true;
@@ -466,10 +639,10 @@ index 00000000..59de8b2d
 +}
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/antibot/checks/PasswordCheck.java b/flame/src/main/java/io/sapphiremc/amethyst/antibot/checks/PasswordCheck.java
 new file mode 100644
-index 00000000..f9bd0dfb
+index 00000000..8db29401
 --- /dev/null
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/antibot/checks/PasswordCheck.java
-@@ -0,0 +1,64 @@
+@@ -0,0 +1,62 @@
 +/*
 + * Copyright (c) 2022 DenaryDev
 + *
@@ -479,7 +652,6 @@ index 00000000..f9bd0dfb
 + */
 +package io.sapphiremc.amethyst.antibot.checks;
 +
-+import io.sapphiremc.amethyst.Amethyst;
 +import io.sapphiremc.amethyst.antibot.address.AddressData;
 +import io.sapphiremc.amethyst.antibot.address.AddressDataManager;
 +import io.sapphiremc.amethyst.conf.AntibotConfig;
@@ -491,13 +663,14 @@ index 00000000..f9bd0dfb
 +@RequiredArgsConstructor
 +public class PasswordCheck {
 +    private final AddressDataManager dataManager;
++    private final AntibotConfig config;
 +
 +    private String lastNickname = "";
 +    private String lastPassword = "";
 +    @Getter
 +    private int repeatCount = 0;
 +
-+    private void updatePassword(AntibotConfig config, String nickname, String password) {
++    private void updatePassword(String nickname, String password) {
 +        if (!nickname.equals(lastNickname)) {
 +            if (password.equals(lastPassword)) {
 +                if (repeatCount < config.passwordLimit) {
@@ -513,8 +686,6 @@ index 00000000..f9bd0dfb
 +    }
 +
 +    public boolean check(SocketAddress address, String passwordMessage) {
-+        AntibotConfig config = Amethyst.getInstance().getAntibotConfig();
-+
 +        if (config.passwordEnabled &&
 +                (passwordMessage.contains("/login ") || passwordMessage.contains("/l ")
 +                || passwordMessage.contains("/register ") || passwordMessage.contains("/reg "))) {
@@ -522,7 +693,7 @@ index 00000000..f9bd0dfb
 +            String nickname = data.getLastNickname();
 +            String password = passwordMessage.split(" ")[1];
 +
-+            updatePassword(config, nickname, password);
++            updatePassword(nickname, password);
 +
 +            if (repeatCount >= config.passwordLimit) {
 +                if (config.passwordFirewall) data.firewall();
@@ -536,10 +707,10 @@ index 00000000..f9bd0dfb
 +}
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/antibot/checks/RateLimitCheck.java b/flame/src/main/java/io/sapphiremc/amethyst/antibot/checks/RateLimitCheck.java
 new file mode 100644
-index 00000000..37525e0d
+index 00000000..6e5b8fd9
 --- /dev/null
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/antibot/checks/RateLimitCheck.java
-@@ -0,0 +1,37 @@
+@@ -0,0 +1,35 @@
 +/*
 + * Copyright (c) 2022 DenaryDev
 + *
@@ -549,7 +720,6 @@ index 00000000..37525e0d
 + */
 +package io.sapphiremc.amethyst.antibot.checks;
 +
-+import io.sapphiremc.amethyst.Amethyst;
 +import io.sapphiremc.amethyst.antibot.address.AddressData;
 +import io.sapphiremc.amethyst.antibot.address.AddressDataManager;
 +import io.sapphiremc.amethyst.conf.AntibotConfig;
@@ -560,10 +730,9 @@ index 00000000..37525e0d
 +@RequiredArgsConstructor
 +public class RateLimitCheck {
 +    private final AddressDataManager dataManager;
++    private final AntibotConfig config;
 +
 +    public boolean check(SocketAddress address) {
-+        AntibotConfig config = Amethyst.getInstance().getAntibotConfig();
-+
 +        if (config.rateLimitEnabled) {
 +            AddressData data = dataManager.getAddressData(address);
 +
@@ -579,10 +748,10 @@ index 00000000..37525e0d
 +}
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/antibot/checks/ReconnectCheck.java b/flame/src/main/java/io/sapphiremc/amethyst/antibot/checks/ReconnectCheck.java
 new file mode 100644
-index 00000000..db37cd6e
+index 00000000..f14f5658
 --- /dev/null
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/antibot/checks/ReconnectCheck.java
-@@ -0,0 +1,40 @@
+@@ -0,0 +1,38 @@
 +/*
 + * Copyright (c) 2022 DenaryDev
 + *
@@ -592,7 +761,6 @@ index 00000000..db37cd6e
 + */
 +package io.sapphiremc.amethyst.antibot.checks;
 +
-+import io.sapphiremc.amethyst.Amethyst;
 +import io.sapphiremc.amethyst.antibot.address.AddressData;
 +import io.sapphiremc.amethyst.antibot.address.AddressDataManager;
 +import io.sapphiremc.amethyst.conf.AntibotConfig;
@@ -603,10 +771,9 @@ index 00000000..db37cd6e
 +@RequiredArgsConstructor
 +public class ReconnectCheck {
 +    private final AddressDataManager dataManager;
++    private final AntibotConfig config;
 +
 +    public boolean check(SocketAddress address) {
-+        AntibotConfig config = Amethyst.getInstance().getAntibotConfig();
-+
 +        if (config.reconnectEnabled) {
 +            AddressData data = dataManager.getAddressData(address);
 +            boolean needsAttempts = data.getTotalConnections() < config.reconnectAttempts || data.getTotalPings() < config.reconnectPings;
@@ -625,10 +792,10 @@ index 00000000..db37cd6e
 +}
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AntibotConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AntibotConfig.java
 new file mode 100644
-index 00000000..ac477576
+index 00000000..4550d8c7
 --- /dev/null
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AntibotConfig.java
-@@ -0,0 +1,89 @@
+@@ -0,0 +1,113 @@
 +/*
 + * Copyright (c) 2022 DenaryDev
 + *
@@ -640,7 +807,7 @@ index 00000000..ac477576
 +
 +import net.md_5.bungee.config.ConfigurationProvider;
 +
-+import java.util.Collections;
++import java.util.Arrays;
 +import java.util.List;
 +
 +/**
@@ -650,31 +817,43 @@ index 00000000..ac477576
 +public class AntibotConfig extends AbstractYamlConfig {
 +
 +    public boolean accountsEnabled = true;
++    public boolean accountsLog = true;
 +    public boolean accountsFirewall = true;
 +    public int accountsLimit = 3;
 +
++    public boolean countryEnabled = true;
++    public boolean countryLog = true;
++    public boolean countryFirewall = true;
++    public List<String> countryBlacklist = Arrays.asList("US", "UA");
++
 +    public boolean fastChatEnabled = true;
++    public boolean fastChatLog = true;
 +    public boolean fastChatFirewall = true;
 +    public int fastChatTime = 1000;
 +
 +    public boolean firewallEnabled = true;
-+    public int firewallExpire = 30000;
++    public boolean firewallLog = true;
++    public boolean firewallIpset = false;
++    public int firewallExpire = 60;
 +
 +    public boolean nicknameEnabled = true;
++    public boolean nicknameLog = true;
 +    public boolean nicknameFirewall = true;
-+    public int nicknameLimit = 3;
-+    public List<String> nicknameBlacklist = Collections.singletonList("mcspam");
++    public List<String> nicknameBlacklist = Arrays.asList("mcstorm", "mcdown", "mcbot", "theresa_bot", "dropbot", "kingbot");
 +
 +    public boolean passwordEnabled = true;
++    public boolean passwordLog = true;
 +    public boolean passwordFirewall = true;
 +    public int passwordLimit = 3;
 +
 +    public boolean rateLimitEnabled = true;
++    public boolean rateLimitLog = true;
 +    public boolean rateLimitFirewall = true;
 +    public int rateLimitConnectionsPerSecond = 3;
 +    public int rateLimitPingsPerSecond = 8;
 +
 +    public boolean reconnectEnabled = true;
++    public boolean reconnectLog = true;
 +    public int reconnectAttempts = 2;
 +    public int reconnectPings = 0;
 +    public int reconnectMaxTime = 10000;
@@ -688,38 +867,50 @@ index 00000000..ac477576
 +    @Override
 +    protected void loadContent() {
 +        this.accountsEnabled = getBoolean("accounts.enabled", this.accountsEnabled);
++        this.accountsLog = getBoolean("accounts.log", this.accountsLog);
 +        this.accountsFirewall = getBoolean("accounts.firewall", this.accountsFirewall);
 +        this.accountsLimit = getInt("accounts.limit", this.accountsLimit);
 +
++        this.countryEnabled = getBoolean("country.enabled", this.countryEnabled);
++        this.countryLog = getBoolean("country.log", this.countryLog);
++        this.countryFirewall = getBoolean("country.firewall", this.countryFirewall);
++        this.countryBlacklist = getStringList("country.blacklist", this.countryBlacklist);
++
 +        this.fastChatEnabled = getBoolean("fast-chat.enabled", this.fastChatEnabled);
++        this.fastChatLog = getBoolean("accounts.log", this.fastChatLog);
 +        this.fastChatFirewall = getBoolean("fast-chat.firewall", this.fastChatFirewall);
 +        this.fastChatTime = getInt("fast-chat.time", this.fastChatTime);
 +
 +        this.firewallEnabled = getBoolean("firewall.enabled", this.firewallEnabled);
++        this.firewallLog = getBoolean("accounts.log", this.firewallLog);
++        this.firewallIpset = getBoolean("firewall.ipset", this.firewallIpset);
 +        this.firewallExpire = getInt("firewall.expire", this.firewallExpire);
 +
 +        this.nicknameEnabled = getBoolean("nickname.enabled", this.nicknameEnabled);
++        this.nicknameLog = getBoolean("nickname.log", this.nicknameLog);
 +        this.nicknameFirewall = getBoolean("nickname.firewall", this.nicknameFirewall);
-+        this.nicknameLimit = getInt("nickname.limit", this.nicknameLimit);
 +        this.nicknameBlacklist = getStringList("nickname.blacklist", this.nicknameBlacklist);
 +
 +        this.passwordEnabled = getBoolean("password.enabled", this.passwordEnabled);
++        this.passwordLog = getBoolean("password.log", this.passwordLog);
 +        this.passwordFirewall = getBoolean("password.firewall", this.passwordFirewall);
 +        this.passwordLimit = getInt("password.limit", this.passwordLimit);
 +
 +        this.rateLimitEnabled = getBoolean("rate-limit.enabled", this.rateLimitEnabled);
++        this.rateLimitLog = getBoolean("rate-limit.log", this.rateLimitLog);
 +        this.rateLimitFirewall = getBoolean("rate-limit.firewall", this.rateLimitFirewall);
 +        this.rateLimitConnectionsPerSecond = getInt("rate-limit.per-second.connections", this.rateLimitConnectionsPerSecond);
 +        this.rateLimitPingsPerSecond = getInt("rate-limit.per-second.pings", this.rateLimitPingsPerSecond);
 +
 +        this.reconnectEnabled = getBoolean("reconnect.enabled", this.reconnectEnabled);
++        this.reconnectLog = getBoolean("reconnect.log", this.reconnectLog);
 +        this.reconnectAttempts = getInt("reconnect.attempts", this.reconnectAttempts);
 +        this.reconnectPings = getInt("reconnect.pings", this.reconnectPings);
 +        this.reconnectMaxTime = getInt("reconnect.max-time", this.reconnectMaxTime);
 +    }
 +}
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
-index bebfa299..bfb61dff 100644
+index bebfa299..39425bde 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
 @@ -15,6 +15,7 @@ public class MessagesConfig extends AbstractYamlConfig {
@@ -730,11 +921,12 @@ index bebfa299..bfb61dff 100644
          getString("command.alert.success", "8[&4Alert&8]&r ");
          getString("command.alert.error.message-needed", "&cYou must supply a message.");
          getString("command.find.success", "&a{0} &ris online at {1}");
-@@ -35,6 +36,14 @@ public class MessagesConfig extends AbstractYamlConfig {
+@@ -35,6 +36,15 @@ public class MessagesConfig extends AbstractYamlConfig {
          getString("command.server.available", "&6You may connect to the following servers at this time: ");
          getString("command.server.hover", "{0} players online\nClick to connect to this server");
  
 +        getString("event.antibot.accounts", "&cYou have too many accounts! ({0})");
++        getString("event.antibot.country", "&cYour country is blacklisted! ({0})");
 +        getString("event.antibot.fast-chat", "&cYou are chatting too fast!");
 +        getString("event.antibot.firewall", "&cYou are blocked from this server!");
 +        getString("event.antibot.nickname", "&cYour nickname was detected as bot! ({0})");
@@ -747,47 +939,68 @@ index bebfa299..bfb61dff 100644
          getString("event.restart", "[Proxy] Proxy restarting.");
 diff --git a/flame/src/main/resources/antibot.yml b/flame/src/main/resources/antibot.yml
 new file mode 100644
-index 00000000..de636f19
+index 00000000..db658fa4
 --- /dev/null
 +++ b/flame/src/main/resources/antibot.yml
-@@ -0,0 +1,48 @@
+@@ -0,0 +1,70 @@
 +# Amethyst Antibot configuration file
 +# Generated on ${project.version}
 +
 +# Accounts configuration
 +accounts:
 +  enabled: true
++  log: true
 +  firewall: true
 +  limit: 3
++
++# Country check configuration
++country:
++  enabled: true
++  log: true
++  firewall: true
++  blacklist:
++    - "UA" # Z
++    - "US"
++    - "UK"
 +
 +# Fast chat configuration
 +fast-chat:
 +  enabled: true
++  log: true
 +  firewall: true
 +  time: 1000
 +
 +# Firewall configuration
 +firewall:
 +  enabled: true
-+  expire: 30000
++  log: true
++  ipset: false
++  expire: 60
 +
 +# Nickname checks configuration
 +nickname:
 +  enabled: true
++  log: true
 +  firewall: true
-+  limit: 3
 +  blacklist:
-+    - "mcspam"
++    - "mcstorm"
++    - "mcdown"
++    - "mcbot"
++    - "theresa_bot"
++    - "dropbot"
++    - "kingbot"
 +
 +# Password configuration
 +password:
 +  enabled: true
++  log: true
 +  firewall: true
 +  limit: 3
 +
 +# Rate limiter configuration
 +rate-limit:
 +  enabled: true
++  log: true
 +  firewall: true
 +  per-second:
 +    connections: 3
@@ -796,20 +1009,22 @@ index 00000000..de636f19
 +# Reconnect limiter configuration
 +reconnect:
 +  enabled: true
++  log: true
 +  attempts: 2
 +  pings: 0
 +  max-time: 10000
 diff --git a/flame/src/main/resources/messages.yml b/flame/src/main/resources/messages.yml
-index d4de461c..671c6550 100644
+index d4de461c..6fbac725 100644
 --- a/flame/src/main/resources/messages.yml
 +++ b/flame/src/main/resources/messages.yml
-@@ -56,6 +56,16 @@ command:
+@@ -56,6 +56,17 @@ command:
  
  # Event messages
  event:
 +  # Antibot kick messages
 +  antibot:
 +    accounts: "&cYou have too many accounts! ({0})"
++    country: "&cYour country is blacklisted! ({0})"
 +    fast-chat: "&cYou are chatting too fast!"
 +    firewall: "&cYou are blocked from this server!"
 +    nickname: "&cYour nickname was detected as bot! ({0})"
@@ -821,7 +1036,7 @@ index d4de461c..671c6550 100644
    fallback:
      kick: "&cCould not connect to a default or fallback server. Incorrectly configured address/port/firewall? {0}"
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 54a72ea1..4f17bbe6 100644
+index 54a72ea1..283322a4 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -3,6 +3,8 @@ package net.md_5.bungee.connection;
@@ -845,7 +1060,7 @@ index 54a72ea1..4f17bbe6 100644
          switch ( handshake.getRequestedProtocol() )
          {
              case 1:
-@@ -353,6 +360,16 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -353,6 +360,20 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  }
                  thisState = State.STATUS;
                  ch.setProtocol( Protocol.STATUS );
@@ -855,6 +1070,10 @@ index 54a72ea1..4f17bbe6 100644
 +
 +                if ( checkManager.getRateLimitCheck().check( ch.getRemoteAddress() ) )
 +                {
++                    if ( bungee.getAmethyst().getAntibotConfig().rateLimitLog )
++                    {
++                        bungee.getLogger().log( Level.INFO, "[{0}] is pinging too many times", ch.getRemoteAddress() );
++                    }
 +                    disconnect( bungee.getTranslationComponent( "event.antibot.rate-limit", data.getPingsSecond() ) );
 +                    return;
 +                }
@@ -862,7 +1081,7 @@ index 54a72ea1..4f17bbe6 100644
                  break;
              case 2:
                  // Login
-@@ -363,6 +380,16 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -363,6 +384,20 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  thisState = State.USERNAME;
                  ch.setProtocol( Protocol.LOGIN );
  
@@ -871,6 +1090,10 @@ index 54a72ea1..4f17bbe6 100644
 +
 +                if ( checkManager.getRateLimitCheck().check( ch.getRemoteAddress() ) )
 +                {
++                    if ( bungee.getAmethyst().getAntibotConfig().rateLimitLog )
++                    {
++                        bungee.getLogger().log( Level.INFO, "[{0}] is connecting too many times", ch.getRemoteAddress() );
++                    }
 +                    disconnect( bungee.getTranslationComponent( "event.antibot.rate-limit", data.getConnectionsSecond() ) );
 +                    return;
 +                }
@@ -879,32 +1102,55 @@ index 54a72ea1..4f17bbe6 100644
                  if ( !ProtocolVersion.isSupported( handshake.getProtocolVersion() ) )
                  {
                      if ( handshake.getProtocolVersion() > bungee.getProtocolVersion() )
-@@ -401,6 +428,32 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -401,6 +436,55 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              return;
          }
  
 +        // Amethyst start - Antibot system
 +        AddressData data = bungee.getAmethyst().getAddressDataManager().getAddressData( ch.getRemoteAddress() );
 +        CheckManager checkManager = bungee.getAmethyst().getCheckManager();
++        String nickname = loginRequest.getData();
 +
 +        data.addNickname( loginRequest.getData() );
 +
++        // Check account
++        if ( checkManager.getAccountsCheck().check( ch.getRemoteAddress(), nickname ) )
++        {
++            if ( bungee.getAmethyst().getAntibotConfig().accountsLog )
++            {
++                bungee.getLogger().log( Level.INFO, "[{0}] has too many accounts", ch.getRemoteAddress() );
++            }
++            disconnect( bungee.getTranslationComponent( "event.antibot.accounts", data.getNicknames().size() ) );
++            return;
++        }
 +        // Check nickname
 +        if ( checkManager.getNicknameCheck().check( ch.getRemoteAddress() ) )
 +        {
++            if ( bungee.getAmethyst().getAntibotConfig().nicknameLog )
++            {
++                bungee.getLogger().log( Level.INFO, "[{0}] has a blacklisted nickname", ch.getRemoteAddress() );
++            }
 +            disconnect( bungee.getTranslationComponent( "event.antibot.nickname", loginRequest.getData() ) );
-+            return;
-+        }
-+        // Check account
-+        if ( checkManager.getAccountsCheck().check( ch.getRemoteAddress() ) )
-+        {
-+            disconnect( bungee.getTranslationComponent( "event.antibot.accounts", data.getNicknames().size() ) );
 +            return;
 +        }
 +        // Check reconnect
 +        if ( checkManager.getReconnectCheck().check( ch.getRemoteAddress() ) )
 +        {
++            if ( bungee.getAmethyst().getAntibotConfig().reconnectLog )
++            {
++                bungee.getLogger().log( Level.INFO, "[{0}] has to reconnect to join", ch.getRemoteAddress() );
++            }
 +            disconnect( bungee.getTranslationComponent( "event.antibot.reconnect", bungee.getAmethyst().getAntibotConfig().reconnectAttempts - data.getTotalConnections()));
++            return;
++        }
++        // Check country
++        if ( checkManager.getCountryCheck().check( ch.getRemoteAddress() ) )
++        {
++            if ( bungee.getAmethyst().getAntibotConfig().countryLog )
++            {
++                bungee.getLogger().log( Level.INFO, "[{0}] had his country blocked from the server", ch.getRemoteAddress() );
++            }
++            disconnect( bungee.getTranslationComponent( "event.antibot.country", data.getCountry() ) );
 +            return;
 +        }
 +        // Amethyst end
@@ -913,10 +1159,10 @@ index 54a72ea1..4f17bbe6 100644
          // We can just check by UUID here as names are based on UUID
          if ( !isOnlineMode() && bungee.getPlayer( getUniqueId() ) != null )
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 74d46c23..95b98818 100644
+index 74d46c23..7517057b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -5,6 +5,8 @@ import com.mojang.brigadier.context.StringRange;
+@@ -5,10 +5,14 @@ import com.mojang.brigadier.context.StringRange;
  import com.mojang.brigadier.suggestion.Suggestion;
  import com.mojang.brigadier.suggestion.Suggestions;
  import io.netty.channel.Channel;
@@ -925,7 +1171,13 @@ index 74d46c23..95b98818 100644
  import io.sapphiremc.amethyst.api.protocol.ProtocolVersion;
  import java.util.ArrayList;
  import java.util.LinkedList;
-@@ -161,6 +163,23 @@ public class UpstreamBridge extends PacketHandler
+ import java.util.List;
++import java.util.logging.Level;
++
+ import net.md_5.bungee.BungeeCord;
+ import net.md_5.bungee.ServerConnection.KeepAliveData;
+ import net.md_5.bungee.UserConnection;
+@@ -161,6 +165,31 @@ public class UpstreamBridge extends PacketHandler
          }
          Preconditions.checkArgument(!empty, "Chat message is empty");
  
@@ -935,12 +1187,20 @@ index 74d46c23..95b98818 100644
 +        // Check chat
 +        if ( checkManager.getFastChatCheck().check( con.getCh().getRemoteAddress() ) )
 +        {
++            if ( bungee.getAmethyst().getAntibotConfig().fastChatLog )
++            {
++                bungee.getLogger().log( Level.INFO, "[{0}] is chatting too fast", con.getCh().getRemoteAddress() );
++            }
 +            con.disconnect( bungee.getTranslationComponent( "event.antibot.fast-chat" ) );
 +            throw CancelSendSignal.INSTANCE;
 +        }
 +        // Check password
 +        if ( checkManager.getPasswordCheck().check( con.getCh().getRemoteAddress(), chat.getMessage() ) )
 +        {
++            if ( bungee.getAmethyst().getAntibotConfig().passwordLog )
++            {
++                bungee.getLogger().log( Level.INFO, "[{0}] has entered a repeated password", con.getCh().getRemoteAddress() );
++            }
 +            con.disconnect( bungee.getTranslationComponent( "event.antibot.password", checkManager.getPasswordCheck().getRepeatCount() ) );
 +            throw CancelSendSignal.INSTANCE;
 +        }
