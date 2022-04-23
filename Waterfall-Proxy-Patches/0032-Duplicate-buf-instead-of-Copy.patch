@@ -1,0 +1,31 @@
+From 7f5e8f5f9d80ddd7bcde0537bd93944b1cfc29a2 Mon Sep 17 00:00:00 2001
+From: DenaryDev <denaryplanet@gmail.com>
+Date: Sat, 23 Apr 2022 18:36:27 +0500
+Subject: [PATCH] Duplicate buf instead of Copy
+
+
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+index fab61368..8bccdc0f 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+@@ -54,7 +54,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+             }
+         }
+         // Amethyst end
+-        ByteBuf slice = in.copy(); // Can't slice this one due to EntityMap :(
++        ByteBuf slice = in.duplicate(); // Can't slice this one due to EntityMap :( // Amethyst - Duplicate buf instead of Copy
+ 
+         Object packetTypeInfo = null;
+         try
+@@ -95,7 +95,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+                 in.skipBytes( in.readableBytes() );
+             }
+ 
+-            out.add( new PacketWrapper( packet, slice ) );
++            out.add( new PacketWrapper( packet, slice.retain() ) ); // Amethyst - Duplicate buf instead of Copy
+             slice = null;
+         } catch (BadPacketException | IndexOutOfBoundsException e) {
+             // Waterfall start: Additional DoS mitigations
+-- 
+2.36.0
+
