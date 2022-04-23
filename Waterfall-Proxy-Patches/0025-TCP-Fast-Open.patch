@@ -1,4 +1,4 @@
-From 48757fdf2e58314c3b7a80bb7af0de7fc2d60d86 Mon Sep 17 00:00:00 2001
+From 8243519c12d2032c2f77dee5fa1f64593172bf9a Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Thu, 3 Mar 2022 00:54:41 +0500
 Subject: [PATCH] TCP Fast Open
@@ -59,10 +59,10 @@ index 10739f05..24effcbf 100644
  logger:
    # Enable or disable InitialHandler logging.
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 3d08e38a..fceea075 100644
+index cd811cfe..f1b11b9d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -197,6 +197,11 @@ public class PipelineUtils
+@@ -193,6 +193,11 @@ public class PipelineUtils
                  // IP_TOS is not supported (Windows XP / Windows Server 2003)
              }
              ch.config().setOption( ChannelOption.TCP_NODELAY, true );
@@ -75,5 +75,5 @@ index 3d08e38a..fceea075 100644
              ch.config().setWriteBufferWaterMark( MARK );
  
 -- 
-2.35.1
+2.36.0
 

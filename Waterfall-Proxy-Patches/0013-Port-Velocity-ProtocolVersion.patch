@@ -1,4 +1,4 @@
-From e4288ca760dd78712f3ef7ac494c7b1c0c6ac04f Mon Sep 17 00:00:00 2001
+From a6be6a5625fe46f4f23af3c41bf8c5159a247884 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 3 Jan 2022 17:46:53 +0500
 Subject: [PATCH] Port Velocity ProtocolVersion
@@ -1926,7 +1926,7 @@ index 92bacc7c..e4d98e81 100644
          DefinedPacket.writeVarInt( action.ordinal(), buf );
          DefinedPacket.writeVarInt( items.length, buf );
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
-index 4f3a8c72..38dbdf0f 100644
+index 91f71c09..cf5e2b08 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
 @@ -4,6 +4,8 @@ import com.google.common.base.Function;
@@ -1954,10 +1954,10 @@ index 4f3a8c72..38dbdf0f 100644
 +    public void read(ByteBuf buf, ProtocolDirection direction, int protocolVersion)
      {
 -        tag = ( protocolVersion >= ProtocolConstants.MINECRAFT_1_13 ) ? MODERNISE.apply( readString( buf ) ) : readString( buf, 20 );
--        int maxSize = direction == ProtocolConstants.Direction.TO_SERVER ? Short.MAX_VALUE : 0x100000;
+-        int maxSize = ( direction == ProtocolConstants.Direction.TO_SERVER ) ? Short.MAX_VALUE : 0x100000;
 +        tag = ( ProtocolVersion.MINECRAFT_1_13.isBeforeOrEq( protocolVersion ) ) ? MODERNISE.apply( readString( buf ) ) : readString( buf, 20 );
-+        int maxSize = direction == ProtocolDirection.TO_SERVER ? Short.MAX_VALUE : 0x100000;
-         Preconditions.checkArgument( buf.readableBytes() < maxSize );
++        int maxSize = ( direction == ProtocolDirection.TO_SERVER ) ? Short.MAX_VALUE : 0x100000;
+         Preconditions.checkArgument( buf.readableBytes() <= maxSize, "Payload too large" );
          data = new byte[ buf.readableBytes() ];
          buf.readBytes( data );
      }
@@ -2572,7 +2572,7 @@ index 32be5c3c..7d3220f9 100644
          // Throttling options
          tabThrottle = config.getInt("throttling.tab_complete", tabThrottle);
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index cfcf39ee..1377c401 100644
+index a11a7304..ceff1ea1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -23,6 +23,7 @@ import io.netty.channel.EventLoopGroup;
@@ -2611,7 +2611,7 @@ index cfcf39ee..1377c401 100644
      }
  
      /**
-@@ -702,7 +704,7 @@ public class BungeeCord extends ProxyServer
+@@ -699,7 +701,7 @@ public class BungeeCord extends ProxyServer
  
      public PluginMessage registerChannels(int protocolVersion)
      {
@@ -2620,7 +2620,7 @@ index cfcf39ee..1377c401 100644
          {
              return new PluginMessage( "minecraft:register", Util.format( Iterables.transform( pluginChannels, PluginMessage.MODERNISE ), "\00" ).getBytes( Charsets.UTF_8 ), false );
          }
-@@ -713,7 +715,7 @@ public class BungeeCord extends ProxyServer
+@@ -710,7 +712,7 @@ public class BungeeCord extends ProxyServer
      @Override
      public int getProtocolVersion()
      {
@@ -2713,7 +2713,7 @@ index e1c7879d..458b315c 100644
                  user.unsafe().sendPacket( new ViewDistance( login.getViewDistance() ) );
              }
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 19940acc..a8215b7c 100644
+index 022642c3..ec3aefa3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -11,6 +11,7 @@ import io.netty.channel.ChannelFutureListener;
@@ -2732,7 +2732,7 @@ index 19940acc..a8215b7c 100644
  import net.md_5.bungee.protocol.packet.Chat;
  import net.md_5.bungee.protocol.packet.ClientSettings;
  import net.md_5.bungee.protocol.packet.Kick;
-@@ -511,11 +511,11 @@ public final class UserConnection implements ProxiedPlayer
+@@ -515,11 +515,11 @@ public final class UserConnection implements ProxiedPlayer
          // transform score components
          message = ChatComponentTransformer.getInstance().transform( this, true, message );
  
@@ -4001,5 +4001,5 @@ index faca17fa..25e167e8 100644
              for ( int i = 0; i < components.length; i++ )
              {
 -- 
-2.35.1
+2.36.0
 

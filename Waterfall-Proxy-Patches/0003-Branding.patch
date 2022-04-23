@@ -1,4 +1,4 @@
-From 7d7b72413f0224b7b96295099639daba4440388a Mon Sep 17 00:00:00 2001
+From 573a7f4e10ed4df3d3e3cc6eb5312c3da497f674 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Sun, 2 Jan 2022 14:55:19 +0500
 Subject: [PATCH] Branding
@@ -45,7 +45,7 @@ index e31fb00a..32be5c3c 100644
          // Throttling options
          tabThrottle = config.getInt("throttling.tab_complete", tabThrottle);
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 07d74c67..7ee4020e 100644
+index 639c2c8f..ae2fe176 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -188,7 +188,7 @@ public class BungeeCord extends ProxyServer
@@ -57,7 +57,7 @@ index 07d74c67..7ee4020e 100644
  
          try
          {
-@@ -539,7 +539,7 @@ public class BungeeCord extends ProxyServer
+@@ -536,7 +536,7 @@ public class BungeeCord extends ProxyServer
      @Override
      public String getName()
      {
@@ -115,5 +115,5 @@ index 0644b8cd..8a54afd6 100644
  
              int maxPlayers = get( "max_players", 1, val );
 -- 
-2.34.1.windows.1
+2.36.0
 

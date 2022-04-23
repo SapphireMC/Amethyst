@@ -1,4 +1,4 @@
-From 09f09d89e7f03e13b7143440c78868bca5248eae Mon Sep 17 00:00:00 2001
+From d2c0c722b3af350826e166774e87e0a816ccbac6 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Sun, 6 Mar 2022 23:35:34 +0500
 Subject: [PATCH] More user-friendly connection fails messages
@@ -28,7 +28,7 @@ index b67b2aab..c3c12a4f 100644
          alertEnabled = getBoolean( "modules.alert", alertEnabled );
          findEnabled = getBoolean( "modules.find", findEnabled );
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
-index bfb61dff..61ffcb48 100644
+index bfb61dff..7b42c917 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
 @@ -44,7 +44,7 @@ public class MessagesConfig extends AbstractYamlConfig {
@@ -84,7 +84,7 @@ index 671c6550..7a60777e 100644
 +  server-unavailable: "This server is unavailable"
    username-needed: "&cPlease follow this command by a user name."
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 34236cbd..7166e683 100644
+index 319a9f15..7166e683 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -10,6 +10,7 @@ import io.netty.channel.ChannelFuture;
@@ -108,14 +108,18 @@ index 34236cbd..7166e683 100644
                      }
                  }
              }
-@@ -401,9 +402,25 @@ public final class UserConnection implements ProxiedPlayer
+@@ -401,13 +402,25 @@ public final class UserConnection implements ProxiedPlayer
          b.connect().addListener( listener );
      }
  
 -    private String connectionFailMessage(Throwable cause)
 +    private String connectionFailMessage(Throwable cause, String server) // Amethyst - More user-friendly connection fail messages
      {
--        return Util.exception( cause, false );
+-        // Waterfall start
+-        cause.printStackTrace();
+-        return "";
+-        //return Util.exception( cause, false );
+-        // Waterfall end
 +        // Amethyst start - More user-friendly connection fail messages
 +        if ( bungee.getAmethyst().getConfig().logBackendConnectionFailed )
 +        {
@@ -137,5 +141,5 @@ index 34236cbd..7166e683 100644
  
      @Override
 -- 
-2.35.1
+2.36.0
 

@@ -1,4 +1,4 @@
-From dd71f6f4662a4d795420712dbbcbb9f15c5266b5 Mon Sep 17 00:00:00 2001
+From e9ae32d3f4b0f24601664b66766c47da6bb1690b Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Thu, 6 Jan 2022 18:32:40 +0500
 Subject: [PATCH] Amethyst message system
@@ -581,7 +581,7 @@ index c3116ac0..23ae15bb 100644
              {
                  player.connect( server, ServerConnectEvent.Reason.COMMAND );
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index ca29641b..7b7e42b5 100644
+index b0a20273..167603de 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -111,8 +111,8 @@ public class BungeeCord extends ProxyServer
@@ -631,7 +631,7 @@ index ca29641b..7b7e42b5 100644
      }
  
      @Override
-@@ -572,6 +576,8 @@ public class BungeeCord extends ProxyServer
+@@ -569,6 +573,8 @@ public class BungeeCord extends ProxyServer
          return ( BungeeCord.class.getPackage().getImplementationVersion() == null ) ? "git-Amethyst-unknown" : BungeeCord.class.getPackage().getImplementationVersion(); // Amethyst
      }
  
@@ -640,7 +640,7 @@ index ca29641b..7b7e42b5 100644
      public void reloadMessages()
      {
          File file = new File( "messages.properties" );
-@@ -586,10 +592,15 @@ public class BungeeCord extends ProxyServer
+@@ -583,10 +589,15 @@ public class BungeeCord extends ProxyServer
              }
          }
      }
@@ -656,7 +656,7 @@ index ca29641b..7b7e42b5 100644
          String translation = "<translation '" + name + "' missing>";
          try
          {
-@@ -600,6 +611,8 @@ public class BungeeCord extends ProxyServer
+@@ -597,6 +608,8 @@ public class BungeeCord extends ProxyServer
          {
          }
          return translation;
@@ -665,7 +665,7 @@ index ca29641b..7b7e42b5 100644
      }
  
      @Override
-@@ -844,5 +857,11 @@ public class BungeeCord extends ProxyServer
+@@ -841,5 +854,11 @@ public class BungeeCord extends ProxyServer
      {
          return Amethyst.getInstance();
      }
@@ -699,7 +699,7 @@ index 458b315c..604671ff 100644
          {
              user.disconnect( message );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index a8215b7c..34236cbd 100644
+index ec3aefa3..319a9f15 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -328,7 +328,7 @@ public final class UserConnection implements ProxiedPlayer
@@ -980,5 +980,5 @@ index e16cf0a8..00000000
 -command_ip=\u00a79IP of {0} is {1}
 -illegal_chat_characters=\u00a7cillegal characters in chat ({0})
 -- 
-2.35.1
+2.36.0
 

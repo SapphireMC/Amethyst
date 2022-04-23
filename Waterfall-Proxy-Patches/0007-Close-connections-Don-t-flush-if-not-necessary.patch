@@ -1,4 +1,4 @@
-From 04d0aaa4731d502a8c868dfd1284531a56cfabc3 Mon Sep 17 00:00:00 2001
+From 5adb56a28947ad1a6eb046a0ff9c307f3e499925 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Sun, 2 Jan 2022 16:02:46 +0500
 Subject: [PATCH] Close connections & Don't flush if not necessary
@@ -121,7 +121,7 @@ index 6dc5633f..c3b69cef 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 96704d5e..3d08e38a 100644
+index 2a21243b..cd811cfe 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -5,6 +5,7 @@ import io.github.waterfallmc.waterfall.event.ConnectionInitEvent;
@@ -132,7 +132,7 @@ index 96704d5e..3d08e38a 100644
  import io.netty.channel.ChannelInitializer;
  import io.netty.channel.ChannelOption;
  import io.netty.channel.EventLoopGroup;
-@@ -102,6 +103,15 @@ public class PipelineUtils
+@@ -98,6 +99,15 @@ public class PipelineUtils
  
              BungeeCord.getInstance().getPluginManager().callEvent(connectionInitEvent);
          }
@@ -148,7 +148,7 @@ index 96704d5e..3d08e38a 100644
      };
      public static final Base BASE = new Base();
      private static final KickStringWriter legacyKicker = new KickStringWriter();
-@@ -196,5 +206,14 @@ public class PipelineUtils
+@@ -192,5 +202,14 @@ public class PipelineUtils
  
              ch.pipeline().addLast( BOSS_HANDLER, new HandlerBoss() );
          }
@@ -185,5 +185,5 @@ index 0c1ecfb8..a0b7a4ec 100644
                      listener.getHost().getHostString(), "MINECRAFT",  players, bungee.getGameVersion()));
              QueryResult result = bungee.getPluginManager().callEvent(event).getResult();
 -- 
-2.34.1.windows.1
+2.36.0
 

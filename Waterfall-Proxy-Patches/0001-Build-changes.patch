@@ -1,4 +1,4 @@
-From 8d29b029342f608427faf663c2bd2f54b340a9d3 Mon Sep 17 00:00:00 2001
+From 7dd26c67bc9e2c5f3dac3de8e6eb7a8780c6e5bb Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Fri, 31 Dec 2021 13:46:52 +0500
 Subject: [PATCH] Build changes
@@ -902,7 +902,7 @@ index 00000000..44753d74
 +    public static String VERSION = "${project.version}";
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 07d74c67..e7272d8b 100644
+index 9ef2b77a..639c2c8f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -21,10 +21,10 @@ import io.netty.channel.ChannelFutureListener;
@@ -917,7 +917,7 @@ index 07d74c67..e7272d8b 100644
  import java.net.InetSocketAddress;
  import java.net.SocketAddress;
  import java.text.MessageFormat;
-@@ -545,7 +545,13 @@ public class BungeeCord extends ProxyServer
+@@ -542,7 +542,13 @@ public class BungeeCord extends ProxyServer
      @Override
      public String getVersion()
      {
@@ -988,5 +988,5 @@ index 081bff62..c4b6ed73 100644
              <scope>compile</scope>
          </dependency>
 -- 
-2.34.1.windows.1
+2.36.0
 
