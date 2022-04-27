@@ -1,4 +1,4 @@
-From c819509da7acea4b4e77964974e02417fb2f4d78 Mon Sep 17 00:00:00 2001
+From 3991a877af535909a7c73d88cb15cc9cc0eb7dc8 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Wed, 5 Jan 2022 01:24:39 +0500
 Subject: [PATCH] Make min and max versions configurable
@@ -62,7 +62,7 @@ index e8da947f..8b2bffc3 100644
  # In this section you can enable or disable certain proxy modules
  modules:
 diff --git a/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java b/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java
-index b999c93f..35b6fba7 100644
+index 720f33cb..ab87a53f 100644
 --- a/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java
 +++ b/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java
 @@ -3,6 +3,7 @@ package io.sapphiremc.amethyst.api.protocol;
@@ -73,7 +73,7 @@ index b999c93f..35b6fba7 100644
  import java.util.EnumSet;
  import java.util.HashMap;
  import java.util.List;
-@@ -61,18 +62,16 @@ public enum ProtocolVersion {
+@@ -57,18 +58,16 @@ public enum ProtocolVersion {
      /**
       * Represents the lowest supported version.
       */
@@ -95,7 +95,7 @@ index b999c93f..35b6fba7 100644
  
      /**
       * A map linking the protocol version number to its {@link ProtocolVersion} representation.
-@@ -94,6 +93,28 @@ public enum ProtocolVersion {
+@@ -90,6 +89,28 @@ public enum ProtocolVersion {
          ID_TO_PROTOCOL_CONSTANT = ImmutableMap.copyOf(versions);
      }
  
@@ -124,7 +124,7 @@ index b999c93f..35b6fba7 100644
      /**
       * A set containing all the protocols that the proxy actually supports, excluding special-purpose
       * "versions" like {@link #LEGACY} and {@link #UNKNOWN}.
-@@ -186,6 +207,16 @@ public enum ProtocolVersion {
+@@ -182,6 +203,16 @@ public enum ProtocolVersion {
          return ID_TO_PROTOCOL_CONSTANT.getOrDefault(protocol, UNKNOWN);
      }
  
@@ -180,7 +180,7 @@ index 7d3220f9..5e4ff7f4 100644
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index d0bb5c37..ca29641b 100644
+index 610911d4..b0a20273 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -291,6 +291,7 @@ public class BungeeCord extends ProxyServer
@@ -233,5 +233,5 @@ index 431f268a..9915b800 100644
          sender.sendMessage( ChatColor.BOLD.toString() + ChatColor.RED.toString() + "Amethyst has been reloaded."
                  + " This is NOT advisable and you will not be supported with any issues that arise! Please restart Amethyst ASAP." );
 -- 
-2.35.1
+2.36.0
 

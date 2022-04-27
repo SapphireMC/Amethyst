@@ -1,4 +1,4 @@
-From a6be6a5625fe46f4f23af3c41bf8c5159a247884 Mon Sep 17 00:00:00 2001
+From 0a174c0336efcee92942e4cba2dba76b1aa5c58a Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 3 Jan 2022 17:46:53 +0500
 Subject: [PATCH] Port Velocity ProtocolVersion
@@ -45,10 +45,10 @@ index 00000000..c8f6c430
 +}
 diff --git a/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java b/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java
 new file mode 100644
-index 00000000..b999c93f
+index 00000000..720f33cb
 --- /dev/null
 +++ b/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java
-@@ -0,0 +1,288 @@
+@@ -0,0 +1,284 @@
 +package io.sapphiremc.amethyst.api.protocol;
 +
 +import com.google.common.collect.ImmutableList;
@@ -66,10 +66,6 @@ index 00000000..b999c93f
 +public enum ProtocolVersion {
 +    UNKNOWN(-1, "Unknown"),
 +    LEGACY(-2, "Legacy"),
-+    MINECRAFT_1_7_2(4,
-+            "1.7.2", "1.7.3", "1.7.4", "1.7.5"),
-+    MINECRAFT_1_7_6(5,
-+            "1.7.6", "1.7.7", "1.7.8", "1.7.9", "1.7.10"),
 +    MINECRAFT_1_8(47,
 +            "1.8", "1.8.1", "1.8.2", "1.8.3", "1.8.4", "1.8.5", "1.8.6", "1.8.7", "1.8.8", "1.8.9"),
 +    MINECRAFT_1_9(107, "1.9"),
