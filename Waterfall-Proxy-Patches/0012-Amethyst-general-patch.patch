@@ -1,4 +1,4 @@
-From 87773cb09094e6295981496fcbc608d7a61fff6a Mon Sep 17 00:00:00 2001
+From ed55b3f5eaca22ca5c95f5719c767c534e39bf2f Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 3 Jan 2022 01:19:36 +0500
 Subject: [PATCH] Amethyst general patch
@@ -80,10 +80,10 @@ index 73006e0c..6e3ac9ac 100644
      }
 diff --git a/flame/pom.xml b/flame/pom.xml
 new file mode 100644
-index 00000000..ff4d2d85
+index 00000000..e689d482
 --- /dev/null
 +++ b/flame/pom.xml
-@@ -0,0 +1,44 @@
+@@ -0,0 +1,35 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<project xmlns="http://maven.apache.org/POM/4.0.0"
 +         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -118,15 +118,6 @@ index 00000000..ff4d2d85
 +            <scope>compile</scope>
 +        </dependency>
 +    </dependencies>
-+
-+    <build>
-+        <resources>
-+            <resource>
-+                <directory>src/main/resources</directory>
-+                <filtering>true</filtering>
-+            </resource>
-+        </resources>
-+    </build>
 +</project>
 \ No newline at end of file
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/Amethyst.java b/flame/src/main/java/io/sapphiremc/amethyst/Amethyst.java
@@ -188,23 +179,19 @@ index 00000000..aad66497
 +}
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AbstractYamlConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AbstractYamlConfig.java
 new file mode 100644
-index 00000000..f8dda3b7
+index 00000000..35780a69
 --- /dev/null
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AbstractYamlConfig.java
-@@ -0,0 +1,229 @@
+@@ -0,0 +1,194 @@
 +package io.sapphiremc.amethyst.conf;
 +
 +import io.sapphiremc.amethyst.Amethyst;
 +import java.io.File;
-+import java.io.FileOutputStream;
 +import java.io.IOException;
-+import java.io.InputStream;
-+import java.io.OutputStream;
-+import java.net.URL;
-+import java.net.URLConnection;
 +import java.util.List;
 +import java.util.logging.Level;
 +import lombok.Getter;
++import net.md_5.bungee.api.ChatColor;
 +import net.md_5.bungee.config.Configuration;
 +import net.md_5.bungee.config.ConfigurationProvider;
 +
@@ -258,7 +245,13 @@ index 00000000..f8dda3b7
 +     * This method using for loading configuration from its file.
 +     */
 +    protected void init() {
-+        if (!file.exists()) saveToFile(filename, false);
++        if (!file.exists()) {
++            try {
++                file.createNewFile();
++            } catch (IOException e) {
++                throw new RuntimeException("Failed to create configuration file " + file.getName(), e);
++            }
++        }
 +
 +        try {
 +            if (!file.exists()) throw new NullPointerException("Failed to load configuration from file " + file.toPath() + " because 'file' is null!");
@@ -267,72 +260,7 @@ index 00000000..f8dda3b7
 +        } catch (IOException ex) {
 +            throw new RuntimeException("Failed to load configuration from file " + file.toPath(), ex);
 +        }
-+    }
-+
-+    /**
-+     * Saving resource from proxy jar file.
-+     *
-+     * @param resourcePath full path to resource in jar
-+     * @param replace Whether to overwrite the resource if it already exists
-+     */
-+    protected void saveToFile(String resourcePath, boolean replace) {
-+        if (resourcePath == null || resourcePath.isEmpty()) {
-+            throw new IllegalArgumentException("ResourcePath cannot be null or empty");
-+        }
-+
-+        resourcePath = resourcePath.replace("\\", "/");
-+        InputStream in = getFromJar(resourcePath);
-+        if (in == null) {
-+            throw new IllegalArgumentException("The embedded resource '" + resourcePath + "' cannot be found in Amethyst.jar");
-+        }
-+
-+        File outFile = new File(dataFolder, resourcePath);
-+        int lastIndex = resourcePath.lastIndexOf('/');
-+        File outDir = new File(dataFolder, resourcePath.substring(0, Math.max(lastIndex, 0)));
-+
-+        if (!outDir.exists()) {
-+            outDir.mkdirs();
-+        }
-+
-+        try {
-+            if (!outFile.exists() || replace) {
-+                OutputStream out = new FileOutputStream(outFile);
-+                byte[] buf = new byte[1024];
-+                int len;
-+                while ((len = in.read(buf)) > 0) {
-+                    out.write(buf, 0, len);
-+                }
-+                out.close();
-+                in.close();
-+            } else {
-+                Amethyst.getInstance().getLogger().log(Level.WARNING, "Could not save " + outFile.getName() + " to " + outFile + " because " + outFile.getName() + " already exists.");
-+            }
-+        } catch (IOException ex) {
-+            Amethyst.getInstance().getLogger().log(Level.SEVERE, "Could not save " + outFile.getName() + " to " + outFile, ex);
-+        }
-+    }
-+
-+    /**
-+     * This method is used for getting file {@link InputStream} from jar.
-+     *
-+     * @param filename file name
-+     * @return file {@link InputStream}
-+     */
-+    protected InputStream getFromJar(String filename) {
-+        if (filename == null) {
-+            throw new IllegalArgumentException("Filename cannot be null");
-+        }
-+
-+        try {
-+            URL url = getClass().getClassLoader().getResource(filename);
-+            if (url == null) return null;
-+
-+            URLConnection connection = url.openConnection();
-+            connection.setUseCaches(false);
-+            return connection.getInputStream();
-+        } catch (IOException ex) {
-+            return null;
-+        }
++        loadContent();
 +    }
 +
 +    /**
@@ -342,7 +270,7 @@ index 00000000..f8dda3b7
 +     * @throws UnsupportedOperationException if not implemented.
 +     */
 +    protected void loadContent() {
-+        throw new UnsupportedOperationException("Not supported yet");
++        throw new UnsupportedOperationException("Not implemented yet");
 +    }
 +
 +    /**
@@ -394,6 +322,18 @@ index 00000000..f8dda3b7
 +    }
 +
 +    /**
++     * Gets a formatted {@link String} from this config
++     * or writes a default value to it.
++     *
++     * @param key key
++     * @param def default value
++     * @return value from config or default value
++     */
++    protected String getFormattedString(String key, String def) {
++        return ChatColor.translateAlternateColorCodes('&', getString(key, def));
++    }
++
++    /**
 +     * Gets a {@link List<>} of stings from this config
 +     * or writes a default value to it.
 +     *
@@ -403,6 +343,7 @@ index 00000000..f8dda3b7
 +     */
 +    protected List<String> getStringList(String key, List<String> def) {
 +        if (!config.contains(key)) {
++            config.set(key, def);
 +            return def;
 +        } else {
 +            return config.getStringList(key);
@@ -418,15 +359,30 @@ index 00000000..f8dda3b7
 +     * @return value from config or default value
 +     */
 +    protected Object get(String key, Object def) {
-+        return config.get(key, def);
++        if (!config.contains(key)) {
++            config.set(key, def);
++            return def;
++        }
++        return config.get(key);
++    }
++
++    /**
++     * Save this config to its file.
++     */
++    protected void save() {
++        try {
++            provider.save(config, file);
++        } catch (IOException ex) {
++            Amethyst.getInstance().getLogger().log(Level.SEVERE, "Failed to save configuration file " + file.getName(), ex);
++        }
 +    }
 +}
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 new file mode 100644
-index 00000000..893fa2b8
+index 00000000..8b16caf7
 --- /dev/null
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-@@ -0,0 +1,15 @@
+@@ -0,0 +1,16 @@
 +package io.sapphiremc.amethyst.conf;
 +
 +import net.md_5.bungee.config.ConfigurationProvider;
@@ -440,16 +396,9 @@ index 00000000..893fa2b8
 +    public AmethystConfig(ConfigurationProvider provider) {
 +        super(provider, "amethyst.yml");
 +        init();
++        save();
 +    }
 +}
-diff --git a/flame/src/main/resources/amethyst.yml b/flame/src/main/resources/amethyst.yml
-new file mode 100644
-index 00000000..72394640
---- /dev/null
-+++ b/flame/src/main/resources/amethyst.yml
-@@ -0,0 +1,2 @@
-+# Amethyst configuration file
-+# Generated on ${project.version}
 diff --git a/pom.xml b/pom.xml
 index aed1838d..61513b4e 100644
 --- a/pom.xml
@@ -642,7 +591,7 @@ index 9e74d158..e1c7879d 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index c7b0b5d9..022642c3 100644
+index af81ee4a..45d97fa5 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -35,6 +35,7 @@ import net.md_5.bungee.api.SkinConfiguration;
@@ -713,7 +662,7 @@ index 10ccb6b7..787172e4 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 316a50a0..6e86def8 100644
+index e3557816..e0bd05ed 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -154,7 +154,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -726,5 +675,5 @@ index 316a50a0..6e86def8 100644
      }
  
 -- 
-2.36.0
+2.36.1.windows.1
 

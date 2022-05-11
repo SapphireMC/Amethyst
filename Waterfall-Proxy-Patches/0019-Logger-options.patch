@@ -1,14 +1,14 @@
-From 7e75b79335d8107b642c82d1b4cd1c599457f08c Mon Sep 17 00:00:00 2001
+From a0e7477aceb06d0f20a1c8f4b2486f99e13768d1 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 10 Jan 2022 00:39:35 +0500
 Subject: [PATCH] Logger options
 
 
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-index e567be66..d7de9d03 100644
+index b35221d7..b61fd540 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-@@ -51,6 +51,19 @@ public class AmethystConfig extends AbstractYamlConfig {
+@@ -18,6 +18,19 @@ public class AmethystConfig extends AbstractYamlConfig {
       */
      public String maxVersion = "1.18.2";
  
@@ -25,13 +25,13 @@ index e567be66..d7de9d03 100644
 +     */
 +    public boolean logHaProxy = false;
 +
-     public AmethystConfig(ConfigurationProvider provider) {
-         super(provider, "amethyst.yml");
-         init();
-@@ -60,6 +73,10 @@ public class AmethystConfig extends AbstractYamlConfig {
-     @Override
-     protected void loadContent()
-     {
+     /**
+      * A module that provides the /alert and /alertraw commands.
+      */
+@@ -63,6 +76,10 @@ public class AmethystConfig extends AbstractYamlConfig {
+         minVersion = getString( "versions.min", minVersion );
+         maxVersion = getString( "versions.max", maxVersion );
+ 
 +        logInitialHandler = getBoolean("logger.initialHandler", logInitialHandler);
 +        logExceptions = getBoolean("logger.exceptions", logExceptions);
 +        logHaProxy = getBoolean("logger.haProxy", logHaProxy);
@@ -39,30 +39,8 @@ index e567be66..d7de9d03 100644
          alertEnabled = getBoolean( "modules.alert", alertEnabled );
          findEnabled = getBoolean( "modules.find", findEnabled );
          ipEnabled = getBoolean( "modules.ip", ipEnabled );
-diff --git a/flame/src/main/resources/amethyst.yml b/flame/src/main/resources/amethyst.yml
-index 8b2bffc3..b5d1f34c 100644
---- a/flame/src/main/resources/amethyst.yml
-+++ b/flame/src/main/resources/amethyst.yml
-@@ -16,6 +16,17 @@ versions:
-   # Default: 1.18.2
-   max: "1.18.2"
- 
-+# Logger configuration
-+logger:
-+  # Enable or disable InitialHandler logging.
-+  initialHandler: false
-+
-+  # Enable or disable Exceptions logging.
-+  exceptions: false
-+
-+  # Enable or disable HaProxy logging.
-+  haProxy: false
-+
- # Modules configuration
- # In this section you can enable or disable certain proxy modules
- modules:
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 7b7e42b5..28d0c795 100644
+index 167603de..9314daff 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -293,7 +293,7 @@ public class BungeeCord extends ProxyServer
@@ -75,7 +53,7 @@ index 7b7e42b5..28d0c795 100644
          ProtocolVersion.register(); // Amethyst - configurable min and max versions
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
-index 1c696a7d..926dd30a 100644
+index 7887c5e6..5e0a3e27 100644
 --- a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
 +++ b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
 @@ -3,8 +3,11 @@ package net.md_5.bungee.command;
@@ -100,7 +78,7 @@ index 1c696a7d..926dd30a 100644
          ProtocolVersion.register(); // Amethyst - register min and max supported versions
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 2c46ba9b..99dd905d 100644
+index c3a3581a..9338e2e0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -344,7 +344,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -130,7 +108,7 @@ index 2c46ba9b..99dd905d 100644
  
          int limit = BungeeCord.getInstance().config.getPlayerLimit();
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index 6d38de16..58a508d4 100644
+index 85676dfa..23c8391c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 @@ -44,7 +44,7 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
@@ -178,5 +156,5 @@ index 6d38de16..58a508d4 100644
              if ( logExceptions )
              {
 -- 
-2.35.1
+2.36.1.windows.1
 

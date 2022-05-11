@@ -1,14 +1,14 @@
-From c97e2cb9797c830ce05235e7b14afd8f19ca83ee Mon Sep 17 00:00:00 2001
+From f181caeaf8db5fe73b82f0e9ad5fbf8cd5819dd2 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Sun, 6 Mar 2022 02:54:51 +0500
 Subject: [PATCH] Option to allow invalid usernames
 
 
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-index e992d378..b67b2aab 100644
+index d01b4510..b472af1e 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-@@ -140,6 +140,10 @@ public class AmethystConfig extends AbstractYamlConfig {
+@@ -15,6 +15,10 @@ public class AmethystConfig extends AbstractYamlConfig {
       * Custom bungee name.
       */
      public String bungeeName = "Amethyst";
@@ -17,24 +17,18 @@ index e992d378..b67b2aab 100644
 +     */
 +    public boolean allowInvalidUsernames = false;
  
-     public AmethystConfig(ConfigurationProvider provider) {
-         super(provider, "amethyst.yml");
-diff --git a/flame/src/main/resources/amethyst.yml b/flame/src/main/resources/amethyst.yml
-index dcf38c34..90e3a6a4 100644
---- a/flame/src/main/resources/amethyst.yml
-+++ b/flame/src/main/resources/amethyst.yml
-@@ -6,6 +6,9 @@ general:
-   # Custom bungee name
-   bungee-name: "Amethyst"
+     /**
+      * Enable or disable custom motd.
+@@ -150,6 +154,7 @@ public class AmethystConfig extends AbstractYamlConfig {
+     protected void loadContent()
+     {
+         bungeeName = getString("general.bungee-name", bungeeName);
++        allowInvalidUsernames = getBoolean("general.allow-invalid-usernames", allowInvalidUsernames);
  
-+  # Allow invalid usernames option
-+  allow-invalid-usernames: false
-+
- # Motd configuration
- motd:
-   # Enable amethyst custom motd?
+         motdEnabled = getBoolean("motd.enabled", motdEnabled);
+         motdFirstLines = getStringList("motd.firstLines", motdFirstLines);
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 283322a4..b30d8bb3 100644
+index 4aa72aa9..2ca2d628 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -421,7 +421,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -47,5 +41,5 @@ index 283322a4..b30d8bb3 100644
              disconnect( bungee.getTranslationComponent( "error.name-invalid" ) );
              return;
 -- 
-2.36.0
+2.36.1.windows.1
 

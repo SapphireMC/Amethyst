@@ -1,14 +1,14 @@
-From 0cb77dc347774b2428c2bdf49c04013173f40975 Mon Sep 17 00:00:00 2001
+From ab126315f48bf78b5312210e18d0c3eb2ae124d0 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Tue, 4 Jan 2022 20:41:35 +0500
 Subject: [PATCH] Amethyst modules system
 
 
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-index 893fa2b8..84f940ca 100644
+index 8b16caf7..ff227aeb 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-@@ -7,9 +7,55 @@ import net.md_5.bungee.config.ConfigurationProvider;
+@@ -7,10 +7,55 @@ import net.md_5.bungee.config.ConfigurationProvider;
   * Use this only to get parameter values!
   */
  public class AmethystConfig extends AbstractYamlConfig {
@@ -48,8 +48,8 @@ index 893fa2b8..84f940ca 100644
      public AmethystConfig(ConfigurationProvider provider) {
          super(provider, "amethyst.yml");
          init();
-+        loadContent();
-+    }
+         save();
+     }
 +
 +    @Override
 +    protected void loadContent()
@@ -62,57 +62,8 @@ index 893fa2b8..84f940ca 100644
 +        sendEnabled = getBoolean( "modules.send", sendEnabled );
 +        serverEnabled = getBoolean( "modules.server", serverEnabled );
 +        reconnectEnabled = getBoolean( "modules.reconnect", reconnectEnabled );
-     }
++    }
  }
-diff --git a/flame/src/main/resources/amethyst.yml b/flame/src/main/resources/amethyst.yml
-index 72394640..e8da947f 100644
---- a/flame/src/main/resources/amethyst.yml
-+++ b/flame/src/main/resources/amethyst.yml
-@@ -1,2 +1,44 @@
- # Amethyst configuration file
- # Generated on ${project.version}
-+
-+# Modules configuration
-+# In this section you can enable or disable certain proxy modules
-+modules:
-+  # Alert commands module
-+  # Provides /alert and /alertraw commands
-+  alert: true
-+
-+  # Find command module
-+  # Provides /find command
-+  # Default: true
-+  find: true
-+
-+  # Ip command module
-+  # Provides /ip command
-+  # Default: true
-+  ip: true
-+
-+  # List command module
-+  # Provides /glist command
-+  # Default: true
-+  list: true
-+
-+  # Perms command module
-+  # Provides /gperms command
-+  # Default: true
-+  perms: true
-+
-+  # Send command module
-+  # Provides /send command
-+  # Default: true
-+  send: true
-+
-+  # Server command module
-+  # Provides /server command
-+  # Default: true
-+  server: true
-+
-+  # Reconnect yaml module
-+  # Provides reconnect location functionality in locations.yml
-+  # Default: false
-+  reconnect: false
 diff --git a/module/cmd-alert/pom.xml b/module/cmd-alert/pom.xml
 deleted file mode 100644
 index c0d9f7d5..00000000
@@ -715,7 +666,7 @@ index 3a514a76..a703665b 100644
  import java.io.File;
  import java.io.FileReader;
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 1377c401..d0bb5c37 100644
+index ceff1ea1..610911d4 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -23,6 +23,7 @@ import io.netty.channel.EventLoopGroup;
@@ -886,5 +837,5 @@ index 787172e4..49836d12 100644
          return ret;
      }
 -- 
-2.35.1
+2.36.1.windows.1
 

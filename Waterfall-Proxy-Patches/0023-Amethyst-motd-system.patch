@@ -1,11 +1,11 @@
-From 17e65d820e125c46a525c71e871732a31e232514 Mon Sep 17 00:00:00 2001
+From 5b026ecd78576a9b993f6e0b8b3b70ad831e4187 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 10 Jan 2022 02:59:49 +0500
 Subject: [PATCH] Amethyst motd system
 
 
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-index d7de9d03..489f0c79 100644
+index b61fd540..1a68ee88 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 @@ -1,5 +1,9 @@
@@ -18,10 +18,10 @@ index d7de9d03..489f0c79 100644
  import net.md_5.bungee.config.ConfigurationProvider;
  
  /**
-@@ -64,6 +68,41 @@ public class AmethystConfig extends AbstractYamlConfig {
-      */
-     public boolean logHaProxy = false;
- 
+@@ -7,6 +11,40 @@ import net.md_5.bungee.config.ConfigurationProvider;
+  * Use this only to get parameter values!
+  */
+ public class AmethystConfig extends AbstractYamlConfig {
 +    /**
 +     * Enable or disable custom motd.
 +     */
@@ -47,7 +47,6 @@ index d7de9d03..489f0c79 100644
 +        Random random = new Random();
 +        return linesList.get(random.nextInt(linesList.size()));
 +    }
-+
 +    /**
 +     * Enable or disable motd hoverBox.
 +     */
@@ -57,66 +56,22 @@ index d7de9d03..489f0c79 100644
 +     */
 +    public List<String> motdHoverBoxContent = Arrays.asList("&eAmethyst", "", "&7Online: &f%online%", "", "&bServers:", "&8- &7Lobby: &f%online_lobby%", "", "&eexample.net");
 +
-     public AmethystConfig(ConfigurationProvider provider) {
-         super(provider, "amethyst.yml");
-         init();
-@@ -73,6 +112,13 @@ public class AmethystConfig extends AbstractYamlConfig {
+     /**
+      * Minimum supported version.
+      * Default: 1.8
+@@ -73,6 +111,12 @@ public class AmethystConfig extends AbstractYamlConfig {
      @Override
      protected void loadContent()
      {
 +        motdEnabled = getBoolean("motd.enabled", motdEnabled);
 +        motdFirstLines = getStringList("motd.firstLines", motdFirstLines);
 +        motdSecondLines = getStringList("motd.secondLines", motdSecondLines);
-+
 +        motdHoverBoxEnabled = getBoolean("motd.hoverBox.enabled", motdHoverBoxEnabled);
 +        motdHoverBoxContent = getStringList("motd.hoverBox.content", motdHoverBoxContent);
 +
-         logInitialHandler = getBoolean("logger.initialHandler", logInitialHandler);
-         logExceptions = getBoolean("logger.exceptions", logExceptions);
-         logHaProxy = getBoolean("logger.haProxy", logHaProxy);
-diff --git a/flame/src/main/resources/amethyst.yml b/flame/src/main/resources/amethyst.yml
-index b5d1f34c..e3d54bf4 100644
---- a/flame/src/main/resources/amethyst.yml
-+++ b/flame/src/main/resources/amethyst.yml
-@@ -1,6 +1,38 @@
- # Amethyst configuration file
- # Generated on ${project.version}
+         minVersion = getString( "versions.min", minVersion );
+         maxVersion = getString( "versions.max", maxVersion );
  
-+# Motd configuration
-+motd:
-+  # Enable amethyst custom motd?
-+  enabled: true
-+
-+  # First motd lines
-+  # Supported placeholders: %online%, %online_<server_name>%, %online_max%
-+  firstLines:
-+    - "&eDefault &6Amethyst &emotd"
-+
-+  # Second motd lines
-+  # Supported placeholders: %online%, %online_<server_name>%, %online_max%
-+  secondLines:
-+    - "&eChange me in &6amethyst.yml &efile!"
-+
-+  # HoverBox configuration
-+  hoverBox:
-+    # Enable hoverBox?
-+    enable: true
-+
-+    # HoverBox content
-+    # Supported placeholders: %online%, %online_<server_name>%, %online_max%
-+    content:
-+      - "&eAmethyst"
-+      - ""
-+      - "&7Online: &f%online%"
-+      - ""
-+      - "&bServers:"
-+      - "&8- &7Lobby: &f%online_lobby%"
-+      - ""
-+      - "&eexample.net"
-+
- # Versions configuration
- # In this section, you can configure the minimum and maximum supported versions
- versions:
 diff --git a/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java b/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java
 index 7e0fedb3..e8c575c3 100644
 --- a/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java
@@ -234,5 +189,5 @@ index 00000000..f566f10c
 +    }
 +}
 -- 
-2.35.1
+2.36.1.windows.1
 

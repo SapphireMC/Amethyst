@@ -1,11 +1,11 @@
-From 5adb56a28947ad1a6eb046a0ff9c307f3e499925 Mon Sep 17 00:00:00 2001
+From 47d780dbbbbb7f96239c70fd4ab9c8d4a97aa754 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Sun, 2 Jan 2022 16:02:46 +0500
 Subject: [PATCH] Close connections & Don't flush if not necessary
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 4afab05d..3c7adbcf 100644
+index bba6d324..0d403bc0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -192,6 +192,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -61,7 +61,7 @@ index 4afab05d..3c7adbcf 100644
      }
  
      @Override
-@@ -595,7 +613,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -596,7 +614,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      {
          if ( canSendKickMessage() )
          {
@@ -185,5 +185,5 @@ index 0c1ecfb8..a0b7a4ec 100644
                      listener.getHost().getHostString(), "MINECRAFT",  players, bungee.getGameVersion()));
              QueryResult result = bungee.getPluginManager().callEvent(event).getResult();
 -- 
-2.36.0
+2.36.1.windows.1
 

@@ -1,38 +1,22 @@
-From b55411e848106169e2a189a3606c745ea71904e8 Mon Sep 17 00:00:00 2001
+From c065ab6eeac4bb89a7d7c29bcee147c16d7720c2 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 25 Apr 2022 18:25:05 +0500
 Subject: [PATCH] Upgrade bungee command
 
 
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
-index 318b7c6d..b70191ec 100644
+index 9dd83dd1..a6a42511 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
-@@ -18,6 +18,8 @@ public class MessagesConfig extends AbstractYamlConfig {
- 
-         getString("command.alert.success", "8[&4Alert&8]&r ");
-         getString("command.alert.error.message-needed", "&cYou must supply a message.");
-+        getString("command.bungee.usage", "&cUse: /bungee <version|plugins>");
-+        getString("command.bungee.plugins", "&fPlugins ({0}): &r{1}");
-         getString("command.find.success", "&a{0} &ris online at {1}");
-         getString("command.ip.success", "&9IP of {0} is {1}");
-         getString("command.list.header", "Available servers:");
-diff --git a/flame/src/main/resources/messages.yml b/flame/src/main/resources/messages.yml
-index 57641e87..aaddcedd 100644
---- a/flame/src/main/resources/messages.yml
-+++ b/flame/src/main/resources/messages.yml
-@@ -9,6 +9,11 @@ command:
-     error:
-       message-needed: "&cYou must supply a message."
- 
-+  # Bungee command
-+  bungee:
-+    usage: "&cUse: /bungee <version|plugins>"
-+    plugins: "&fPlugins ({0}): &r{1}"
-+
-   # Find command
-   find:
-     success: "&a{0} &ris online at {1}"
+@@ -22,6 +22,8 @@ public class MessagesConfig extends AbstractYamlConfig {
+     public void loadContent() {
+         formattedMessages.put("command.alert.success", ChatColor.translateAlternateColorCodes('&', getString("command.alert.success", "8[&4Alert&8]&r ")));
+         formattedMessages.put("command.alert.error.message-needed", ChatColor.translateAlternateColorCodes('&', getString("command.alert.error.message-needed", "&cYou must supply a message.")));
++        formattedMessages.put("command.bungee.usage", ChatColor.translateAlternateColorCodes('&', getString("command.bungee.usage", "&cUse: /bungee <version|plugins>")));
++        formattedMessages.put("command.bungee.plugins", ChatColor.translateAlternateColorCodes('&', getString("command.bungee.plugins", "&fPlugins ({0}): &r{1}")));
+         formattedMessages.put("command.find.success", ChatColor.translateAlternateColorCodes('&', getString("command.find.success", "&a{0} &ris online at {1}")));
+         formattedMessages.put("command.ip.success", ChatColor.translateAlternateColorCodes('&', getString("command.ip.success", "&9IP of {0} is {1}")));
+         formattedMessages.put("command.list.header", ChatColor.translateAlternateColorCodes('&', getString("command.list.header", "Available servers:")));
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
 index 88486f5b..87feb6a5 100644
 --- a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
@@ -130,5 +114,5 @@ index 88486f5b..87feb6a5 100644
      }
  }
 -- 
-2.36.0
+2.36.1.windows.1
 

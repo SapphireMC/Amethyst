@@ -1,16 +1,16 @@
-From 195bfdbff282672ea34e36557bb430c83f24fedd Mon Sep 17 00:00:00 2001
+From 532c65b5a6bfa4f274eaecfa978959266b9c4498 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 10 Jan 2022 18:39:08 +0500
 Subject: [PATCH] Add lobby and hub commands
 
 
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-index 489f0c79..e3ba79b9 100644
+index 1a68ee88..1aff5459 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-@@ -81,6 +81,28 @@ public class AmethystConfig extends AbstractYamlConfig {
+@@ -56,6 +56,28 @@ public class AmethystConfig extends AbstractYamlConfig {
       */
-     public List<String> motdSecondLines = Collections.singletonList("&eChange me in &6amethyst.yml &efile!");
+     public String maxVersion = "1.18.2";
  
 +    /**
 +     * A module that provides the /lobby and /hub commands.
@@ -35,11 +35,11 @@ index 489f0c79..e3ba79b9 100644
 +    }
 +
      /**
-      * Gets random motd line from first or second lines list.
-      *
-@@ -119,6 +141,10 @@ public class AmethystConfig extends AbstractYamlConfig {
-         motdHoverBoxEnabled = getBoolean("motd.hoverBox.enabled", motdHoverBoxEnabled);
-         motdHoverBoxContent = getStringList("motd.hoverBox.content", motdHoverBoxContent);
+      * Enable or disable InitialHandler logging.
+      */
+@@ -120,6 +142,10 @@ public class AmethystConfig extends AbstractYamlConfig {
+         minVersion = getString( "versions.min", minVersion );
+         maxVersion = getString( "versions.max", maxVersion );
  
 +        lobbyEnabled = getBoolean("lobby.enabled", lobbyEnabled);
 +        lobbyMessage = getBoolean("lobby.message", lobbyMessage);
@@ -49,61 +49,19 @@ index 489f0c79..e3ba79b9 100644
          logExceptions = getBoolean("logger.exceptions", logExceptions);
          logHaProxy = getBoolean("logger.haProxy", logHaProxy);
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
-index 835888c3..bebfa299 100644
+index df22c4bd..32873f04 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
-@@ -22,6 +22,9 @@ public class MessagesConfig extends AbstractYamlConfig {
-         getString("command.list.header", "Available servers:");
-         getString("command.list.entry", "&a[{0}] &e({1}): &r{2}");
-         getString("command.list.total", "Total players online: {0}");
-+        getString("command.lobby.success", "&7&oAttempt to move you to the lobby...");
-+        getString("command.lobby.error.already-in", "&cYou are already in the lobby!");
-+        getString("command.lobby.error.not-found", "&cNo lobby servers were found, please inform the server administrator!");
-         getString("command.perms.groups", "&6You have the following groups: {0}");
-         getString("command.perms.permissions", "=&9- {0}");
-         getString("command.reload.success", "&c&lAmethyst has been reloaded. This is NOT advisable and you will not be supported with any issues that arise! Please restart Amethyst ASAP.");
-diff --git a/flame/src/main/resources/amethyst.yml b/flame/src/main/resources/amethyst.yml
-index e3d54bf4..10739f05 100644
---- a/flame/src/main/resources/amethyst.yml
-+++ b/flame/src/main/resources/amethyst.yml
-@@ -48,6 +48,19 @@ versions:
-   # Default: 1.18.2
-   max: "1.18.2"
- 
-+# Lobby module configuration
-+lobby:
-+  # Enable lobby module?
-+  enabled: true
-+
-+  # Send the player a message when teleporting to the lobby?
-+  message: true
-+
-+  # Lobby servers
-+  # Use ids from bungeecord.yml
-+  servers:
-+    - "lobby"
-+
- # Logger configuration
- logger:
-   # Enable or disable InitialHandler logging.
-diff --git a/flame/src/main/resources/messages.yml b/flame/src/main/resources/messages.yml
-index 071c698f..d4de461c 100644
---- a/flame/src/main/resources/messages.yml
-+++ b/flame/src/main/resources/messages.yml
-@@ -23,6 +23,13 @@ command:
-     entry: "&a[{0}] &e({1}): &r{2}"
-     total: "Total players online: {0}"
- 
-+  # Lobby command
-+  lobby:
-+    success: "&7&oAttempt to move you to the lobby..."
-+    error:
-+      already-in: "&cYou are already in the lobby!"
-+      not-found: "&cNo lobby servers were found, please inform the server administrator!"
-+
-   # Perms command
-   perms:
-     groups: "&6You have the following groups: {0}"
+@@ -27,6 +27,9 @@ public class MessagesConfig extends AbstractYamlConfig {
+         formattedMessages.put("command.list.header", ChatColor.translateAlternateColorCodes('&', getString("command.list.header", "Available servers:")));
+         formattedMessages.put("command.list.entry", ChatColor.translateAlternateColorCodes('&', getString("command.list.entry", "&a[{0}] &e({1}): &r{2}")));
+         formattedMessages.put("command.list.total", ChatColor.translateAlternateColorCodes('&', getString("command.list.total", "Total players online: {0}")));
++        formattedMessages.put("command.lobby.success", ChatColor.translateAlternateColorCodes('&', getString("command.lobby.success", "&7&oAttempt to move you to the lobby...")));
++        formattedMessages.put("command.lobby.error.already-in", ChatColor.translateAlternateColorCodes('&', getString("command.lobby.error.already-in", "&cYou are already in the lobby!")));
++        formattedMessages.put("command.lobby.error.not-found", ChatColor.translateAlternateColorCodes('&', getString("command.lobby.error.not-found", "&cNo lobby servers were found, please inform the server administrator!")));
+         formattedMessages.put("command.perms.groups", ChatColor.translateAlternateColorCodes('&', getString("command.perms.groups", "&6You have the following groups: {0}")));
+         formattedMessages.put("command.perms.permissions", ChatColor.translateAlternateColorCodes('&', getString("command.perms.permissions", "=&9- {0}")));
+         formattedMessages.put("command.reload.success", ChatColor.translateAlternateColorCodes('&', getString("command.reload.success", "&c&lAmethyst has been reloaded. This is NOT advisable and you will not be supported with any issues that arise! Please restart Amethyst ASAP.")));
 diff --git a/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java b/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java
 index e8c575c3..0c0bd76e 100644
 --- a/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java
@@ -169,5 +127,5 @@ index 00000000..f2da93b7
 +    }
 +}
 -- 
-2.35.1
+2.36.1.windows.1
 

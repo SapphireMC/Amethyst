@@ -1,20 +1,20 @@
-From 8243519c12d2032c2f77dee5fa1f64593172bf9a Mon Sep 17 00:00:00 2001
+From 25380d5d88e6f955b3e509067d7f28179c08132a Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Thu, 3 Mar 2022 00:54:41 +0500
 Subject: [PATCH] TCP Fast Open
 
 
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-index e3ba79b9..66e39af3 100644
+index 1aff5459..0f22a87e 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-@@ -55,6 +55,17 @@ public class AmethystConfig extends AbstractYamlConfig {
-      */
-     public String maxVersion = "1.18.2";
+@@ -78,6 +78,17 @@ public class AmethystConfig extends AbstractYamlConfig {
+         return lobbyServers.get(random.nextInt(lobbyServers.size()));
+     }
  
 +    /**
 +     * Enable TCP fast open netty feature.
-+     * For more information see https://netty.io/wiki/tcp-fast-open.html
++     * For more information see <a href="https://netty.io/wiki/tcp-fast-open.html">netty wiki</a>
 +     */
 +    public boolean connectionTFOEnable = true;
 +
@@ -26,7 +26,7 @@ index e3ba79b9..66e39af3 100644
      /**
       * Enable or disable InitialHandler logging.
       */
-@@ -145,6 +156,9 @@ public class AmethystConfig extends AbstractYamlConfig {
+@@ -146,6 +157,9 @@ public class AmethystConfig extends AbstractYamlConfig {
          lobbyMessage = getBoolean("lobby.message", lobbyMessage);
          lobbyServers = getStringList("lobby.servers", lobbyServers);
  
@@ -36,28 +36,6 @@ index e3ba79b9..66e39af3 100644
          logInitialHandler = getBoolean("logger.initialHandler", logInitialHandler);
          logExceptions = getBoolean("logger.exceptions", logExceptions);
          logHaProxy = getBoolean("logger.haProxy", logHaProxy);
-diff --git a/flame/src/main/resources/amethyst.yml b/flame/src/main/resources/amethyst.yml
-index 10739f05..24effcbf 100644
---- a/flame/src/main/resources/amethyst.yml
-+++ b/flame/src/main/resources/amethyst.yml
-@@ -61,6 +61,17 @@ lobby:
-   servers:
-     - "lobby"
- 
-+# Connection settings
-+connection:
-+  # TCP Fast open
-+  tfo:
-+    # Enable TCP fast open netty feature.
-+    # For more information see https://netty.io/wiki/tcp-fast-open.html
-+    enable: true
-+
-+    # Max pending fast open
-+    max-pending: 3
-+
- # Logger configuration
- logger:
-   # Enable or disable InitialHandler logging.
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 index cd811cfe..f1b11b9d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
@@ -75,5 +53,5 @@ index cd811cfe..f1b11b9d 100644
              ch.config().setWriteBufferWaterMark( MARK );
  
 -- 
-2.36.0
+2.36.1.windows.1
 

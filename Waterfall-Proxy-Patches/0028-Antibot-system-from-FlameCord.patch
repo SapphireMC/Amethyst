@@ -1,14 +1,14 @@
-From bc5eca71fc4ca4089d40d33361045fd9769f52e8 Mon Sep 17 00:00:00 2001
+From e76d2d5abb4f320aea4b3031e09c7d4493703245 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Sun, 6 Mar 2022 02:47:48 +0500
 Subject: [PATCH] Antibot system from FlameCord
 
 
 diff --git a/flame/pom.xml b/flame/pom.xml
-index ff4d2d85..2a1745c4 100644
+index e689d482..ccd463ba 100644
 --- a/flame/pom.xml
 +++ b/flame/pom.xml
-@@ -31,6 +31,11 @@
+@@ -31,5 +31,10 @@
              <version>${project.version}</version>
              <scope>compile</scope>
          </dependency>
@@ -18,8 +18,8 @@ index ff4d2d85..2a1745c4 100644
 +            <version>2.0.0</version>
 +        </dependency>
      </dependencies>
- 
-     <build>
+ </project>
+\ No newline at end of file
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/Amethyst.java b/flame/src/main/java/io/sapphiremc/amethyst/Amethyst.java
 index 934c0ccf..076515a7 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/Amethyst.java
@@ -792,7 +792,7 @@ index 00000000..f14f5658
 +}
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AntibotConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AntibotConfig.java
 new file mode 100644
-index 00000000..4550d8c7
+index 00000000..c7b0c5ea
 --- /dev/null
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AntibotConfig.java
 @@ -0,0 +1,113 @@
@@ -861,7 +861,7 @@ index 00000000..4550d8c7
 +    public AntibotConfig(ConfigurationProvider provider) {
 +        super(provider, "antibot.yml");
 +        init();
-+        loadContent();
++        save();
 +    }
 +
 +    @Override
@@ -910,133 +910,27 @@ index 00000000..4550d8c7
 +    }
 +}
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
-index bebfa299..39425bde 100644
+index 32873f04..8c7800b8 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
-@@ -15,6 +15,7 @@ public class MessagesConfig extends AbstractYamlConfig {
+@@ -40,6 +40,15 @@ public class MessagesConfig extends AbstractYamlConfig {
+         formattedMessages.put("command.server.available", ChatColor.translateAlternateColorCodes('&', getString("command.server.available", "&6You may connect to the following servers at this time: ")));
+         formattedMessages.put("command.server.hover", ChatColor.translateAlternateColorCodes('&', getString("command.server.hover", "{0} players online\nClick to connect to this server")));
  
-     @Override
-     public void loadContent() {
++        formattedMessages.put("event.antibot.account", ChatColor.translateAlternateColorCodes('&', getString("event.antibot.accounts", "&cYou have too many accounts! ({0})")));
++        formattedMessages.put("event.antibot.country", ChatColor.translateAlternateColorCodes('&', getString("event.antibot.country", "&cYour country is blacklisted! ({0})")));
++        formattedMessages.put("event.antibot.fast-chat", ChatColor.translateAlternateColorCodes('&', getString("event.antibot.fast-chat", "&cYou are chatting too fast!")));
++        formattedMessages.put("event.antibot.firewall", ChatColor.translateAlternateColorCodes('&', getString("event.antibot.firewall", "&cYou are blocked from this server!")));
++        formattedMessages.put("event.antibot.nickname", ChatColor.translateAlternateColorCodes('&', getString("event.antibot.nickname", "&cYour nickname was detected as bot! ({0})")));
++        formattedMessages.put("event.antibot.password", ChatColor.translateAlternateColorCodes('&', getString("event.antibot.password", "&cYour password is used by other players! ({0})")));
++        formattedMessages.put("event.antibot.rate-limit", ChatColor.translateAlternateColorCodes('&', getString("event.antibot.rate-limit", "&cYou are connecting too fast! ({0})")));
++        formattedMessages.put("event.antibot.reconnect", ChatColor.translateAlternateColorCodes('&', getString("event.antibot.reconnect", "&cReconnect {0} more times to enter!")));
 +
-         getString("command.alert.success", "8[&4Alert&8]&r ");
-         getString("command.alert.error.message-needed", "&cYou must supply a message.");
-         getString("command.find.success", "&a{0} &ris online at {1}");
-@@ -35,6 +36,15 @@ public class MessagesConfig extends AbstractYamlConfig {
-         getString("command.server.available", "&6You may connect to the following servers at this time: ");
-         getString("command.server.hover", "{0} players online\nClick to connect to this server");
- 
-+        getString("event.antibot.accounts", "&cYou have too many accounts! ({0})");
-+        getString("event.antibot.country", "&cYour country is blacklisted! ({0})");
-+        getString("event.antibot.fast-chat", "&cYou are chatting too fast!");
-+        getString("event.antibot.firewall", "&cYou are blocked from this server!");
-+        getString("event.antibot.nickname", "&cYour nickname was detected as bot! ({0})");
-+        getString("event.antibot.password", "&cYour password is used by other players! ({0})");
-+        getString("event.antibot.rate-limit", "&cYou are connecting too fast! ({0})");
-+        getString("event.antibot.reconnect", "&cReconnect {0} more times to enter!");
-+
-         getString("event.fallback.kick", "&cCould not connect to a default or fallback server. Incorrectly configured address/port/firewall? {0}");
-         getString("event.fallback.lobby", "&cCould not connect to target server, you have been moved to a fallback server.");
-         getString("event.restart", "[Proxy] Proxy restarting.");
-diff --git a/flame/src/main/resources/antibot.yml b/flame/src/main/resources/antibot.yml
-new file mode 100644
-index 00000000..db658fa4
---- /dev/null
-+++ b/flame/src/main/resources/antibot.yml
-@@ -0,0 +1,70 @@
-+# Amethyst Antibot configuration file
-+# Generated on ${project.version}
-+
-+# Accounts configuration
-+accounts:
-+  enabled: true
-+  log: true
-+  firewall: true
-+  limit: 3
-+
-+# Country check configuration
-+country:
-+  enabled: true
-+  log: true
-+  firewall: true
-+  blacklist:
-+    - "UA" # Z
-+    - "US"
-+    - "UK"
-+
-+# Fast chat configuration
-+fast-chat:
-+  enabled: true
-+  log: true
-+  firewall: true
-+  time: 1000
-+
-+# Firewall configuration
-+firewall:
-+  enabled: true
-+  log: true
-+  ipset: false
-+  expire: 60
-+
-+# Nickname checks configuration
-+nickname:
-+  enabled: true
-+  log: true
-+  firewall: true
-+  blacklist:
-+    - "mcstorm"
-+    - "mcdown"
-+    - "mcbot"
-+    - "theresa_bot"
-+    - "dropbot"
-+    - "kingbot"
-+
-+# Password configuration
-+password:
-+  enabled: true
-+  log: true
-+  firewall: true
-+  limit: 3
-+
-+# Rate limiter configuration
-+rate-limit:
-+  enabled: true
-+  log: true
-+  firewall: true
-+  per-second:
-+    connections: 3
-+    pings: 8
-+
-+# Reconnect limiter configuration
-+reconnect:
-+  enabled: true
-+  log: true
-+  attempts: 2
-+  pings: 0
-+  max-time: 10000
-diff --git a/flame/src/main/resources/messages.yml b/flame/src/main/resources/messages.yml
-index d4de461c..6fbac725 100644
---- a/flame/src/main/resources/messages.yml
-+++ b/flame/src/main/resources/messages.yml
-@@ -56,6 +56,17 @@ command:
- 
- # Event messages
- event:
-+  # Antibot kick messages
-+  antibot:
-+    accounts: "&cYou have too many accounts! ({0})"
-+    country: "&cYour country is blacklisted! ({0})"
-+    fast-chat: "&cYou are chatting too fast!"
-+    firewall: "&cYou are blocked from this server!"
-+    nickname: "&cYour nickname was detected as bot! ({0})"
-+    password: "&cYour password is used by other players! ({0})"
-+    rate-limit: "&cYou are connecting too fast! ({0})"
-+    reconnect: "&cReconnect {0} more times to enter!"
-+
-   # Fallback
-   fallback:
-     kick: "&cCould not connect to a default or fallback server. Incorrectly configured address/port/firewall? {0}"
+         formattedMessages.put("event.fallback.kick", ChatColor.translateAlternateColorCodes('&', getString("event.fallback.kick", "&cCould not connect to a default or fallback server. Incorrectly configured address/port/firewall? {0}")));
+         formattedMessages.put("event.fallback.lobby", ChatColor.translateAlternateColorCodes('&', getString("event.fallback.lobby", "&cCould not connect to target server, you have been moved to a fallback server.")));
+         formattedMessages.put("event.restart", ChatColor.translateAlternateColorCodes('&', getString("event.restart", "[Proxy] Proxy restarting.")));
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 54a72ea1..283322a4 100644
+index fd24fa75..4aa72aa9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -3,6 +3,8 @@ package net.md_5.bungee.connection;
@@ -1247,5 +1141,5 @@ index f1b11b9d..bf30ecd1 100644
              {
                  ch.close();
 -- 
-2.36.0
+2.36.1.windows.1
 

@@ -1,14 +1,14 @@
-From 42771098caa3b6d2dd1499bb4a99a169da982f28 Mon Sep 17 00:00:00 2001
+From 1f866bbb645de1051d9be2d52c213399768066e3 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Tue, 26 Apr 2022 13:52:59 +0500
 Subject: [PATCH] Drop 1.8-1.11.2 support
 
 
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-index 30df577f..2d38e076 100644
+index 35920436..1a5f30fe 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-@@ -46,9 +46,9 @@ public class AmethystConfig extends AbstractYamlConfig {
+@@ -56,9 +56,9 @@ public class AmethystConfig extends AbstractYamlConfig {
  
      /**
       * Minimum supported version.
@@ -20,28 +20,6 @@ index 30df577f..2d38e076 100644
      /**
       * Maximum supported version.
       * Default: 1.18.2
-diff --git a/flame/src/main/resources/amethyst.yml b/flame/src/main/resources/amethyst.yml
-index 784f6790..bff26f71 100644
---- a/flame/src/main/resources/amethyst.yml
-+++ b/flame/src/main/resources/amethyst.yml
-@@ -46,13 +46,13 @@ motd:
- versions:
-   # Minimum supported version
-   # Players with a version below than this will not be able to log into the server
--  # Examples: 1.9, 1.12, 1.15.2
--  # Default: 1.8
--  min: "1.8"
-+  # Examples: 1.12, 1.15.2
-+  # Default: 1.12
-+  min: "1.12"
- 
-   # Maximum supported version
-   # Players with a version above than this will not be able to log into the server
--  # Examples: 1.9, 1.12, 1.15.2
-+  # Examples: 1.12, 1.15.2
-   # Default: 1.18.2
-   max: "1.18.2"
- 
 diff --git a/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java b/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java
 index ab87a53f..169bf0ef 100644
 --- a/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java
@@ -574,5 +552,5 @@ index da9f9343..db152107 100644
      }
  
 -- 
-2.36.0
+2.36.1.windows.1
 

@@ -1,4 +1,4 @@
-From 7f6d49872b482083b9d8b532b69028f0236475b4 Mon Sep 17 00:00:00 2001
+From 0998732d2b4dccc1b27ce97db91b40d13707aaac Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 7 Mar 2022 17:55:13 +0500
 Subject: [PATCH] More plugin api
@@ -524,10 +524,10 @@ index 00000000..08c4fa7d
 +    ERROR
 +}
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-index c3c12a4f..30df577f 100644
+index bff8f28e..35920436 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-@@ -54,6 +54,11 @@ public class AmethystConfig extends AbstractYamlConfig {
+@@ -64,6 +64,11 @@ public class AmethystConfig extends AbstractYamlConfig {
       * Default: 1.18.2
       */
      public String maxVersion = "1.18.2";
@@ -538,8 +538,8 @@ index c3c12a4f..30df577f 100644
 +    public String minApiVersion = "none";
  
      /**
-      * Enable TCP fast open netty feature.
-@@ -82,6 +87,10 @@ public class AmethystConfig extends AbstractYamlConfig {
+      * A module that provides the /lobby and /hub commands.
+@@ -114,6 +119,10 @@ public class AmethystConfig extends AbstractYamlConfig {
       * Log exception when connection to backend server failed
       */
      public boolean logBackendConnectionFailed = true;
@@ -549,8 +549,16 @@ index c3c12a4f..30df577f 100644
 +    public boolean logLegacyPluginWarning = false;
  
      /**
-      * Enable or disable custom motd.
-@@ -178,6 +187,7 @@ public class AmethystConfig extends AbstractYamlConfig {
+      * A module that provides the /alert and /alertraw commands.
+@@ -168,6 +177,7 @@ public class AmethystConfig extends AbstractYamlConfig {
+ 
+         minVersion = getString( "versions.min", minVersion );
+         maxVersion = getString( "versions.max", maxVersion );
++        minApiVersion = getString("versions.minApi", minApiVersion);
+ 
+         lobbyEnabled = getBoolean("lobby.enabled", lobbyEnabled);
+         lobbyMessage = getBoolean("lobby.message", lobbyMessage);
+@@ -180,6 +190,7 @@ public class AmethystConfig extends AbstractYamlConfig {
          logExceptions = getBoolean("logger.exceptions", logExceptions);
          logHaProxy = getBoolean("logger.haProxy", logHaProxy);
          logBackendConnectionFailed = getBoolean("logger.backendConnectionFailed", logBackendConnectionFailed);
@@ -558,40 +566,6 @@ index c3c12a4f..30df577f 100644
  
          alertEnabled = getBoolean( "modules.alert", alertEnabled );
          findEnabled = getBoolean( "modules.find", findEnabled );
-@@ -190,5 +200,6 @@ public class AmethystConfig extends AbstractYamlConfig {
- 
-         minVersion = getString( "versions.min", minVersion );
-         maxVersion = getString( "versions.max", maxVersion );
-+        minApiVersion = getString("versions.minApi", minApiVersion);
-     }
- }
-diff --git a/flame/src/main/resources/amethyst.yml b/flame/src/main/resources/amethyst.yml
-index 883b3999..784f6790 100644
---- a/flame/src/main/resources/amethyst.yml
-+++ b/flame/src/main/resources/amethyst.yml
-@@ -56,6 +56,12 @@ versions:
-   # Default: 1.18.2
-   max: "1.18.2"
- 
-+  # Minimum api version that required for all plugins
-+  # If you set this to 'none', plugins with any api version can be loaded
-+  # Supported api versions: 1.18
-+  # Default: none
-+  minApi: "none"
-+
- # Lobby module configuration
- lobby:
-   # Enable lobby module?
-@@ -94,6 +100,9 @@ logger:
-   # Enable or disable logging when connection to any backend server failed.
-   backendConnectionFailed: true
- 
-+  # Enable or disable warnings for legacy plugins.
-+  legacyPluginWarning: false
-+
- # Modules configuration
- # In this section you can enable or disable certain proxy modules
- modules:
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
 index 5e0a3e27..6ae95a2e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
@@ -605,5 +579,5 @@ index 5e0a3e27..6ae95a2e 100644
  
          Amethyst.getInstance().load( BungeeCord.getInstance().getLogger()); // Amethyst - load our configs
 -- 
-2.35.1
+2.36.1.windows.1
 

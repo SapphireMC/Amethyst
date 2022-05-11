@@ -1,14 +1,14 @@
-From 6ffa5a48ee908c37f4c8eac1facada6c304f12f5 Mon Sep 17 00:00:00 2001
+From b8e60303c15ad1fbb019cdbe3bd289645a91287a Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Sun, 6 Mar 2022 23:35:34 +0500
 Subject: [PATCH] More user-friendly connection fails messages
 
 
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-index b67b2aab..c3c12a4f 100644
+index b472af1e..bff8f28e 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-@@ -78,6 +78,10 @@ public class AmethystConfig extends AbstractYamlConfig {
+@@ -110,6 +110,10 @@ public class AmethystConfig extends AbstractYamlConfig {
       * Enable or disable HaProxy logging.
       */
      public boolean logHaProxy = false;
@@ -18,8 +18,8 @@ index b67b2aab..c3c12a4f 100644
 +    public boolean logBackendConnectionFailed = true;
  
      /**
-      * Enable or disable custom motd.
-@@ -173,6 +177,7 @@ public class AmethystConfig extends AbstractYamlConfig {
+      * A module that provides the /alert and /alertraw commands.
+@@ -175,6 +179,7 @@ public class AmethystConfig extends AbstractYamlConfig {
          logInitialHandler = getBoolean("logger.initialHandler", logInitialHandler);
          logExceptions = getBoolean("logger.exceptions", logExceptions);
          logHaProxy = getBoolean("logger.haProxy", logHaProxy);
@@ -28,63 +28,20 @@ index b67b2aab..c3c12a4f 100644
          alertEnabled = getBoolean( "modules.alert", alertEnabled );
          findEnabled = getBoolean( "modules.find", findEnabled );
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
-index 39425bde..318b7c6d 100644
+index 8c7800b8..9dd83dd1 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
-@@ -45,7 +45,7 @@ public class MessagesConfig extends AbstractYamlConfig {
-         getString("event.antibot.rate-limit", "&cYou are connecting too fast! ({0})");
-         getString("event.antibot.reconnect", "&cReconnect {0} more times to enter!");
- 
--        getString("event.fallback.kick", "&cCould not connect to a default or fallback server. Incorrectly configured address/port/firewall? {0}");
-+        getString("event.fallback.kick", "&cCould not connect to a default or fallback server. Please try again later: {0}");
-         getString("event.fallback.lobby", "&cCould not connect to target server, you have been moved to a fallback server.");
-         getString("event.restart", "[Proxy] Proxy restarting.");
-         getString("event.server-down", "&cThe server you were previously on went down, you have been connected to a fallback server");
-@@ -72,6 +72,8 @@ public class MessagesConfig extends AbstractYamlConfig {
-         getString("error.ping-cannot-connect", "&c[Bungee] Can't connect to server.");
-         getString("error.players-only", "&cOnly in game players can use this command");
-         getString("error.proxy-full", "Server is full!");
-+        getString("error.timeout", "Server not reachable (timeout). Offline? Incorrectly configured address/port/firewall?");
-+        getString("error.server-unavailable", "This server is unavailable");
-         getString("error.username-needed", "&cPlease follow this command by a user name.");
+@@ -77,6 +77,8 @@ public class MessagesConfig extends AbstractYamlConfig {
+         formattedMessages.put("error.players-only", ChatColor.translateAlternateColorCodes('&', getString("error.players-only", "&cOnly in game players can use this command")));
+         formattedMessages.put("error.proxy-full", ChatColor.translateAlternateColorCodes('&', getString("error.proxy-full", "Server is full!")));
+         formattedMessages.put("error.username-needed", ChatColor.translateAlternateColorCodes('&', getString("error.username-needed", "&cPlease follow this command by a user name.")));
++        formattedMessages.put("error.timeout", ChatColor.translateAlternateColorCodes('&', getString("error.timeout", "Server not reachable (timeout). Offline? Incorrectly configured address/port/firewall?")));
++        formattedMessages.put("error.server-unavailable", ChatColor.translateAlternateColorCodes('&', getString("error.server-unavailable", "This server is unavailable")));
      }
  
-diff --git a/flame/src/main/resources/amethyst.yml b/flame/src/main/resources/amethyst.yml
-index 90e3a6a4..883b3999 100644
---- a/flame/src/main/resources/amethyst.yml
-+++ b/flame/src/main/resources/amethyst.yml
-@@ -91,6 +91,9 @@ logger:
-   # Enable or disable HaProxy logging.
-   haProxy: false
- 
-+  # Enable or disable logging when connection to any backend server failed.
-+  backendConnectionFailed: true
-+
- # Modules configuration
- # In this section you can enable or disable certain proxy modules
- modules:
-diff --git a/flame/src/main/resources/messages.yml b/flame/src/main/resources/messages.yml
-index 6fbac725..57641e87 100644
---- a/flame/src/main/resources/messages.yml
-+++ b/flame/src/main/resources/messages.yml
-@@ -69,7 +69,7 @@ event:
- 
-   # Fallback
-   fallback:
--    kick: "&cCould not connect to a default or fallback server. Incorrectly configured address/port/firewall? {0}"
-+    kick: "&cCould not connect to a default or fallback server. Please try again later: {0}"
-     lobby: "&cCould not connect to target server, you have been moved to a fallback server."
- 
-   # Restart
-@@ -116,4 +116,6 @@ error:
-   ping-cannot-connect: "&c[Bungee] Can't connect to server."
-   players-only: "&cOnly in game players can use this command"
-   proxy-full: "Server is full!"
-+  timeout: "Server not reachable (timeout). Offline? Incorrectly configured address/port/firewall?"
-+  server-unavailable: "This server is unavailable"
-   username-needed: "&cPlease follow this command by a user name."
+     public String getTranslation(final String name, final Object... args) {
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 319a9f15..7166e683 100644
+index c64b1188..7166e683 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -10,6 +10,7 @@ import io.netty.channel.ChannelFuture;
@@ -108,18 +65,15 @@ index 319a9f15..7166e683 100644
                      }
                  }
              }
-@@ -401,13 +402,25 @@ public final class UserConnection implements ProxiedPlayer
+@@ -401,10 +402,25 @@ public final class UserConnection implements ProxiedPlayer
          b.connect().addListener( listener );
      }
  
 -    private String connectionFailMessage(Throwable cause)
 +    private String connectionFailMessage(Throwable cause, String server) // Amethyst - More user-friendly connection fail messages
      {
--        // Waterfall start
--        cause.printStackTrace();
--        return "";
--        //return Util.exception( cause, false );
--        // Waterfall end
+-        bungee.getLogger().log(Level.WARNING, "Error occurred processing connection for " + this.name + " " + Util.exception( cause, false )); // Waterfall
+-        return ""; // Waterfall
 +        // Amethyst start - More user-friendly connection fail messages
 +        if ( bungee.getAmethyst().getConfig().logBackendConnectionFailed )
 +        {
@@ -141,5 +95,5 @@ index 319a9f15..7166e683 100644
  
      @Override
 -- 
-2.36.0
+2.36.1.windows.1
 

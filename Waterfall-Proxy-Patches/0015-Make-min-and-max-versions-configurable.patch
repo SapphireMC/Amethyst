@@ -1,17 +1,17 @@
-From 3991a877af535909a7c73d88cb15cc9cc0eb7dc8 Mon Sep 17 00:00:00 2001
+From 2f70ff26576a150e417d916ba35abea7cdbe03cd Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Wed, 5 Jan 2022 01:24:39 +0500
 Subject: [PATCH] Make min and max versions configurable
 
 
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-index 84f940ca..e567be66 100644
+index ff227aeb..b35221d7 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-@@ -40,6 +40,17 @@ public class AmethystConfig extends AbstractYamlConfig {
-      */
-     public boolean reconnectEnabled = false;
- 
+@@ -7,6 +7,17 @@ import net.md_5.bungee.config.ConfigurationProvider;
+  * Use this only to get parameter values!
+  */
+ public class AmethystConfig extends AbstractYamlConfig {
 +    /**
 +     * Minimum supported version.
 +     * Default: 1.8
@@ -23,44 +23,19 @@ index 84f940ca..e567be66 100644
 +     */
 +    public String maxVersion = "1.18.2";
 +
-     public AmethystConfig(ConfigurationProvider provider) {
-         super(provider, "amethyst.yml");
-         init();
-@@ -57,5 +68,8 @@ public class AmethystConfig extends AbstractYamlConfig {
-         sendEnabled = getBoolean( "modules.send", sendEnabled );
-         serverEnabled = getBoolean( "modules.server", serverEnabled );
-         reconnectEnabled = getBoolean( "modules.reconnect", reconnectEnabled );
-+
+     /**
+      * A module that provides the /alert and /alertraw commands.
+      */
+@@ -49,6 +60,9 @@ public class AmethystConfig extends AbstractYamlConfig {
+     @Override
+     protected void loadContent()
+     {
 +        minVersion = getString( "versions.min", minVersion );
 +        maxVersion = getString( "versions.max", maxVersion );
-     }
- }
-diff --git a/flame/src/main/resources/amethyst.yml b/flame/src/main/resources/amethyst.yml
-index e8da947f..8b2bffc3 100644
---- a/flame/src/main/resources/amethyst.yml
-+++ b/flame/src/main/resources/amethyst.yml
-@@ -1,6 +1,21 @@
- # Amethyst configuration file
- # Generated on ${project.version}
- 
-+# Versions configuration
-+# In this section, you can configure the minimum and maximum supported versions
-+versions:
-+  # Minimum supported version
-+  # Players with a version below than this will not be able to log into the server
-+  # Examples: 1.9, 1.12, 1.15.2
-+  # Default: 1.8
-+  min: "1.8"
 +
-+  # Maximum supported version
-+  # Players with a version above than this will not be able to log into the server
-+  # Examples: 1.9, 1.12, 1.15.2
-+  # Default: 1.18.2
-+  max: "1.18.2"
-+
- # Modules configuration
- # In this section you can enable or disable certain proxy modules
- modules:
+         alertEnabled = getBoolean( "modules.alert", alertEnabled );
+         findEnabled = getBoolean( "modules.find", findEnabled );
+         ipEnabled = getBoolean( "modules.ip", ipEnabled );
 diff --git a/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java b/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java
 index 720f33cb..ab87a53f 100644
 --- a/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java
@@ -233,5 +208,5 @@ index 431f268a..9915b800 100644
          sender.sendMessage( ChatColor.BOLD.toString() + ChatColor.RED.toString() + "Amethyst has been reloaded."
                  + " This is NOT advisable and you will not be supported with any issues that arise! Please restart Amethyst ASAP." );
 -- 
-2.36.0
+2.36.1.windows.1
 

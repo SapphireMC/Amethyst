@@ -1,4 +1,4 @@
-From 0a174c0336efcee92942e4cba2dba76b1aa5c58a Mon Sep 17 00:00:00 2001
+From d2e723aaafab40fefe0eb98bfda15bff1bbed3b9 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 3 Jan 2022 17:46:53 +0500
 Subject: [PATCH] Port Velocity ProtocolVersion
@@ -2709,7 +2709,7 @@ index e1c7879d..458b315c 100644
                  user.unsafe().sendPacket( new ViewDistance( login.getViewDistance() ) );
              }
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 022642c3..ec3aefa3 100644
+index 45d97fa5..6cb01afa 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -11,6 +11,7 @@ import io.netty.channel.ChannelFutureListener;
@@ -2728,7 +2728,7 @@ index 022642c3..ec3aefa3 100644
  import net.md_5.bungee.protocol.packet.Chat;
  import net.md_5.bungee.protocol.packet.ClientSettings;
  import net.md_5.bungee.protocol.packet.Kick;
-@@ -515,11 +515,11 @@ public final class UserConnection implements ProxiedPlayer
+@@ -512,11 +512,11 @@ public final class UserConnection implements ProxiedPlayer
          // transform score components
          message = ChatComponentTransformer.getInstance().transform( this, true, message );
  
@@ -2780,7 +2780,7 @@ index 97c4b210..dd1afc0d 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 6e86def8..3eed5043 100644
+index e0bd05ed..6bd8ea68 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -3,6 +3,7 @@ package net.md_5.bungee.connection;
@@ -2817,7 +2817,7 @@ index 6e86def8..3eed5043 100644
                  {
                      if ( handshake.getProtocolVersion() > bungee.getProtocolVersion() )
                      {
-@@ -650,6 +650,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -651,6 +651,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          return ( handshake == null ) ? -1 : handshake.getProtocolVersion();
      }
  
@@ -2829,7 +2829,7 @@ index 6e86def8..3eed5043 100644
      @Override
      public InetSocketAddress getAddress()
      {
-@@ -692,7 +697,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -693,7 +698,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      @Override
      public String toString()
      {
@@ -3997,5 +3997,5 @@ index faca17fa..25e167e8 100644
              for ( int i = 0; i < components.length; i++ )
              {
 -- 
-2.36.0
+2.36.1.windows.1
 

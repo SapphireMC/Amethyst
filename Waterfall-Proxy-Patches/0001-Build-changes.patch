@@ -1,4 +1,4 @@
-From 7dd26c67bc9e2c5f3dac3de8e6eb7a8780c6e5bb Mon Sep 17 00:00:00 2001
+From 16a9c0d53ba31df59702e78d88b4bcea93fd5bf7 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Fri, 31 Dec 2021 13:46:52 +0500
 Subject: [PATCH] Build changes
@@ -278,7 +278,7 @@ index 465ebbf2..f1c4b181 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/log4j/pom.xml b/log4j/pom.xml
-index 127d0c14..be68201a 100644
+index 24a5f780..706a69e5 100644
 --- a/log4j/pom.xml
 +++ b/log4j/pom.xml
 @@ -3,19 +3,18 @@
@@ -305,7 +305,7 @@ index 127d0c14..be68201a 100644
 +    <description>Simplistic and performant Log4j2 based logger and console API designed for use with Amethyst and Minecraft related applications.</description>
  
      <properties>
-         <log4j2.version>2.17.1</log4j2.version>
+         <log4j2.version>2.17.2</log4j2.version>
 diff --git a/module/cmd-alert/pom.xml b/module/cmd-alert/pom.xml
 index b41791f1..c0d9f7d5 100644
 --- a/module/cmd-alert/pom.xml
@@ -777,7 +777,7 @@ index a783d9b0..fa8f6511 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index cca0ef95..d703131e 100644
+index 23bfa61d..b36862cf 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -4,18 +4,17 @@
@@ -988,5 +988,5 @@ index 081bff62..c4b6ed73 100644
              <scope>compile</scope>
          </dependency>
 -- 
-2.36.0
+2.36.1.windows.1
 
