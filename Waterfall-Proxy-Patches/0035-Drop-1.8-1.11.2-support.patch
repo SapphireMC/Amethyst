@@ -1,4 +1,4 @@
-From 1f866bbb645de1051d9be2d52c213399768066e3 Mon Sep 17 00:00:00 2001
+From e8f38d3066c76322ad7af50079cf0f6c672df238 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Tue, 26 Apr 2022 13:52:59 +0500
 Subject: [PATCH] Drop 1.8-1.11.2 support
@@ -376,39 +376,37 @@ index 15489048..3c81be75 100644
          {
              buf.writeBoolean( disableTextFiltering );
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Login.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Login.java
-index 2664584e..6f9a96ee 100644
+index 2664584e..73f2db3f 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Login.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Login.java
-@@ -72,13 +72,8 @@ public class Login extends DefinedPacket
+@@ -72,12 +72,9 @@ public class Login extends DefinedPacket
                  dimension = readString( buf );
              }
              worldName = readString( buf );
 -        } else if ( ProtocolVersion.MINECRAFT_1_9.isBefore( protocolVersion ) )
 -        {
 -            dimension = buf.readInt();
--        } else
--        {
+         } else
+         {
 -            dimension = (int) buf.readByte();
++            dimension = buf.readInt();
          }
-+        dimension = buf.readInt();
          if ( ProtocolVersion.MINECRAFT_1_15.isBeforeOrEq( protocolVersion ) )
          {
-             seed = buf.readLong();
-@@ -153,13 +148,8 @@ public class Login extends DefinedPacket
+@@ -153,12 +150,9 @@ public class Login extends DefinedPacket
                  writeString( (String) dimension, buf );
              }
              writeString( worldName, buf );
 -        } else if ( ProtocolVersion.MINECRAFT_1_9.isBefore( protocolVersion ) )
 -        {
 -            buf.writeInt( (Integer) dimension );
--        } else
--        {
+         } else
+         {
 -            buf.writeByte( (Integer) dimension );
++            buf.writeInt( (Integer) dimension );
          }
-+        buf.writeInt( (Integer) dimension );
          if ( ProtocolVersion.MINECRAFT_1_15.isBeforeOrEq( protocolVersion ) )
          {
-             buf.writeLong( seed );
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteRequest.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteRequest.java
 index 77fd4d09..48ed5689 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteRequest.java
