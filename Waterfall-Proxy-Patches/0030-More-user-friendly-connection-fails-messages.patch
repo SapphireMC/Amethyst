@@ -1,4 +1,4 @@
-From b8e60303c15ad1fbb019cdbe3bd289645a91287a Mon Sep 17 00:00:00 2001
+From d8aadd646f5eb8db30f6e8d42e3475eeede1f56e Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Sun, 6 Mar 2022 23:35:34 +0500
 Subject: [PATCH] More user-friendly connection fails messages
@@ -28,12 +28,12 @@ index b472af1e..bff8f28e 100644
          alertEnabled = getBoolean( "modules.alert", alertEnabled );
          findEnabled = getBoolean( "modules.find", findEnabled );
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
-index 8c7800b8..9dd83dd1 100644
+index c141c747..63e7bbd6 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
-@@ -77,6 +77,8 @@ public class MessagesConfig extends AbstractYamlConfig {
-         formattedMessages.put("error.players-only", ChatColor.translateAlternateColorCodes('&', getString("error.players-only", "&cOnly in game players can use this command")));
-         formattedMessages.put("error.proxy-full", ChatColor.translateAlternateColorCodes('&', getString("error.proxy-full", "Server is full!")));
+@@ -80,6 +80,8 @@ public class MessagesConfig extends AbstractYamlConfig {
+         formattedMessages.put("error.secure-profile.expired", ChatColor.translateAlternateColorCodes('&', getString("error.secure-profile.expired", "Secure profile expired.")));
+         formattedMessages.put("error.secure-profile.invalid", ChatColor.translateAlternateColorCodes('&', getString("error.secure-profile.invalid", "Secure profile invalid.")));
          formattedMessages.put("error.username-needed", ChatColor.translateAlternateColorCodes('&', getString("error.username-needed", "&cPlease follow this command by a user name.")));
 +        formattedMessages.put("error.timeout", ChatColor.translateAlternateColorCodes('&', getString("error.timeout", "Server not reachable (timeout). Offline? Incorrectly configured address/port/firewall?")));
 +        formattedMessages.put("error.server-unavailable", ChatColor.translateAlternateColorCodes('&', getString("error.server-unavailable", "This server is unavailable")));
@@ -41,7 +41,7 @@ index 8c7800b8..9dd83dd1 100644
  
      public String getTranslation(final String name, final Object... args) {
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index c64b1188..7166e683 100644
+index 5beb295e..679fe5cd 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -10,6 +10,7 @@ import io.netty.channel.ChannelFuture;
@@ -52,7 +52,7 @@ index c64b1188..7166e683 100644
  import io.netty.util.internal.PlatformDependent;
  import io.sapphiremc.amethyst.api.protocol.ProtocolVersion;
  import java.net.InetSocketAddress;
-@@ -378,10 +379,10 @@ public final class UserConnection implements ProxiedPlayer
+@@ -379,10 +380,10 @@ public final class UserConnection implements ProxiedPlayer
                          connect( def, null, true, ServerConnectEvent.Reason.LOBBY_FALLBACK, request.getConnectTimeout(), request.isSendFeedback() ); // Waterfall
                      } else if ( dimensionChange )
                      {
@@ -65,7 +65,7 @@ index c64b1188..7166e683 100644
                      }
                  }
              }
-@@ -401,10 +402,25 @@ public final class UserConnection implements ProxiedPlayer
+@@ -402,10 +403,25 @@ public final class UserConnection implements ProxiedPlayer
          b.connect().addListener( listener );
      }
  

@@ -1,4 +1,4 @@
-From 2f70ff26576a150e417d916ba35abea7cdbe03cd Mon Sep 17 00:00:00 2001
+From aa6057d98ceb72331d94bcd7f82aa5a7030f5bf9 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Wed, 5 Jan 2022 01:24:39 +0500
 Subject: [PATCH] Make min and max versions configurable
@@ -37,7 +37,7 @@ index ff227aeb..b35221d7 100644
          findEnabled = getBoolean( "modules.find", findEnabled );
          ipEnabled = getBoolean( "modules.ip", ipEnabled );
 diff --git a/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java b/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java
-index 720f33cb..ab87a53f 100644
+index 9e736b9c..e532427f 100644
 --- a/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java
 +++ b/protocol/src/main/java/io/sapphiremc/amethyst/api/protocol/ProtocolVersion.java
 @@ -3,6 +3,7 @@ package io.sapphiremc.amethyst.api.protocol;
@@ -48,7 +48,7 @@ index 720f33cb..ab87a53f 100644
  import java.util.EnumSet;
  import java.util.HashMap;
  import java.util.List;
-@@ -57,18 +58,16 @@ public enum ProtocolVersion {
+@@ -58,18 +59,16 @@ public enum ProtocolVersion {
      /**
       * Represents the lowest supported version.
       */
@@ -70,7 +70,7 @@ index 720f33cb..ab87a53f 100644
  
      /**
       * A map linking the protocol version number to its {@link ProtocolVersion} representation.
-@@ -90,6 +89,28 @@ public enum ProtocolVersion {
+@@ -91,6 +90,28 @@ public enum ProtocolVersion {
          ID_TO_PROTOCOL_CONSTANT = ImmutableMap.copyOf(versions);
      }
  
@@ -99,7 +99,7 @@ index 720f33cb..ab87a53f 100644
      /**
       * A set containing all the protocols that the proxy actually supports, excluding special-purpose
       * "versions" like {@link #LEGACY} and {@link #UNKNOWN}.
-@@ -182,6 +203,16 @@ public enum ProtocolVersion {
+@@ -183,6 +204,16 @@ public enum ProtocolVersion {
          return ID_TO_PROTOCOL_CONSTANT.getOrDefault(protocol, UNKNOWN);
      }
  

@@ -1,14 +1,14 @@
-From 73daae5f5b1d8f6b750fb8feb098aa34227ce72a Mon Sep 17 00:00:00 2001
+From 7380f80196877ab46095bc34fc109fc1c83c03b6 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Sun, 2 Jan 2022 16:22:55 +0500
 Subject: [PATCH] Change IllegalStateException to QuietException
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 4a858f31..ca7d310e 100644
+index b44d13e5..bd142afa 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -65,6 +65,7 @@ import net.md_5.bungee.tab.ServerUnique;
+@@ -66,6 +66,7 @@ import net.md_5.bungee.tab.ServerUnique;
  import net.md_5.bungee.tab.TabList;
  import net.md_5.bungee.util.CaseInsensitiveSet;
  import net.md_5.bungee.util.ChatComponentTransformer;
@@ -16,7 +16,7 @@ index 4a858f31..ca7d310e 100644
  
  @RequiredArgsConstructor
  public final class UserConnection implements ProxiedPlayer
-@@ -310,7 +311,9 @@ public final class UserConnection implements ProxiedPlayer
+@@ -311,7 +312,9 @@ public final class UserConnection implements ProxiedPlayer
  
              if ( getServer() == null && !ch.isClosing() )
              {
@@ -28,5 +28,5 @@ index 4a858f31..ca7d310e 100644
              return;
          }
 -- 
-2.35.1
+2.36.1.windows.1
 

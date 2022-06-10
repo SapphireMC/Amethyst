@@ -1,14 +1,14 @@
-From 47d780dbbbbb7f96239c70fd4ab9c8d4a97aa754 Mon Sep 17 00:00:00 2001
+From 3e685067e2e6c9c48e826c6328da7b4386847a91 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Sun, 2 Jan 2022 16:02:46 +0500
 Subject: [PATCH] Close connections & Don't flush if not necessary
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index bba6d324..0d403bc0 100644
+index ed1fe41a..76877578 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -192,6 +192,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -194,6 +194,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  }
  
                  ServerPing legacy = result.getResponse();
@@ -22,7 +22,7 @@ index bba6d324..0d403bc0 100644
                  String kickMessage;
  
                  if ( v1_5 )
-@@ -257,6 +264,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -259,6 +266,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                      @Override
                      public void done(ProxyPingEvent pingResult, Throwable error)
                      {
@@ -37,7 +37,7 @@ index bba6d324..0d403bc0 100644
                          Gson gson = BungeeCord.getInstance().gson;
                          unsafe.sendPacket( new StatusResponse( gson.toJson( pingResult.getResponse() ) ) );
                          if ( bungee.getConnectionThrottle() != null )
-@@ -281,16 +296,19 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -283,16 +298,19 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          thisState = State.PING;
      }
  
@@ -61,7 +61,7 @@ index bba6d324..0d403bc0 100644
      }
  
      @Override
-@@ -596,7 +614,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -622,7 +640,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      {
          if ( canSendKickMessage() )
          {

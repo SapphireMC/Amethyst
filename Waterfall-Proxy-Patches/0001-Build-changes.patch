@@ -1,11 +1,11 @@
-From 16a9c0d53ba31df59702e78d88b4bcea93fd5bf7 Mon Sep 17 00:00:00 2001
+From f16ede718675b5f4e62fe19dadb5897949bf5cbe Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Fri, 31 Dec 2021 13:46:52 +0500
 Subject: [PATCH] Build changes
 
 
 diff --git a/api/pom.xml b/api/pom.xml
-index 379b6023..d60d248d 100644
+index 405b1c2c..bd1eb807 100644
 --- a/api/pom.xml
 +++ b/api/pom.xml
 @@ -4,42 +4,41 @@
@@ -16,14 +16,14 @@ index 379b6023..d60d248d 100644
 -        <artifactId>waterfall-parent</artifactId>
 +        <groupId>io.sapphiremc.amethyst</groupId>
 +        <artifactId>amethyst-parent</artifactId>
-         <version>1.18-R0.1-SNAPSHOT</version>
+         <version>1.19-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
 -    <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-api</artifactId>
 +    <artifactId>amethyst-api</artifactId>
-     <version>1.18-R0.1-SNAPSHOT</version>
+     <version>1.19-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-API</name>
@@ -82,7 +82,7 @@ index a4011335..8d4b3ee5 100644
       * Gets a localized string from the .properties file.
       *
 diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
-index 00ce099c..bc92a525 100644
+index 688f1b99..0248087b 100644
 --- a/bootstrap/pom.xml
 +++ b/bootstrap/pom.xml
 @@ -4,19 +4,18 @@
@@ -93,14 +93,14 @@ index 00ce099c..bc92a525 100644
 -        <artifactId>waterfall-parent</artifactId>
 +        <groupId>io.sapphiremc.amethyst</groupId>
 +        <artifactId>amethyst-parent</artifactId>
-         <version>1.18-R0.1-SNAPSHOT</version>
+         <version>1.19-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
 -    <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-bootstrap</artifactId>
 +    <artifactId>amethyst-bootstrap</artifactId>
-     <version>1.18-R0.1-SNAPSHOT</version>
+     <version>1.19-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-Bootstrap</name>
@@ -153,7 +153,7 @@ index 00ce099c..bc92a525 100644
 +    -->
  </project>
 diff --git a/chat/pom.xml b/chat/pom.xml
-index 0ad5dd16..94edee5f 100644
+index 3ac27114..79432f7b 100644
 --- a/chat/pom.xml
 +++ b/chat/pom.xml
 @@ -4,19 +4,18 @@
@@ -164,14 +164,14 @@ index 0ad5dd16..94edee5f 100644
 -        <artifactId>waterfall-parent</artifactId>
 +        <groupId>io.sapphiremc.amethyst</groupId>
 +        <artifactId>amethyst-parent</artifactId>
-         <version>1.18-R0.1-SNAPSHOT</version>
+         <version>1.19-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
 -    <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-chat</artifactId>
 +    <artifactId>amethyst-chat</artifactId>
-     <version>1.18-R0.1-SNAPSHOT</version>
+     <version>1.19-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-Chat</name>
@@ -182,7 +182,7 @@ index 0ad5dd16..94edee5f 100644
      <dependencies>
          <dependency>
 diff --git a/config/pom.xml b/config/pom.xml
-index 7d32ea69..af7c04df 100644
+index ac721ee3..5b842d60 100644
 --- a/config/pom.xml
 +++ b/config/pom.xml
 @@ -4,19 +4,18 @@
@@ -193,14 +193,14 @@ index 7d32ea69..af7c04df 100644
 -        <artifactId>waterfall-parent</artifactId>
 +        <groupId>io.sapphiremc.amethyst</groupId>
 +        <artifactId>amethyst-parent</artifactId>
-         <version>1.18-R0.1-SNAPSHOT</version>
+         <version>1.19-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
 -    <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-config</artifactId>
 +    <artifactId>amethyst-config</artifactId>
-     <version>1.18-R0.1-SNAPSHOT</version>
+     <version>1.19-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-Config</name>
@@ -211,7 +211,7 @@ index 7d32ea69..af7c04df 100644
      <dependencies>
          <dependency>
 diff --git a/event/pom.xml b/event/pom.xml
-index e2432463..27eaf7f7 100644
+index ac85fc82..27748b58 100644
 --- a/event/pom.xml
 +++ b/event/pom.xml
 @@ -4,17 +4,16 @@
@@ -222,14 +222,14 @@ index e2432463..27eaf7f7 100644
 -        <artifactId>waterfall-parent</artifactId>
 +        <groupId>io.sapphiremc.amethyst</groupId>
 +        <artifactId>amethyst-parent</artifactId>
-         <version>1.18-R0.1-SNAPSHOT</version>
+         <version>1.19-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
 -    <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-event</artifactId>
 +    <artifactId>amethyst-event</artifactId>
-     <version>1.18-R0.1-SNAPSHOT</version>
+     <version>1.19-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-Event</name>
@@ -238,7 +238,7 @@ index e2432463..27eaf7f7 100644
 +    <description>Generic java event dispatching API intended for use with Amethyst.</description>
  </project>
 diff --git a/log/pom.xml b/log/pom.xml
-index 465ebbf2..f1c4b181 100644
+index d61dba6f..0a8086aa 100644
 --- a/log/pom.xml
 +++ b/log/pom.xml
 @@ -4,19 +4,18 @@
@@ -249,14 +249,14 @@ index 465ebbf2..f1c4b181 100644
 -        <artifactId>waterfall-parent</artifactId>
 +        <groupId>io.sapphiremc.amethyst</groupId>
 +        <artifactId>amethyst-parent</artifactId>
-         <version>1.18-R0.1-SNAPSHOT</version>
+         <version>1.19-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
 -    <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-log</artifactId>
 +    <artifactId>amethyst-log</artifactId>
-     <version>1.18-R0.1-SNAPSHOT</version>
+     <version>1.19-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-Log</name>
@@ -278,7 +278,7 @@ index 465ebbf2..f1c4b181 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/log4j/pom.xml b/log4j/pom.xml
-index 24a5f780..706a69e5 100644
+index fb091698..1416e3f6 100644
 --- a/log4j/pom.xml
 +++ b/log4j/pom.xml
 @@ -3,19 +3,18 @@
@@ -289,14 +289,14 @@ index 24a5f780..706a69e5 100644
 -        <artifactId>waterfall-parent</artifactId>
 +        <groupId>io.sapphiremc.amethyst</groupId>
 +        <artifactId>amethyst-parent</artifactId>
-         <version>1.18-R0.1-SNAPSHOT</version>
+         <version>1.19-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
 -    <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-log4j</artifactId>
 +    <artifactId>amethyst-log4j</artifactId>
-     <version>1.18-R0.1-SNAPSHOT</version>
+     <version>1.19-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-Log</name>
@@ -307,7 +307,7 @@ index 24a5f780..706a69e5 100644
      <properties>
          <log4j2.version>2.17.2</log4j2.version>
 diff --git a/module/cmd-alert/pom.xml b/module/cmd-alert/pom.xml
-index b41791f1..c0d9f7d5 100644
+index 64d197ce..f285e4da 100644
 --- a/module/cmd-alert/pom.xml
 +++ b/module/cmd-alert/pom.xml
 @@ -4,14 +4,13 @@
@@ -318,14 +318,14 @@ index b41791f1..c0d9f7d5 100644
 -        <artifactId>waterfall-module</artifactId>
 +        <groupId>io.sapphiremc.amethyst</groupId>
 +        <artifactId>amethyst-module</artifactId>
-         <version>1.18-R0.1-SNAPSHOT</version>
+         <version>1.19-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
 -    <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-module-cmd-alert</artifactId>
 +    <artifactId>amethyst-module-cmd-alert</artifactId>
-     <version>1.18-R0.1-SNAPSHOT</version>
+     <version>1.19-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 diff --git a/module/cmd-alert/src/main/resources/plugin.yml b/module/cmd-alert/src/main/resources/bungee.yml
@@ -343,7 +343,7 @@ index 8ed58084..9dcf1704 100644
  description: ${project.description}
  author: ${module.author}
 diff --git a/module/cmd-find/pom.xml b/module/cmd-find/pom.xml
-index a17080ab..e8172a66 100644
+index c4ad20de..7cae4ca2 100644
 --- a/module/cmd-find/pom.xml
 +++ b/module/cmd-find/pom.xml
 @@ -4,14 +4,13 @@
@@ -354,14 +354,14 @@ index a17080ab..e8172a66 100644
 -        <artifactId>waterfall-module</artifactId>
 +        <groupId>io.sapphiremc.amethyst</groupId>
 +        <artifactId>amethyst-module</artifactId>
-         <version>1.18-R0.1-SNAPSHOT</version>
+         <version>1.19-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
 -    <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-module-cmd-find</artifactId>
 +    <artifactId>amethyst-module-cmd-find</artifactId>
-     <version>1.18-R0.1-SNAPSHOT</version>
+     <version>1.19-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 diff --git a/module/cmd-find/src/main/resources/plugin.yml b/module/cmd-find/src/main/resources/bungee.yml
@@ -379,7 +379,7 @@ index e0f346f9..34efb98d 100644
  description: ${project.description}
  author: ${module.author}
 diff --git a/module/cmd-list/pom.xml b/module/cmd-list/pom.xml
-index 16003086..a222f913 100644
+index 9e22202d..4704057e 100644
 --- a/module/cmd-list/pom.xml
 +++ b/module/cmd-list/pom.xml
 @@ -4,14 +4,13 @@
@@ -390,14 +390,14 @@ index 16003086..a222f913 100644
 -        <artifactId>waterfall-module</artifactId>
 +        <groupId>io.sapphiremc.amethyst</groupId>
 +        <artifactId>amethyst-module</artifactId>
-         <version>1.18-R0.1-SNAPSHOT</version>
+         <version>1.19-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
 -    <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-module-cmd-list</artifactId>
 +    <artifactId>amethyst-module-cmd-list</artifactId>
-     <version>1.18-R0.1-SNAPSHOT</version>
+     <version>1.19-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 diff --git a/module/cmd-list/src/main/resources/plugin.yml b/module/cmd-list/src/main/resources/bungee.yml
@@ -415,7 +415,7 @@ index 272e64eb..c5999f77 100644
  description: ${project.description}
  author: ${module.author}
 diff --git a/module/cmd-send/pom.xml b/module/cmd-send/pom.xml
-index ba084281..6e864859 100644
+index 5326f925..444c881a 100644
 --- a/module/cmd-send/pom.xml
 +++ b/module/cmd-send/pom.xml
 @@ -4,14 +4,13 @@
@@ -426,14 +426,14 @@ index ba084281..6e864859 100644
 -        <artifactId>waterfall-module</artifactId>
 +        <groupId>io.sapphiremc.amethyst</groupId>
 +        <artifactId>amethyst-module</artifactId>
-         <version>1.18-R0.1-SNAPSHOT</version>
+         <version>1.19-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
 -    <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-module-cmd-send</artifactId>
 +    <artifactId>amethyst-module-cmd-send</artifactId>
-     <version>1.18-R0.1-SNAPSHOT</version>
+     <version>1.19-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 diff --git a/module/cmd-send/src/main/resources/plugin.yml b/module/cmd-send/src/main/resources/bungee.yml
@@ -451,7 +451,7 @@ index a613e78b..8f0d0edd 100644
  description: ${project.description}
  author: ${module.author}
 diff --git a/module/cmd-server/pom.xml b/module/cmd-server/pom.xml
-index cb4d2932..b0d3bff1 100644
+index 86faab24..b5f2e2a9 100644
 --- a/module/cmd-server/pom.xml
 +++ b/module/cmd-server/pom.xml
 @@ -4,14 +4,13 @@
@@ -462,14 +462,14 @@ index cb4d2932..b0d3bff1 100644
 -        <artifactId>waterfall-module</artifactId>
 +        <groupId>io.sapphiremc.amethyst</groupId>
 +        <artifactId>amethyst-module</artifactId>
-         <version>1.18-R0.1-SNAPSHOT</version>
+         <version>1.19-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
 -    <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-module-cmd-server</artifactId>
 +    <artifactId>amethyst-module-cmd-server</artifactId>
-     <version>1.18-R0.1-SNAPSHOT</version>
+     <version>1.19-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 diff --git a/module/cmd-server/src/main/resources/plugin.yml b/module/cmd-server/src/main/resources/bungee.yml
@@ -487,7 +487,7 @@ index 006f3e3f..b0b87841 100644
  description: ${project.description}
  author: ${module.author}
 diff --git a/module/pom.xml b/module/pom.xml
-index 350a49b8..9117dc2b 100644
+index b4283e43..6b998e3a 100644
 --- a/module/pom.xml
 +++ b/module/pom.xml
 @@ -4,19 +4,18 @@
@@ -498,14 +498,14 @@ index 350a49b8..9117dc2b 100644
 -        <artifactId>waterfall-parent</artifactId>
 +        <groupId>io.sapphiremc.amethyst</groupId>
 +        <artifactId>amethyst-parent</artifactId>
-         <version>1.18-R0.1-SNAPSHOT</version>
+         <version>1.19-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
 -    <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-module</artifactId>
 +    <artifactId>amethyst-module</artifactId>
-     <version>1.18-R0.1-SNAPSHOT</version>
+     <version>1.19-R0.1-SNAPSHOT</version>
      <packaging>pom</packaging>
  
 -    <name>Waterfall Modules</name>
@@ -535,7 +535,7 @@ index 350a49b8..9117dc2b 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/module/reconnect-yaml/pom.xml b/module/reconnect-yaml/pom.xml
-index d3476fc5..0b36aad2 100644
+index 8aff53bd..44e00342 100644
 --- a/module/reconnect-yaml/pom.xml
 +++ b/module/reconnect-yaml/pom.xml
 @@ -4,14 +4,13 @@
@@ -546,14 +546,14 @@ index d3476fc5..0b36aad2 100644
 -        <artifactId>waterfall-module</artifactId>
 +        <groupId>io.sapphiremc.amethyst</groupId>
 +        <artifactId>amethyst-module</artifactId>
-         <version>1.18-R0.1-SNAPSHOT</version>
+         <version>1.19-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
 -    <groupId>net.md-5</groupId>
 -    <artifactId>bungeecord-module-reconnect-yaml</artifactId>
 +    <artifactId>amethyst-module-reconnect-yaml</artifactId>
-     <version>1.18-R0.1-SNAPSHOT</version>
+     <version>1.19-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 diff --git a/module/reconnect-yaml/src/main/resources/plugin.yml b/module/reconnect-yaml/src/main/resources/bungee.yml
@@ -571,7 +571,7 @@ index 451e3c61..9757ba83 100644
  description: ${project.description}
  author: ${module.author}
 diff --git a/native/pom.xml b/native/pom.xml
-index 1eff2c93..8a7c62ab 100644
+index caa4c4cb..09f0aee7 100644
 --- a/native/pom.xml
 +++ b/native/pom.xml
 @@ -4,19 +4,18 @@
@@ -582,14 +582,14 @@ index 1eff2c93..8a7c62ab 100644
 -        <artifactId>waterfall-parent</artifactId>
 +        <groupId>io.sapphiremc.amethyst</groupId>
 +        <artifactId>amethyst-parent</artifactId>
-         <version>1.18-R0.1-SNAPSHOT</version>
+         <version>1.19-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
 -    <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-native</artifactId>
 +    <artifactId>amethyst-native</artifactId>
-     <version>1.18-R0.1-SNAPSHOT</version>
+     <version>1.19-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-Native</name>
@@ -600,7 +600,7 @@ index 1eff2c93..8a7c62ab 100644
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index 505d1d14..aed1838d 100644
+index 2b544c23..3eb93221 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -4,24 +4,23 @@
@@ -618,7 +618,7 @@ index 505d1d14..aed1838d 100644
 -    <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-parent</artifactId>
 +    <artifactId>amethyst-parent</artifactId>
-     <version>1.18-R0.1-SNAPSHOT</version>
+     <version>1.19-R0.1-SNAPSHOT</version>
      <packaging>pom</packaging>
  
 -    <name>Waterfall-Parent</name>
@@ -737,7 +737,7 @@ index 505d1d14..aed1838d 100644
                                          api/target/generated-sources/delombok;
                                          chat/target/generated-sources/delombok
 diff --git a/protocol/pom.xml b/protocol/pom.xml
-index a783d9b0..fa8f6511 100644
+index 93ae5952..6951c911 100644
 --- a/protocol/pom.xml
 +++ b/protocol/pom.xml
 @@ -4,19 +4,18 @@
@@ -748,14 +748,14 @@ index a783d9b0..fa8f6511 100644
 -        <artifactId>waterfall-parent</artifactId>
 +        <groupId>io.sapphiremc.amethyst</groupId>
 +        <artifactId>amethyst-parent</artifactId>
-         <version>1.18-R0.1-SNAPSHOT</version>
+         <version>1.19-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
 -    <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-protocol</artifactId>
 +    <artifactId>amethyst-protocol</artifactId>
-     <version>1.18-R0.1-SNAPSHOT</version>
+     <version>1.19-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-Protocol</name>
@@ -777,7 +777,7 @@ index a783d9b0..fa8f6511 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 23bfa61d..b36862cf 100644
+index d81bf730..868a55ce 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -4,18 +4,17 @@
@@ -788,14 +788,14 @@ index 23bfa61d..b36862cf 100644
 -        <artifactId>waterfall-parent</artifactId>
 +        <groupId>io.sapphiremc.amethyst</groupId>
 +        <artifactId>amethyst-parent</artifactId>
-         <version>1.18-R0.1-SNAPSHOT</version>
+         <version>1.19-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
 -    <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-proxy</artifactId>
 +    <artifactId>amethyst-proxy</artifactId>
-     <version>1.18-R0.1-SNAPSHOT</version>
+     <version>1.19-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-Proxy</name>
@@ -846,9 +846,9 @@ index 23bfa61d..b36862cf 100644
              <version>${project.version}</version>
              <scope>compile</scope>
          </dependency>
-@@ -153,6 +152,21 @@
-     </dependencies>
+@@ -154,6 +153,21 @@
  
+     <!-- Waterfall start - copy license files into jar -->
      <build>
 +        <plugins>
 +            <plugin>
@@ -948,7 +948,7 @@ index d3abee44..3992ecc7 100644
              try ( InputStream in = jar.getInputStream( pdf ) )
              {
 diff --git a/query/pom.xml b/query/pom.xml
-index 081bff62..c4b6ed73 100644
+index 72eb14e2..1a005da9 100644
 --- a/query/pom.xml
 +++ b/query/pom.xml
 @@ -4,19 +4,18 @@
@@ -959,14 +959,14 @@ index 081bff62..c4b6ed73 100644
 -        <artifactId>waterfall-parent</artifactId>
 +        <groupId>io.sapphiremc.amethyst</groupId>
 +        <artifactId>amethyst-parent</artifactId>
-         <version>1.18-R0.1-SNAPSHOT</version>
+         <version>1.19-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
 -    <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-query</artifactId>
 +    <artifactId>amethyst-query</artifactId>
-     <version>1.18-R0.1-SNAPSHOT</version>
+     <version>1.19-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-Query</name>

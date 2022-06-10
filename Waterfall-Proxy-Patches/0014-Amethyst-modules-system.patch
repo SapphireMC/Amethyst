@@ -1,4 +1,4 @@
-From ab126315f48bf78b5312210e18d0c3eb2ae124d0 Mon Sep 17 00:00:00 2001
+From 751ed546f83db68e8e2f66bfb10707f158c6377e Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Tue, 4 Jan 2022 20:41:35 +0500
 Subject: [PATCH] Amethyst modules system
@@ -66,7 +66,7 @@ index 8b16caf7..ff227aeb 100644
  }
 diff --git a/module/cmd-alert/pom.xml b/module/cmd-alert/pom.xml
 deleted file mode 100644
-index c0d9f7d5..00000000
+index f285e4da..00000000
 --- a/module/cmd-alert/pom.xml
 +++ /dev/null
 @@ -1,19 +0,0 @@
@@ -78,12 +78,12 @@ index c0d9f7d5..00000000
 -    <parent>
 -        <groupId>io.sapphiremc.amethyst</groupId>
 -        <artifactId>amethyst-module</artifactId>
--        <version>1.18-R0.1-SNAPSHOT</version>
+-        <version>1.19-R0.1-SNAPSHOT</version>
 -        <relativePath>../pom.xml</relativePath>
 -    </parent>
 -
 -    <artifactId>amethyst-module-cmd-alert</artifactId>
--    <version>1.18-R0.1-SNAPSHOT</version>
+-    <version>1.19-R0.1-SNAPSHOT</version>
 -    <packaging>jar</packaging>
 -
 -    <name>cmd_alert</name>
@@ -122,7 +122,7 @@ index 9dcf1704..00000000
 -author: ${module.author}
 diff --git a/module/cmd-find/pom.xml b/module/cmd-find/pom.xml
 deleted file mode 100644
-index e8172a66..00000000
+index 7cae4ca2..00000000
 --- a/module/cmd-find/pom.xml
 +++ /dev/null
 @@ -1,19 +0,0 @@
@@ -134,12 +134,12 @@ index e8172a66..00000000
 -    <parent>
 -        <groupId>io.sapphiremc.amethyst</groupId>
 -        <artifactId>amethyst-module</artifactId>
--        <version>1.18-R0.1-SNAPSHOT</version>
+-        <version>1.19-R0.1-SNAPSHOT</version>
 -        <relativePath>../pom.xml</relativePath>
 -    </parent>
 -
 -    <artifactId>amethyst-module-cmd-find</artifactId>
--    <version>1.18-R0.1-SNAPSHOT</version>
+-    <version>1.19-R0.1-SNAPSHOT</version>
 -    <packaging>jar</packaging>
 -
 -    <name>cmd_find</name>
@@ -177,7 +177,7 @@ index 34efb98d..00000000
 -author: ${module.author}
 diff --git a/module/cmd-list/pom.xml b/module/cmd-list/pom.xml
 deleted file mode 100644
-index a222f913..00000000
+index 4704057e..00000000
 --- a/module/cmd-list/pom.xml
 +++ /dev/null
 @@ -1,19 +0,0 @@
@@ -189,12 +189,12 @@ index a222f913..00000000
 -    <parent>
 -        <groupId>io.sapphiremc.amethyst</groupId>
 -        <artifactId>amethyst-module</artifactId>
--        <version>1.18-R0.1-SNAPSHOT</version>
+-        <version>1.19-R0.1-SNAPSHOT</version>
 -        <relativePath>../pom.xml</relativePath>
 -    </parent>
 -
 -    <artifactId>amethyst-module-cmd-list</artifactId>
--    <version>1.18-R0.1-SNAPSHOT</version>
+-    <version>1.19-R0.1-SNAPSHOT</version>
 -    <packaging>jar</packaging>
 -
 -    <name>cmd_list</name>
@@ -232,7 +232,7 @@ index c5999f77..00000000
 -author: ${module.author}
 diff --git a/module/cmd-send/pom.xml b/module/cmd-send/pom.xml
 deleted file mode 100644
-index 6e864859..00000000
+index 444c881a..00000000
 --- a/module/cmd-send/pom.xml
 +++ /dev/null
 @@ -1,19 +0,0 @@
@@ -244,12 +244,12 @@ index 6e864859..00000000
 -    <parent>
 -        <groupId>io.sapphiremc.amethyst</groupId>
 -        <artifactId>amethyst-module</artifactId>
--        <version>1.18-R0.1-SNAPSHOT</version>
+-        <version>1.19-R0.1-SNAPSHOT</version>
 -        <relativePath>../pom.xml</relativePath>
 -    </parent>
 -
 -    <artifactId>amethyst-module-cmd-send</artifactId>
--    <version>1.18-R0.1-SNAPSHOT</version>
+-    <version>1.19-R0.1-SNAPSHOT</version>
 -    <packaging>jar</packaging>
 -
 -    <name>cmd_send</name>
@@ -287,7 +287,7 @@ index 8f0d0edd..00000000
 -author: ${module.author}
 diff --git a/module/cmd-server/pom.xml b/module/cmd-server/pom.xml
 deleted file mode 100644
-index b0d3bff1..00000000
+index b5f2e2a9..00000000
 --- a/module/cmd-server/pom.xml
 +++ /dev/null
 @@ -1,19 +0,0 @@
@@ -299,12 +299,12 @@ index b0d3bff1..00000000
 -    <parent>
 -        <groupId>io.sapphiremc.amethyst</groupId>
 -        <artifactId>amethyst-module</artifactId>
--        <version>1.18-R0.1-SNAPSHOT</version>
+-        <version>1.19-R0.1-SNAPSHOT</version>
 -        <relativePath>../pom.xml</relativePath>
 -    </parent>
 -
 -    <artifactId>amethyst-module-cmd-server</artifactId>
--    <version>1.18-R0.1-SNAPSHOT</version>
+-    <version>1.19-R0.1-SNAPSHOT</version>
 -    <packaging>jar</packaging>
 -
 -    <name>cmd_server</name>
@@ -342,7 +342,7 @@ index b0b87841..00000000
 -author: ${module.author}
 diff --git a/module/pom.xml b/module/pom.xml
 deleted file mode 100644
-index 9117dc2b..00000000
+index 6b998e3a..00000000
 --- a/module/pom.xml
 +++ /dev/null
 @@ -1,53 +0,0 @@
@@ -354,12 +354,12 @@ index 9117dc2b..00000000
 -    <parent>
 -        <groupId>io.sapphiremc.amethyst</groupId>
 -        <artifactId>amethyst-parent</artifactId>
--        <version>1.18-R0.1-SNAPSHOT</version>
+-        <version>1.19-R0.1-SNAPSHOT</version>
 -        <relativePath>../pom.xml</relativePath>
 -    </parent>
 -
 -    <artifactId>amethyst-module</artifactId>
--    <version>1.18-R0.1-SNAPSHOT</version>
+-    <version>1.19-R0.1-SNAPSHOT</version>
 -    <packaging>pom</packaging>
 -
 -    <name>Amethyst Modules</name>
@@ -401,7 +401,7 @@ index 9117dc2b..00000000
 -</project>
 diff --git a/module/reconnect-yaml/pom.xml b/module/reconnect-yaml/pom.xml
 deleted file mode 100644
-index 0b36aad2..00000000
+index 44e00342..00000000
 --- a/module/reconnect-yaml/pom.xml
 +++ /dev/null
 @@ -1,19 +0,0 @@
@@ -413,12 +413,12 @@ index 0b36aad2..00000000
 -    <parent>
 -        <groupId>io.sapphiremc.amethyst</groupId>
 -        <artifactId>amethyst-module</artifactId>
--        <version>1.18-R0.1-SNAPSHOT</version>
+-        <version>1.19-R0.1-SNAPSHOT</version>
 -        <relativePath>../pom.xml</relativePath>
 -    </parent>
 -
 -    <artifactId>amethyst-module-reconnect-yaml</artifactId>
--    <version>1.18-R0.1-SNAPSHOT</version>
+-    <version>1.19-R0.1-SNAPSHOT</version>
 -    <packaging>jar</packaging>
 -
 -    <name>reconnect_yaml</name>
@@ -464,7 +464,7 @@ index 9757ba83..00000000
 -description: ${project.description}
 -author: ${module.author}
 diff --git a/pom.xml b/pom.xml
-index 61513b4e..eda1866c 100644
+index 3ad14fb0..5fa20152 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -45,7 +45,7 @@

@@ -1,4 +1,4 @@
-From a0e7477aceb06d0f20a1c8f4b2486f99e13768d1 Mon Sep 17 00:00:00 2001
+From beecff1abfc3dcf0bf6ded2273f99f4679ee1976 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 10 Jan 2022 00:39:35 +0500
 Subject: [PATCH] Logger options
@@ -78,10 +78,10 @@ index 7887c5e6..5e0a3e27 100644
          ProtocolVersion.register(); // Amethyst - register min and max supported versions
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index c3a3581a..9338e2e0 100644
+index 73973a16..b07d3384 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -344,7 +344,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -346,7 +346,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          {
              case 1:
                  // Ping
@@ -90,7 +90,7 @@ index c3a3581a..9338e2e0 100644
                  {
                      bungee.getLogger().log( Level.INFO, "{0} has pinged", this );
                  }
-@@ -353,7 +353,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -355,7 +355,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  break;
              case 2:
                  // Login
@@ -99,14 +99,6 @@ index c3a3581a..9338e2e0 100644
                  {
                      bungee.getLogger().log( Level.INFO, "{0} has connected", this );
                  }
-@@ -387,6 +387,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
-             disconnect( bungee.getTranslationComponent( "error.name-invalid" ) );
-             return;
-         }
-+
-         this.loginRequest = loginRequest;
- 
-         int limit = BungeeCord.getInstance().config.getPlayerLimit();
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 index 85676dfa..23c8391c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java

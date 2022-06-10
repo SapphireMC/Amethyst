@@ -1,4 +1,4 @@
-From f181caeaf8db5fe73b82f0e9ad5fbf8cd5819dd2 Mon Sep 17 00:00:00 2001
+From ff79f297a91f08b9a3722ea5a3ddd03c976557c1 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Sun, 6 Mar 2022 02:54:51 +0500
 Subject: [PATCH] Option to allow invalid usernames
@@ -28,10 +28,10 @@ index d01b4510..b472af1e 100644
          motdEnabled = getBoolean("motd.enabled", motdEnabled);
          motdFirstLines = getStringList("motd.firstLines", motdFirstLines);
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 4aa72aa9..2ca2d628 100644
+index 96753f35..d4deeabe 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -421,7 +421,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -423,7 +423,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          Preconditions.checkState( thisState == State.USERNAME, "Not expecting USERNAME" );
          thisState = State.PROCESSING_USERNAME; // Amethyst
  

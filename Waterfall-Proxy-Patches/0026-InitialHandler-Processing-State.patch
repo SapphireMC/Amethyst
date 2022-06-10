@@ -1,14 +1,14 @@
-From 1dd1c4e82b12569ec02f753740ee28117875d4c5 Mon Sep 17 00:00:00 2001
+From 859abd26ba3af23cd2394dd8ee15d63513ac3488 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Thu, 3 Mar 2022 01:31:49 +0500
 Subject: [PATCH] InitialHandler Processing State
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 9338e2e0..fd24fa75 100644
+index b07d3384..0e8a6041 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -123,12 +123,12 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -125,12 +125,12 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      private enum State
      {
  
@@ -23,7 +23,7 @@ index 9338e2e0..fd24fa75 100644
      }
  
      @Override
-@@ -243,6 +243,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -245,6 +245,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      public void handle(StatusRequest statusRequest) throws Exception
      {
          Preconditions.checkState( thisState == State.STATUS, "Not expecting STATUS" );
@@ -31,7 +31,7 @@ index 9338e2e0..fd24fa75 100644
  
          ServerInfo forced = AbstractReconnectHandler.getForcedHost( this );
          final String motd = ( forced != null ) ? forced.getMotd() : listener.getMotd();
-@@ -303,6 +304,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -305,6 +306,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      {
         // if (!ACCEPT_INVALID_PACKETS) { // Amethyst - Never accept invalid packets
              Preconditions.checkState(thisState == State.PING, "Not expecting PING");
@@ -39,7 +39,7 @@ index 9338e2e0..fd24fa75 100644
         // }
          unsafe.sendPacket( ping );
          // Amethyst start - Close instead of disconnect
-@@ -315,6 +317,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -317,6 +319,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      public void handle(Handshake handshake) throws Exception
      {
          Preconditions.checkState( thisState == State.HANDSHAKE, "Not expecting HANDSHAKE" );
@@ -47,7 +47,7 @@ index 9338e2e0..fd24fa75 100644
          this.handshake = handshake;
          ch.setVersion( handshake.getProtocolVersion() );
  
-@@ -381,6 +384,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -383,6 +386,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      public void handle(LoginRequest loginRequest) throws Exception
      {
          Preconditions.checkState( thisState == State.USERNAME, "Not expecting USERNAME" );
@@ -55,17 +55,17 @@ index 9338e2e0..fd24fa75 100644
  
          if ( !AllowedCharacters.isValidName( loginRequest.getData(), onlineMode ) )
          {
-@@ -440,7 +444,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
-     public void handle(final EncryptionResponse encryptResponse) throws Exception
+@@ -465,7 +469,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      {
          Preconditions.checkState( thisState == State.ENCRYPT, "Not expecting ENCRYPT" );
+         Preconditions.checkState( EncryptionUtil.check( loginRequest.getPublicKey(), encryptResponse, request ), "Invalid verification" );
 -        thisState = State.FINISHING; // Waterfall - move earlier - There is no verification of this later (and this is not API)
 +        //thisState = State.FINISHING; // Waterfall - move earlier - There is no verification of this later (and this is not API)
 +        thisState = State.PROCESSING; // Amethyst
  
          SecretKey sharedKey = EncryptionUtil.getSecret( encryptResponse, request );
          // Waterfall start
-@@ -501,7 +506,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -526,7 +531,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  }
              }
          };
@@ -74,7 +74,7 @@ index 9338e2e0..fd24fa75 100644
          HttpClient.get( authURL, ch.getHandle().eventLoop(), handler );
      }
  
-@@ -678,14 +683,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -703,14 +708,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      @Override
      public void setOnlineMode(boolean onlineMode)
      {

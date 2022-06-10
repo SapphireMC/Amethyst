@@ -1,4 +1,4 @@
-From ed55b3f5eaca22ca5c95f5719c767c534e39bf2f Mon Sep 17 00:00:00 2001
+From f611afd60cc620ae53857ae63a372417605f3de9 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 3 Jan 2022 01:19:36 +0500
 Subject: [PATCH] Amethyst general patch
@@ -80,7 +80,7 @@ index 73006e0c..6e3ac9ac 100644
      }
 diff --git a/flame/pom.xml b/flame/pom.xml
 new file mode 100644
-index 00000000..e689d482
+index 00000000..4403f191
 --- /dev/null
 +++ b/flame/pom.xml
 @@ -0,0 +1,35 @@
@@ -93,12 +93,12 @@ index 00000000..e689d482
 +    <parent>
 +        <groupId>io.sapphiremc.amethyst</groupId>
 +        <artifactId>amethyst-parent</artifactId>
-+        <version>1.18-R0.1-SNAPSHOT</version>
++        <version>1.19-R0.1-SNAPSHOT</version>
 +        <relativePath>../pom.xml</relativePath>
 +    </parent>
 +
 +    <artifactId>amethyst-flame</artifactId>
-+    <version>1.18-R0.1-SNAPSHOT</version>
++    <version>1.19-R0.1-SNAPSHOT</version>
 +    <packaging>jar</packaging>
 +
 +    <name>Amethyst-Flame</name>
@@ -400,7 +400,7 @@ index 00000000..8b16caf7
 +    }
 +}
 diff --git a/pom.xml b/pom.xml
-index aed1838d..61513b4e 100644
+index 3eb93221..3ad14fb0 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -51,6 +51,8 @@
@@ -413,7 +413,7 @@ index aed1838d..61513b4e 100644
  
      <scm>
 diff --git a/protocol/pom.xml b/protocol/pom.xml
-index fa8f6511..5c908a10 100644
+index 6951c911..070f84aa 100644
 --- a/protocol/pom.xml
 +++ b/protocol/pom.xml
 @@ -63,5 +63,12 @@
@@ -430,7 +430,7 @@ index fa8f6511..5c908a10 100644
      </dependencies>
  </project>
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
-index 6360818c..21329e93 100644
+index 164b544e..11559dcf 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 @@ -6,7 +6,7 @@ import java.util.List;
@@ -442,18 +442,16 @@ index 6360818c..21329e93 100644
      public static final int MINECRAFT_1_8 = 47;
      public static final int MINECRAFT_1_9 = 107;
      public static final int MINECRAFT_1_9_1 = 108;
-@@ -90,22 +90,26 @@ public class ProtocolConstants
-                 ProtocolConstants.MINECRAFT_1_18_2
+@@ -93,16 +93,22 @@ public class ProtocolConstants
+                 ProtocolConstants.MINECRAFT_1_19
          );
  
 +        // Amethyst start - remove this because its no longer needed
 +        /*
          if ( SNAPSHOT_SUPPORT )
          {
--            // supportedVersions.add( "1.18.x" );
--            // supportedVersionIds.add( ProtocolConstants.MINECRAFT_1_18 );
-+             supportedVersions.add( "1.18.x" );
-+             supportedVersionIds.add( ProtocolConstants.MINECRAFT_1_18 );
+             // supportedVersions.add( "1.19.x" );
+             // supportedVersionIds.add( ProtocolConstants.MINECRAFT_1_19 );
          }
 +        */
 +        // Amethyst end
@@ -462,19 +460,22 @@ index 6360818c..21329e93 100644
          SUPPORTED_VERSION_IDS = supportedVersionIds.build();
      }
  
--    public static final boolean isBeforeOrEq(int before, int other)
-+    public static boolean isBeforeOrEq(int before, int other) // Amethyst - remove final modifier
++    // Amethyst start - remove this methods
++    /*
+     public static final boolean isBeforeOrEq(int before, int other)
      {
              return before <= other;
-     }
- 
--    public static final boolean isAfterOrEq(int after, int other)
-+    public static boolean isAfterOrEq(int after, int other) // Amethyst - remove final modifier
+@@ -112,6 +118,8 @@ public class ProtocolConstants
      {
              return after >= other;
      }
++    */
++    // Amethyst end
+ 
+     public enum Direction
+     {
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index ae2fe176..a11a7304 100644
+index ae2fe176..3c645cad 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -22,6 +22,7 @@ import io.netty.channel.ChannelOption;
@@ -506,7 +507,7 @@ index ae2fe176..a11a7304 100644
          logger = io.github.waterfallmc.waterfall.log4j.WaterfallLogger.create();
          // Waterfall end
  
-+        logger.info("Booting up proxy server for minecraft 1.8 - 1.18.2"); // Amethyst - add logging on startup
++        logger.info("Booting up proxy server for minecraft 1.8 - 1.19"); // Amethyst - add logging on startup
 +        serverStartTime = System.nanoTime(); // Amethyst - add logging on startup
 +
          pluginManager = new PluginManager( this );
@@ -517,7 +518,7 @@ index ae2fe176..a11a7304 100644
              }
          }
 +
-+        logger.info("This proxy is running " + getName() + " version " + getGitInfo() + " (MC: 1.8-1.18.2) (Implementing API version " + getVersion() + ")"); // Amethyst - add logging on startup
++        logger.info("This proxy is running " + getName() + " version " + getGitInfo() + " (MC: 1.8-1.19) (Implementing API version " + getVersion() + ")"); // Amethyst - add logging on startup
      }
  
      /**
@@ -578,7 +579,7 @@ index 632ff922..4373b97c 100644
          ProxyServer.setInstance( bungee );
          bungee.getLogger().info( "Enabled " + bungee.getName() + " version " + bungee.getVersion() ); // Amethyst - use bungee name
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 9e74d158..e1c7879d 100644
+index ba7fc59c..d4587c58 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -164,7 +164,7 @@ public class ServerConnector extends PacketHandler
@@ -591,7 +592,7 @@ index 9e74d158..e1c7879d 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index af81ee4a..45d97fa5 100644
+index bd142afa..ab1e3f42 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -35,6 +35,7 @@ import net.md_5.bungee.api.SkinConfiguration;
@@ -602,7 +603,7 @@ index af81ee4a..45d97fa5 100644
  import net.md_5.bungee.api.config.ServerInfo;
  import net.md_5.bungee.api.connection.ProxiedPlayer;
  import net.md_5.bungee.api.event.PermissionCheckEvent;
-@@ -392,9 +393,10 @@ public final class UserConnection implements ProxiedPlayer
+@@ -393,9 +394,10 @@ public final class UserConnection implements ProxiedPlayer
                  .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, request.getConnectTimeout() )
                  .remoteAddress( target.getAddress() );
          // Windows is bugged, multi homed users will just have to live with random connecting IPs
@@ -636,10 +637,10 @@ index d97c640f..fe643a8e 100644
                  + " This is NOT advisable and you will not be supported with any issues that arise! Please restart Amethyst ASAP." );
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
-index 85d2197a..5d8b4edf 100644
+index 8911bee8..76677c35 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
-@@ -69,7 +69,7 @@ public abstract class Configuration implements ProxyConfig
+@@ -73,7 +73,7 @@ public abstract class Configuration implements ProxyConfig
      private Favicon favicon;
      private int compressionThreshold = 256;
      private boolean preventProxyConnections;
@@ -662,10 +663,10 @@ index 10ccb6b7..787172e4 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index e3557816..e0bd05ed 100644
+index a4626a3f..c1288389 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -154,7 +154,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -156,7 +156,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      {
          if ( packet.packet == null )
          {

@@ -1,11 +1,11 @@
-From e76d2d5abb4f320aea4b3031e09c7d4493703245 Mon Sep 17 00:00:00 2001
+From 0b6aa24954ebff0a4d3467dd24bb3ed9f58b3d6f Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Sun, 6 Mar 2022 02:47:48 +0500
 Subject: [PATCH] Antibot system from FlameCord
 
 
 diff --git a/flame/pom.xml b/flame/pom.xml
-index e689d482..ccd463ba 100644
+index 4403f191..da5bc9be 100644
 --- a/flame/pom.xml
 +++ b/flame/pom.xml
 @@ -31,5 +31,10 @@
@@ -910,7 +910,7 @@ index 00000000..c7b0c5ea
 +    }
 +}
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
-index 32873f04..8c7800b8 100644
+index 7cec2aed..c141c747 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
 @@ -40,6 +40,15 @@ public class MessagesConfig extends AbstractYamlConfig {
@@ -930,7 +930,7 @@ index 32873f04..8c7800b8 100644
          formattedMessages.put("event.fallback.lobby", ChatColor.translateAlternateColorCodes('&', getString("event.fallback.lobby", "&cCould not connect to target server, you have been moved to a fallback server.")));
          formattedMessages.put("event.restart", ChatColor.translateAlternateColorCodes('&', getString("event.restart", "[Proxy] Proxy restarting.")));
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index fd24fa75..4aa72aa9 100644
+index 0e8a6041..96753f35 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -3,6 +3,8 @@ package net.md_5.bungee.connection;
@@ -942,7 +942,7 @@ index fd24fa75..4aa72aa9 100644
  import io.sapphiremc.amethyst.api.protocol.ProtocolVersion;
  import java.math.BigInteger;
  import java.net.InetSocketAddress;
-@@ -343,6 +345,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -345,6 +347,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
  
          bungee.getPluginManager().callEvent( new PlayerHandshakeEvent( InitialHandler.this, handshake ) );
  
@@ -954,7 +954,7 @@ index fd24fa75..4aa72aa9 100644
          switch ( handshake.getRequestedProtocol() )
          {
              case 1:
-@@ -353,6 +360,20 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -355,6 +362,20 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  }
                  thisState = State.STATUS;
                  ch.setProtocol( Protocol.STATUS );
@@ -975,7 +975,7 @@ index fd24fa75..4aa72aa9 100644
                  break;
              case 2:
                  // Login
-@@ -363,6 +384,20 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -365,6 +386,20 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  thisState = State.USERNAME;
                  ch.setProtocol( Protocol.LOGIN );
  
@@ -996,7 +996,7 @@ index fd24fa75..4aa72aa9 100644
                  if ( !ProtocolVersion.isSupported( handshake.getProtocolVersion() ) )
                  {
                      if ( handshake.getProtocolVersion() > bungee.getProtocolVersion() )
-@@ -401,6 +436,55 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -425,6 +460,55 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              return;
          }
  
@@ -1053,7 +1053,7 @@ index fd24fa75..4aa72aa9 100644
          // We can just check by UUID here as names are based on UUID
          if ( !isOnlineMode() && bungee.getPlayer( getUniqueId() ) != null )
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 74d46c23..7517057b 100644
+index 0336ff9a..0c54578b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -5,10 +5,14 @@ import com.mojang.brigadier.context.StringRange;
@@ -1071,7 +1071,7 @@ index 74d46c23..7517057b 100644
  import net.md_5.bungee.BungeeCord;
  import net.md_5.bungee.ServerConnection.KeepAliveData;
  import net.md_5.bungee.UserConnection;
-@@ -161,6 +165,31 @@ public class UpstreamBridge extends PacketHandler
+@@ -187,6 +191,31 @@ public class UpstreamBridge extends PacketHandler
          }
          Preconditions.checkArgument(!empty, "Chat message is empty");
  
@@ -1089,7 +1089,7 @@ index 74d46c23..7517057b 100644
 +            throw CancelSendSignal.INSTANCE;
 +        }
 +        // Check password
-+        if ( checkManager.getPasswordCheck().check( con.getCh().getRemoteAddress(), chat.getMessage() ) )
++        if ( checkManager.getPasswordCheck().check( con.getCh().getRemoteAddress(), message ) )
 +        {
 +            if ( bungee.getAmethyst().getAntibotConfig().passwordLog )
 +            {
@@ -1100,11 +1100,11 @@ index 74d46c23..7517057b 100644
 +        }
 +        // Amethyst end
 +
-         ChatEvent chatEvent = new ChatEvent( con, con.getServer(), chat.getMessage() );
+         ChatEvent chatEvent = new ChatEvent( con, con.getServer(), message );
          if ( !bungee.getPluginManager().callEvent( chatEvent ).isCancelled() )
          {
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index 2df82e50..42155ebd 100644
+index 2df82e50..cb6b2e7e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 @@ -151,6 +151,13 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
@@ -1112,7 +1112,7 @@ index 2df82e50..42155ebd 100644
              boolean logExceptions = ProxyServer.getInstance().getAmethyst().getConfig().logExceptions && !(handler instanceof PingHandler); // Amethyst - Option to fully disable exceptions logging.
  
 +            // Amethyst start - Antibot system
-+            if ( !(cause instanceof ReadTimeoutException) )
++            if ( !( cause instanceof ReadTimeoutException ) && !( cause instanceof IOException ) )
 +            {
 +                ProxyServer.getInstance().getAmethyst().getAddressDataManager().getAddressData( ctx.channel().remoteAddress() ).firewall();
 +            }

@@ -1,4 +1,4 @@
-From 20435dea5f83f5e586ced9529de93363198184bd Mon Sep 17 00:00:00 2001
+From be27c408289e280e4c636ae5f3baa62ae0eba00c Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Sat, 23 Apr 2022 20:01:49 +0500
 Subject: [PATCH] Disable entity Metadata Rewrite
@@ -21,10 +21,10 @@ index 469fe0e1..97bd384b 100644
       * Whether tablist rewriting should be disabled or not
       * @return {@code true} if tablist rewriting is disabled, {@code false} otherwise
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-index ee2317e8..15a61b7e 100644
+index 558d0dbb..35236382 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-@@ -8,8 +8,6 @@ import net.md_5.bungee.protocol.packet.ClientStatus;
+@@ -10,8 +10,6 @@ import net.md_5.bungee.protocol.packet.ClientStatus;
  import net.md_5.bungee.protocol.packet.Commands;
  import net.md_5.bungee.protocol.packet.EncryptionRequest;
  import net.md_5.bungee.protocol.packet.EncryptionResponse;
@@ -33,7 +33,7 @@ index ee2317e8..15a61b7e 100644
  import net.md_5.bungee.protocol.packet.EntityStatus;
  import net.md_5.bungee.protocol.packet.GameState;
  import net.md_5.bungee.protocol.packet.Handshake;
-@@ -195,14 +193,4 @@ public abstract class AbstractPacketHandler
+@@ -215,14 +213,4 @@ public abstract class AbstractPacketHandler
      public void handle(GameState gameState) throws Exception
      {
      }
@@ -49,10 +49,10 @@ index ee2317e8..15a61b7e 100644
 -    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 9d2c3ed2..324f8b77 100644
+index 5b6663db..5bd50d31 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -20,8 +20,6 @@ import net.md_5.bungee.protocol.packet.EncryptionRequest;
+@@ -22,8 +22,6 @@ import net.md_5.bungee.protocol.packet.EncryptionRequest;
  import net.md_5.bungee.protocol.packet.EncryptionResponse;
  import net.md_5.bungee.protocol.packet.EntityStatus;
  import net.md_5.bungee.protocol.packet.GameState;
@@ -61,9 +61,9 @@ index 9d2c3ed2..324f8b77 100644
  import net.md_5.bungee.protocol.packet.Handshake;
  import net.md_5.bungee.protocol.packet.KeepAlive;
  import net.md_5.bungee.protocol.packet.Kick;
-@@ -125,20 +123,6 @@ public enum Protocol
-                     map( ProtocolVersion.MINECRAFT_1_16, 0x0C ),
-                     map( ProtocolVersion.MINECRAFT_1_17, 0x0D )
+@@ -139,20 +137,6 @@ public enum Protocol
+                     PlayerChat::new,
+                     map( ProtocolVersion.MINECRAFT_1_19, 0x30 )
              );
 -            // Waterfall start
 -            TO_CLIENT.registerPacket(
@@ -208,7 +208,7 @@ index 5e4ff7f4..6758d2df 100644
      public boolean isDisableTabListRewrite() {
          return disableTabListRewrite;
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 604671ff..5c129f88 100644
+index e33b4b82..ca6c4232 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -241,11 +241,6 @@ public class ServerConnector extends PacketHandler
@@ -244,15 +244,15 @@ index 604671ff..5c129f88 100644
              serverScoreboard.clear();
  
              for ( UUID bossbar : user.getSentBossBars() )
-@@ -326,33 +307,27 @@ public class ServerConnector extends PacketHandler
+@@ -326,33 +307,26 @@ public class ServerConnector extends PacketHandler
              }
  
              user.setDimensionChange( true );
 -            if ( !user.isDisableEntityMetadataRewrite() && login.getDimension() == user.getDimension() ) // Waterfall - defer
 -            {
--                user.unsafe().sendPacket( new Respawn( (Integer) login.getDimension() >= 0 ? -1 : 0, login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false ) );
+-                user.unsafe().sendPacket( new Respawn( (Integer) login.getDimension() >= 0 ? -1 : 0, login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false, login.getDeathLocation() ) );
 -            }
- 
+-
              user.setServerEntityId( login.getEntityId() );
  
              // Waterfall start
@@ -265,35 +265,35 @@ index 604671ff..5c129f88 100644
 -                // Only send if we are not in the same dimension
 -                if ( login.getDimension() != user.getDimension() ) // Waterfall - defer
 -                {
--                    user.unsafe().sendPacket( new Respawn( (Integer) user.getDimension() >= 0 ? -1 : 0, login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false ) );
+-                    user.unsafe().sendPacket( new Respawn( (Integer) user.getDimension() >= 0 ? -1 : 0, login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false, login.getDeathLocation() ) );
 -                }
 +            // Only send if we are not in the same dimension
 +            if ( login.getDimension() != user.getDimension() ) // Waterfall - defer
 +            {
-+                user.unsafe().sendPacket( new Respawn( (Integer) user.getDimension() >= 0 ? -1 : 0, login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false ) );
++                user.unsafe().sendPacket( new Respawn( (Integer) user.getDimension() >= 0 ? -1 : 0, login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false, login.getDeathLocation() ) );
 +            }
  
 -                Login modLogin = new Login( login.getEntityId(), login.isHardcore(), login.getGameMode(), login.getPreviousGameMode(), login.getWorldNames(), login.getDimensions(), login.getDimension(), login.getWorldName(), login.getSeed(), login.getDifficulty(),
--                        (byte) user.getPendingConnection().getListener().getTabListSize(), login.getLevelType(), login.getViewDistance(), login.getSimulationDistance(), login.isReducedDebugInfo(), login.isNormalRespawn(), login.isDebug(), login.isFlat() );
+-                        (byte) user.getPendingConnection().getListener().getTabListSize(), login.getLevelType(), login.getViewDistance(), login.getSimulationDistance(), login.isReducedDebugInfo(), login.isNormalRespawn(), login.isDebug(), login.isFlat(), login.getDeathLocation() );
 -                user.unsafe().sendPacket(modLogin);
 +            Login modLogin = new Login( login.getEntityId(), login.isHardcore(), login.getGameMode(), login.getPreviousGameMode(), login.getWorldNames(), login.getDimensions(), login.getDimension(), login.getWorldName(), login.getSeed(), login.getDifficulty(),
-+                    (byte) user.getPendingConnection().getListener().getTabListSize(), login.getLevelType(), login.getViewDistance(), login.getSimulationDistance(), login.isReducedDebugInfo(), login.isNormalRespawn(), login.isDebug(), login.isFlat() );
++                    (byte) user.getPendingConnection().getListener().getTabListSize(), login.getLevelType(), login.getViewDistance(), login.getSimulationDistance(), login.isReducedDebugInfo(), login.isNormalRespawn(), login.isDebug(), login.isFlat(), login.getDeathLocation() );
 +            user.unsafe().sendPacket(modLogin);
  
 -                // Only send if we're in the same dimension
 -                if ( login.getDimension() == user.getDimension() ) // Waterfall - defer
 -                {
--                    user.unsafe().sendPacket( new Respawn( (Integer) login.getDimension() >= 0 ? -1 : 0, login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false ) );
+-                    user.unsafe().sendPacket( new Respawn( (Integer) login.getDimension() >= 0 ? -1 : 0, login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false, login.getDeathLocation() ) );
 -                }
 +            // Only send if we're in the same dimension
 +            if ( login.getDimension() == user.getDimension() ) // Waterfall - defer
 +            {
-+                user.unsafe().sendPacket( new Respawn( (Integer) login.getDimension() >= 0 ? -1 : 0, login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false ) );
++                user.unsafe().sendPacket( new Respawn( (Integer) login.getDimension() >= 0 ? -1 : 0, login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false, login.getDeathLocation() ) );
              }
              // Waterfall end
-             user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false ) );
+             user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false, login.getDeathLocation() ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 7166e683..712f72a5 100644
+index 679fe5cd..715c91f8 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -45,7 +45,6 @@ import net.md_5.bungee.api.event.ServerConnectEvent;
@@ -304,7 +304,7 @@ index 7166e683..712f72a5 100644
  import net.md_5.bungee.forge.ForgeClientHandler;
  import net.md_5.bungee.forge.ForgeConstants;
  import net.md_5.bungee.forge.ForgeServerHandler;
-@@ -136,8 +135,6 @@ public final class UserConnection implements ProxiedPlayer
+@@ -137,8 +136,6 @@ public final class UserConnection implements ProxiedPlayer
      /*========================================================================*/
      @Getter
      private String displayName;
@@ -313,7 +313,7 @@ index 7166e683..712f72a5 100644
      private Locale locale;
      /*========================================================================*/
      @Getter
-@@ -158,8 +155,6 @@ public final class UserConnection implements ProxiedPlayer
+@@ -159,8 +156,6 @@ public final class UserConnection implements ProxiedPlayer
  
      public void init()
      {
@@ -322,7 +322,7 @@ index 7166e683..712f72a5 100644
          this.displayName = name;
  
          tabListHandler = new ServerUnique( this );
-@@ -784,10 +779,4 @@ public final class UserConnection implements ProxiedPlayer
+@@ -801,10 +796,4 @@ public final class UserConnection implements ProxiedPlayer
      {
          return serverSentScoreboard;
      }
@@ -410,7 +410,7 @@ index a5ae8ebc..6f43f426 100644
      public void handle(Respawn respawn)
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 7517057b..e79d4e18 100644
+index 0c54578b..d2f30f3d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -24,7 +24,6 @@ import net.md_5.bungee.api.event.PlayerDisconnectEvent;
@@ -421,7 +421,7 @@ index 7517057b..e79d4e18 100644
  import net.md_5.bungee.forge.ForgeConstants;
  import net.md_5.bungee.netty.ChannelWrapper;
  import net.md_5.bungee.netty.PacketHandler;
-@@ -122,11 +121,6 @@ public class UpstreamBridge extends PacketHandler
+@@ -124,11 +123,6 @@ public class UpstreamBridge extends PacketHandler
      {
          if ( con.getServer() != null )
          {
@@ -435,10 +435,10 @@ index 7517057b..e79d4e18 100644
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 deleted file mode 100644
-index 2695b6e0..00000000
+index 1301a327..00000000
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ /dev/null
-@@ -1,374 +0,0 @@
+@@ -1,375 +0,0 @@
 -package net.md_5.bungee.entitymap;
 -
 -import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -449,7 +449,6 @@ index 2695b6e0..00000000
 -import java.io.DataInputStream;
 -import lombok.AccessLevel;
 -import lombok.NoArgsConstructor;
--
 -import net.md_5.bungee.protocol.DefinedPacket;
 -import se.llbit.nbt.NamedTag;
 -import se.llbit.nbt.Tag;
@@ -532,6 +531,8 @@ index 2695b6e0..00000000
 -            case MINECRAFT_1_18:
 -            case MINECRAFT_1_18_2:
 -                return EntityMap_1_16_2.INSTANCE_1_18;
+-            case MINECRAFT_1_19:
+-                return EntityMap_1_16_2.INSTANCE_1_19;
 -        }
 -        throw new RuntimeException( "Version " + protocolVersion.getVersionIntroducedIn() + " with protocol " + protocolVersion.getProtocol() + " has no entity map" );
 -    }
@@ -2338,10 +2339,10 @@ index 0ae65109..00000000
 -}
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_16_2.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_16_2.java
 deleted file mode 100644
-index 2f0e303d..00000000
+index b9d0b651..00000000
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_16_2.java
 +++ /dev/null
-@@ -1,74 +0,0 @@
+@@ -1,76 +0,0 @@
 -package net.md_5.bungee.entitymap;
 -
 -import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -2361,6 +2362,8 @@ index 2f0e303d..00000000
 -    static final EntityMap_1_16_2 INSTANCE_1_16_2 = new EntityMap_1_16_2( 0x04, 0x2D );
 -    static final EntityMap_1_16_2 INSTANCE_1_17 = new EntityMap_1_16_2( 0x04, 0x2D );
 -    static final EntityMap_1_16_2 INSTANCE_1_18 = new EntityMap_1_16_2( 0x04, 0x2D );
+-    static final EntityMap_1_16_2 INSTANCE_1_19 = new EntityMap_1_16_2( 0x02, 0x2F );
+-
 -    //
 -    private final int spawnPlayerId;
 -    private final int spectateId;
@@ -3035,5 +3038,5 @@ index d33dc314..da9f9343 100644
      }
  
 -- 
-2.36.0
+2.36.1.windows.1
 

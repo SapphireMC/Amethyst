@@ -1,4 +1,4 @@
-From cbbff1412b4df4bb88209d735ae0727c2c062e73 Mon Sep 17 00:00:00 2001
+From 56a0a300b5c2ccc89bc217ba2573f1b50e043129 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Thu, 6 Jan 2022 18:32:40 +0500
 Subject: [PATCH] Amethyst message system
@@ -99,10 +99,10 @@ index aad66497..934c0ccf 100644
  }
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
 new file mode 100644
-index 00000000..df22c4bd
+index 00000000..af6c8b86
 --- /dev/null
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
-@@ -0,0 +1,79 @@
+@@ -0,0 +1,82 @@
 +package io.sapphiremc.amethyst.conf;
 +
 +import io.sapphiremc.amethyst.Amethyst;
@@ -169,6 +169,9 @@ index 00000000..df22c4bd
 +        formattedMessages.put("error.ping-cannot-connect", ChatColor.translateAlternateColorCodes('&', getString("error.ping-cannot-connect", "&c[Bungee] Can't connect to server.")));
 +        formattedMessages.put("error.players-only", ChatColor.translateAlternateColorCodes('&', getString("error.players-only", "&cOnly in game players can use this command")));
 +        formattedMessages.put("error.proxy-full", ChatColor.translateAlternateColorCodes('&', getString("error.proxy-full", "Server is full!")));
++        formattedMessages.put("error.secure-profile.required", ChatColor.translateAlternateColorCodes('&', getString("error.secure-profile.required", "A secure profile is required to join this server.")));
++        formattedMessages.put("error.secure-profile.expired", ChatColor.translateAlternateColorCodes('&', getString("error.secure-profile.expired", "Secure profile expired.")));
++        formattedMessages.put("error.secure-profile.invalid", ChatColor.translateAlternateColorCodes('&', getString("error.secure-profile.invalid", "Secure profile invalid.")));
 +        formattedMessages.put("error.username-needed", ChatColor.translateAlternateColorCodes('&', getString("error.username-needed", "&cPlease follow this command by a user name.")));
 +    }
 +
@@ -182,21 +185,6 @@ index 00000000..df22c4bd
 +        return MessageFormat.format(formattedMessages.get(name), args);
 +    }
 +}
-diff --git a/proxy/pom.xml b/proxy/pom.xml
-index b36862cf..8ee1f29e 100644
---- a/proxy/pom.xml
-+++ b/proxy/pom.xml
-@@ -168,10 +168,6 @@
-             </plugin>
-         </plugins>
-         <resources>
--            <resource>
--                <directory>src/main/resources</directory>
--                <filtering>true</filtering>
--            </resource>
-             <!-- Waterfall start - copy license files into jar -->
-             <resource>
-                 <directory>../</directory>
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/console/WaterfallConsole.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/console/WaterfallConsole.java
 index 6cec0b5a..588f6c6b 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/console/WaterfallConsole.java
@@ -577,7 +565,7 @@ index b0a20273..167603de 100644
      // Amethyst end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 458b315c..604671ff 100644
+index ee951574..e33b4b82 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -16,6 +16,7 @@ import lombok.Getter;
@@ -588,7 +576,7 @@ index 458b315c..604671ff 100644
  import net.md_5.bungee.api.config.ServerInfo;
  import net.md_5.bungee.api.event.ServerConnectEvent;
  import net.md_5.bungee.api.event.ServerConnectedEvent;
-@@ -416,7 +417,7 @@ public class ServerConnector extends PacketHandler
+@@ -417,7 +418,7 @@ public class ServerConnector extends PacketHandler
              throw CancelSendSignal.INSTANCE;
          }
  
@@ -598,10 +586,10 @@ index 458b315c..604671ff 100644
          {
              user.disconnect( message );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 6cb01afa..c64b1188 100644
+index 4196bdf4..5beb295e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -328,7 +328,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -329,7 +329,7 @@ public final class UserConnection implements ProxiedPlayer
                  callback.done( ServerConnectRequest.Result.ALREADY_CONNECTED, null );
              }
  
@@ -610,7 +598,7 @@ index 6cb01afa..c64b1188 100644
              return;
          }
          if ( pendingConnects.contains( target ) )
-@@ -338,7 +338,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -339,7 +339,7 @@ public final class UserConnection implements ProxiedPlayer
                  callback.done( ServerConnectRequest.Result.ALREADY_CONNECTING, null );
              }
  
@@ -619,7 +607,7 @@ index 6cb01afa..c64b1188 100644
              return;
          }
  
-@@ -374,14 +374,14 @@ public final class UserConnection implements ProxiedPlayer
+@@ -375,14 +375,14 @@ public final class UserConnection implements ProxiedPlayer
                      ServerInfo def = updateAndGetNextServer( target );
                      if ( request.isRetry() && def != null && ( getServer() == null || def != getServer().getInfo() ) )
                      {
@@ -679,10 +667,10 @@ index 9915b800..7887c5e6 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
-index 5d8b4edf..af08fd32 100644
+index 76677c35..05bd02e7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
-@@ -132,13 +132,13 @@ public abstract class Configuration implements ProxyConfig
+@@ -137,13 +137,13 @@ public abstract class Configuration implements ProxyConfig
                          ServerInfo destination = newServers.get(destinationName);
                          if (destination == null) {
                              BungeeCord.getInstance().getLogger().severe("Couldn't find server " + listener.getDefaultServer() + " or " + listener.getFallbackServer() + " to put player " + player.getName() + " on");
@@ -721,10 +709,10 @@ index dd1afc0d..a5ae8ebc 100644
              {
                  server.setObsolete( true );
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 6bd8ea68..c3a3581a 100644
+index ce004c69..73973a16 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -168,7 +168,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -170,7 +170,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      public void handle(LegacyHandshake legacyHandshake) throws Exception
      {
          this.legacy = true;
@@ -733,7 +721,7 @@ index 6bd8ea68..c3a3581a 100644
      }
  
      @Override
-@@ -255,7 +255,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -257,7 +257,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              {
                  if ( error != null )
                  {
@@ -742,7 +730,7 @@ index 6bd8ea68..c3a3581a 100644
                      bungee.getLogger().log( Level.WARNING, "Error pinging remote server", error );
                  }
  
-@@ -364,10 +364,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -366,10 +366,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  {
                      if ( handshake.getProtocolVersion() > bungee.getProtocolVersion() )
                      {
@@ -755,7 +743,7 @@ index 6bd8ea68..c3a3581a 100644
                      }
                      return;
                  }
-@@ -384,7 +384,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -386,7 +386,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
  
          if ( !AllowedCharacters.isValidName( loginRequest.getData(), onlineMode ) )
          {
@@ -763,8 +751,31 @@ index 6bd8ea68..c3a3581a 100644
 +            disconnect( bungee.getTranslationComponent( "error.name-invalid" ) );
              return;
          }
-         this.loginRequest = loginRequest;
-@@ -392,7 +392,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+ 
+@@ -395,19 +395,19 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+             PlayerPublicKey publicKey = loginRequest.getPublicKey();
+             if ( publicKey == null )
+             {
+-                disconnect( bungee.getTranslation( "secure_profile_required" ) );
++                disconnect( bungee.getTranslationComponent( "error.secure-profile.required" ) );
+                 return;
+             }
+ 
+             if ( Instant.ofEpochMilli( publicKey.getExpiry() ).isBefore( Instant.now() ) )
+             {
+-                disconnect( bungee.getTranslation( "secure_profile_expired" ) );
++                disconnect( bungee.getTranslationComponent( "error.secure-profile.expired" ) );
+                 return;
+             }
+ 
+             if ( !EncryptionUtil.check( publicKey ) )
+             {
+-                disconnect( bungee.getTranslation( "secure_profile_invalid" ) );
++                disconnect( bungee.getTranslationComponent( "error.secure-profile.invalid" ) );
+                 return;
+             }
+         }
+@@ -417,7 +417,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          int limit = BungeeCord.getInstance().config.getPlayerLimit();
          if ( limit > 0 && bungee.getOnlineCount() >= limit )
          {
@@ -773,7 +784,7 @@ index 6bd8ea68..c3a3581a 100644
              return;
          }
  
-@@ -400,7 +400,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -425,7 +425,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          // We can just check by UUID here as names are based on UUID
          if ( !isOnlineMode() && bungee.getPlayer( getUniqueId() ) != null )
          {
@@ -782,7 +793,7 @@ index 6bd8ea68..c3a3581a 100644
              return;
          }
  
-@@ -492,10 +492,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -518,10 +518,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                          finish();
                          return;
                      }
@@ -795,7 +806,7 @@ index 6bd8ea68..c3a3581a 100644
                      bungee.getLogger().log( Level.SEVERE, "Error authenticating " + getName() + " with minecraft.net", error );
                  }
              }
-@@ -514,14 +514,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -540,14 +540,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              if ( oldName != null )
              {
                  // TODO See #1218
@@ -812,7 +823,7 @@ index 6bd8ea68..c3a3581a 100644
              }
          } else
          {
-@@ -530,7 +530,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -556,7 +556,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              if ( oldName != null )
              {
                  // TODO See #1218
@@ -822,11 +833,11 @@ index 6bd8ea68..c3a3581a 100644
              }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 9002d79b..74d46c23 100644
+index ae81595d..0336ff9a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -153,7 +153,7 @@ public class UpstreamBridge extends PacketHandler
-             char c = chat.getMessage().charAt( index );
+@@ -179,7 +179,7 @@ public class UpstreamBridge extends PacketHandler
+             char c = message.charAt( index );
              if ( !AllowedCharacters.isChatAllowedCharacter( c ) )
              {
 -                con.disconnect( bungee.getTranslation( "illegal_chat_characters", Util.unicode( c ) ) );
@@ -836,10 +847,10 @@ index 9002d79b..74d46c23 100644
                  empty = false;
 diff --git a/proxy/src/main/resources/messages.properties b/proxy/src/main/resources/messages.properties
 deleted file mode 100644
-index e16cf0a8..00000000
+index 2b05a2dd..00000000
 --- a/proxy/src/main/resources/messages.properties
 +++ /dev/null
-@@ -1,38 +0,0 @@
+@@ -1,41 +0,0 @@
 -alert=\u00a78[\u00a74Alert\u00a78]\u00a7r 
 -already_connected=\u00a7cYou are already connected to this server!
 -already_connected_proxy=\u00a7cYou are already connected to this proxy!
@@ -864,6 +875,9 @@ index e16cf0a8..00000000
 -name_invalid=Username contains invalid characters.
 -ping_cannot_connect=\u00a7c[Bungee] Can''t connect to server.
 -offline_mode_player=Not authenticated with Minecraft.net
+-secure_profile_required=A secure profile is required to join this server.
+-secure_profile_expired=Secure profile expired.
+-secure_profile_invalid=Secure profile invalid.
 -message_needed=\u00a7cYou must supply a message.
 -error_occurred_player=\u00a7cAn error occurred while parsing your message. (Hover for details)
 -error_occurred_console=\u00a7cAn error occurred while parsing your message: {0}
