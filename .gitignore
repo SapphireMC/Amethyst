@@ -6,6 +6,7 @@ Amethyst-Proxy
 *.iws
 .idea/
 out/
+run/
 
 .project
 .settings
