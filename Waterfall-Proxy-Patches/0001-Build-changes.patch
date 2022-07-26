@@ -1,4 +1,4 @@
-From f16ede718675b5f4e62fe19dadb5897949bf5cbe Mon Sep 17 00:00:00 2001
+From 8c2ee2b29e902bc95140a98051ef5270921d5c9c Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Fri, 31 Dec 2021 13:46:52 +0500
 Subject: [PATCH] Build changes
@@ -153,7 +153,7 @@ index 688f1b99..0248087b 100644
 +    -->
  </project>
 diff --git a/chat/pom.xml b/chat/pom.xml
-index 3ac27114..79432f7b 100644
+index 1a8b097d..8d3d896d 100644
 --- a/chat/pom.xml
 +++ b/chat/pom.xml
 @@ -4,19 +4,18 @@
@@ -182,7 +182,7 @@ index 3ac27114..79432f7b 100644
      <dependencies>
          <dependency>
 diff --git a/config/pom.xml b/config/pom.xml
-index ac721ee3..5b842d60 100644
+index 0b48084a..ef3688b9 100644
 --- a/config/pom.xml
 +++ b/config/pom.xml
 @@ -4,19 +4,18 @@
@@ -487,7 +487,7 @@ index 006f3e3f..b0b87841 100644
  description: ${project.description}
  author: ${module.author}
 diff --git a/module/pom.xml b/module/pom.xml
-index b4283e43..6b998e3a 100644
+index 0de7979e..66f7e8c5 100644
 --- a/module/pom.xml
 +++ b/module/pom.xml
 @@ -4,19 +4,18 @@
@@ -515,7 +515,7 @@ index b4283e43..6b998e3a 100644
  
      <modules>
          <module>cmd-alert</module>
-@@ -28,15 +27,15 @@
+@@ -29,15 +28,15 @@
      </modules>
  
      <properties>
@@ -988,5 +988,5 @@ index 72eb14e2..1a005da9 100644
              <scope>compile</scope>
          </dependency>
 -- 
-2.36.1.windows.1
+2.37.1.windows.1
 

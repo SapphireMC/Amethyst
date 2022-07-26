@@ -1,4 +1,4 @@
-From 0b6aa24954ebff0a4d3467dd24bb3ed9f58b3d6f Mon Sep 17 00:00:00 2001
+From 959f1f1675312761be65adf57360806131ebf7dd Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Sun, 6 Mar 2022 02:47:48 +0500
 Subject: [PATCH] Antibot system from FlameCord
@@ -910,10 +910,10 @@ index 00000000..c7b0c5ea
 +    }
 +}
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
-index 7cec2aed..c141c747 100644
+index ae72e7a3..046d80a8 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
-@@ -40,6 +40,15 @@ public class MessagesConfig extends AbstractYamlConfig {
+@@ -41,6 +41,15 @@ public class MessagesConfig extends AbstractYamlConfig {
          formattedMessages.put("command.server.available", ChatColor.translateAlternateColorCodes('&', getString("command.server.available", "&6You may connect to the following servers at this time: ")));
          formattedMessages.put("command.server.hover", ChatColor.translateAlternateColorCodes('&', getString("command.server.hover", "{0} players online\nClick to connect to this server")));
  
@@ -930,7 +930,7 @@ index 7cec2aed..c141c747 100644
          formattedMessages.put("event.fallback.lobby", ChatColor.translateAlternateColorCodes('&', getString("event.fallback.lobby", "&cCould not connect to target server, you have been moved to a fallback server.")));
          formattedMessages.put("event.restart", ChatColor.translateAlternateColorCodes('&', getString("event.restart", "[Proxy] Proxy restarting.")));
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 0e8a6041..96753f35 100644
+index 61419b0f..5bac99c8 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -3,6 +3,8 @@ package net.md_5.bungee.connection;
@@ -942,7 +942,7 @@ index 0e8a6041..96753f35 100644
  import io.sapphiremc.amethyst.api.protocol.ProtocolVersion;
  import java.math.BigInteger;
  import java.net.InetSocketAddress;
-@@ -345,6 +347,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -365,6 +367,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
  
          bungee.getPluginManager().callEvent( new PlayerHandshakeEvent( InitialHandler.this, handshake ) );
  
@@ -954,7 +954,7 @@ index 0e8a6041..96753f35 100644
          switch ( handshake.getRequestedProtocol() )
          {
              case 1:
-@@ -355,6 +362,20 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -375,6 +382,20 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  }
                  thisState = State.STATUS;
                  ch.setProtocol( Protocol.STATUS );
@@ -975,7 +975,7 @@ index 0e8a6041..96753f35 100644
                  break;
              case 2:
                  // Login
-@@ -365,6 +386,20 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -385,6 +406,20 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  thisState = State.USERNAME;
                  ch.setProtocol( Protocol.LOGIN );
  
@@ -996,7 +996,7 @@ index 0e8a6041..96753f35 100644
                  if ( !ProtocolVersion.isSupported( handshake.getProtocolVersion() ) )
                  {
                      if ( handshake.getProtocolVersion() > bungee.getProtocolVersion() )
-@@ -425,6 +460,55 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -445,6 +480,55 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              return;
          }
  
@@ -1104,7 +1104,7 @@ index 0336ff9a..0c54578b 100644
          if ( !bungee.getPluginManager().callEvent( chatEvent ).isCancelled() )
          {
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index 2df82e50..cb6b2e7e 100644
+index 1e51b4ce..5956b492 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 @@ -151,6 +151,13 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
@@ -1141,5 +1141,5 @@ index f1b11b9d..bf30ecd1 100644
              {
                  ch.close();
 -- 
-2.36.1.windows.1
+2.37.1.windows.1
 

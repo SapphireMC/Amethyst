@@ -1,4 +1,4 @@
-From 56a0a300b5c2ccc89bc217ba2573f1b50e043129 Mon Sep 17 00:00:00 2001
+From e5cfa1c54306b455ea28806d1b6a25070b8af39d Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Thu, 6 Jan 2022 18:32:40 +0500
 Subject: [PATCH] Amethyst message system
@@ -99,10 +99,10 @@ index aad66497..934c0ccf 100644
  }
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
 new file mode 100644
-index 00000000..af6c8b86
+index 00000000..bf227f6d
 --- /dev/null
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
-@@ -0,0 +1,82 @@
+@@ -0,0 +1,83 @@
 +package io.sapphiremc.amethyst.conf;
 +
 +import io.sapphiremc.amethyst.Amethyst;
@@ -129,6 +129,7 @@ index 00000000..af6c8b86
 +        formattedMessages.put("command.alert.error.message-needed", ChatColor.translateAlternateColorCodes('&', getString("command.alert.error.message-needed", "&cYou must supply a message.")));
 +        formattedMessages.put("command.find.success", ChatColor.translateAlternateColorCodes('&', getString("command.find.success", "&a{0} &ris online at {1}")));
 +        formattedMessages.put("command.ip.success", ChatColor.translateAlternateColorCodes('&', getString("command.ip.success", "&9IP of {0} is {1}")));
++        formattedMessages.put("command.kick.success", ChatColor.translateAlternateColorCodes('&', getString("command.kick.success", "&cYou have been kicked off the proxy.")));
 +        formattedMessages.put("command.list.header", ChatColor.translateAlternateColorCodes('&', getString("command.list.header", "Available servers:")));
 +        formattedMessages.put("command.list.entry", ChatColor.translateAlternateColorCodes('&', getString("command.list.entry", "&a[{0}] &e({1}): &r{2}")));
 +        formattedMessages.put("command.list.total", ChatColor.translateAlternateColorCodes('&', getString("command.list.total", "Total players online: {0}")));
@@ -299,6 +300,34 @@ index c6edd492..03b4a5d9 100644
          }
      }
  }
+diff --git a/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandKick.java b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandKick.java
+index 74fa8281..86c3eb0c 100644
+--- a/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandKick.java
++++ b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandKick.java
+@@ -27,20 +27,20 @@ public class CommandKick extends Command implements TabExecutor
+         ProxyServer proxy = ProxyServer.getInstance();
+         if ( args.length == 0 )
+         {
+-            sender.sendMessage( ProxyServer.getInstance().getTranslation( "username_needed" ) );
++            sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "error.username-needed" ) );
+         } else
+         {
+             ProxiedPlayer player = proxy.getPlayer( args[0] );
+ 
+             if ( player == null )
+             {
+-                sender.sendMessage( TextComponent.fromLegacyText( ProxyServer.getInstance().getTranslation( "user_not_online" ) ) );
++                sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "error.not-online" ) );
+                 return;
+             }
+ 
+             if ( args.length == 1 )
+             {
+-                player.disconnect( TextComponent.fromLegacyText( ProxyServer.getInstance().getTranslation( "kick_message" ) ) );
++                player.disconnect( ProxyServer.getInstance().getTranslationComponent( "command.kick.success" ) );
+             } else
+             {
+                 String[] reason = new String[ args.length - 1 ];
 diff --git a/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandList.java b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandList.java
 index a7b85178..c6918cab 100644
 --- a/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandList.java
@@ -709,10 +738,10 @@ index dd1afc0d..a5ae8ebc 100644
              {
                  server.setObsolete( true );
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index ce004c69..73973a16 100644
+index f14faaef..1f53e2f8 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -170,7 +170,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -169,7 +169,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      public void handle(LegacyHandshake legacyHandshake) throws Exception
      {
          this.legacy = true;
@@ -721,7 +750,7 @@ index ce004c69..73973a16 100644
      }
  
      @Override
-@@ -257,7 +257,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -277,7 +277,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              {
                  if ( error != null )
                  {
@@ -730,7 +759,7 @@ index ce004c69..73973a16 100644
                      bungee.getLogger().log( Level.WARNING, "Error pinging remote server", error );
                  }
  
-@@ -366,10 +366,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -386,10 +386,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  {
                      if ( handshake.getProtocolVersion() > bungee.getProtocolVersion() )
                      {
@@ -743,7 +772,7 @@ index ce004c69..73973a16 100644
                      }
                      return;
                  }
-@@ -386,7 +386,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -406,7 +406,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
  
          if ( !AllowedCharacters.isValidName( loginRequest.getData(), onlineMode ) )
          {
@@ -752,7 +781,7 @@ index ce004c69..73973a16 100644
              return;
          }
  
-@@ -395,19 +395,19 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -415,19 +415,19 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              PlayerPublicKey publicKey = loginRequest.getPublicKey();
              if ( publicKey == null )
              {
@@ -775,7 +804,7 @@ index ce004c69..73973a16 100644
                  return;
              }
          }
-@@ -417,7 +417,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -437,7 +437,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          int limit = BungeeCord.getInstance().config.getPlayerLimit();
          if ( limit > 0 && bungee.getOnlineCount() >= limit )
          {
@@ -784,7 +813,7 @@ index ce004c69..73973a16 100644
              return;
          }
  
-@@ -425,7 +425,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -445,7 +445,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          // We can just check by UUID here as names are based on UUID
          if ( !isOnlineMode() && bungee.getPlayer( getUniqueId() ) != null )
          {
@@ -793,7 +822,7 @@ index ce004c69..73973a16 100644
              return;
          }
  
-@@ -518,10 +518,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -538,10 +538,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                          finish();
                          return;
                      }
@@ -806,7 +835,7 @@ index ce004c69..73973a16 100644
                      bungee.getLogger().log( Level.SEVERE, "Error authenticating " + getName() + " with minecraft.net", error );
                  }
              }
-@@ -540,14 +540,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -560,14 +560,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              if ( oldName != null )
              {
                  // TODO See #1218
@@ -823,7 +852,7 @@ index ce004c69..73973a16 100644
              }
          } else
          {
-@@ -556,7 +556,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -576,7 +576,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              if ( oldName != null )
              {
                  // TODO See #1218
@@ -847,10 +876,10 @@ index ae81595d..0336ff9a 100644
                  empty = false;
 diff --git a/proxy/src/main/resources/messages.properties b/proxy/src/main/resources/messages.properties
 deleted file mode 100644
-index 2b05a2dd..00000000
+index 58380d4a..00000000
 --- a/proxy/src/main/resources/messages.properties
 +++ /dev/null
-@@ -1,41 +0,0 @@
+@@ -1,42 +0,0 @@
 -alert=\u00a78[\u00a74Alert\u00a78]\u00a7r 
 -already_connected=\u00a7cYou are already connected to this server!
 -already_connected_proxy=\u00a7cYou are already connected to this proxy!
@@ -892,6 +921,7 @@ index 2b05a2dd..00000000
 -command_perms_permission=\u00a79- {0}
 -command_ip=\u00a79IP of {0} is {1}
 -illegal_chat_characters=\u00a7cillegal characters in chat ({0})
+-kick_message=\u00a7cYou have been kicked off the proxy.
 -- 
-2.36.1.windows.1
+2.37.1.windows.1
 

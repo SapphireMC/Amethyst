@@ -1,4 +1,4 @@
-From 0998732d2b4dccc1b27ce97db91b40d13707aaac Mon Sep 17 00:00:00 2001
+From 6c0395e418646a8dff2b143e7871564c613c9c89 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 7 Mar 2022 17:55:13 +0500
 Subject: [PATCH] More plugin api
@@ -524,7 +524,7 @@ index 00000000..08c4fa7d
 +    ERROR
 +}
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-index bff8f28e..35920436 100644
+index 5d5cabd5..1205c1bf 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 @@ -64,6 +64,11 @@ public class AmethystConfig extends AbstractYamlConfig {
@@ -550,7 +550,7 @@ index bff8f28e..35920436 100644
  
      /**
       * A module that provides the /alert and /alertraw commands.
-@@ -168,6 +177,7 @@ public class AmethystConfig extends AbstractYamlConfig {
+@@ -172,6 +181,7 @@ public class AmethystConfig extends AbstractYamlConfig {
  
          minVersion = getString( "versions.min", minVersion );
          maxVersion = getString( "versions.max", maxVersion );
@@ -558,7 +558,7 @@ index bff8f28e..35920436 100644
  
          lobbyEnabled = getBoolean("lobby.enabled", lobbyEnabled);
          lobbyMessage = getBoolean("lobby.message", lobbyMessage);
-@@ -180,6 +190,7 @@ public class AmethystConfig extends AbstractYamlConfig {
+@@ -184,6 +194,7 @@ public class AmethystConfig extends AbstractYamlConfig {
          logExceptions = getBoolean("logger.exceptions", logExceptions);
          logHaProxy = getBoolean("logger.haProxy", logHaProxy);
          logBackendConnectionFailed = getBoolean("logger.backendConnectionFailed", logBackendConnectionFailed);
@@ -579,5 +579,5 @@ index 5e0a3e27..6ae95a2e 100644
  
          Amethyst.getInstance().load( BungeeCord.getInstance().getLogger()); // Amethyst - load our configs
 -- 
-2.36.1.windows.1
+2.37.1.windows.1
 

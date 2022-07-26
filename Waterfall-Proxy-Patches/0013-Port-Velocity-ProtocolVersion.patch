@@ -1,4 +1,4 @@
-From e8e7414934c50b0f19f2817bfec2779bbe70a81a Mon Sep 17 00:00:00 2001
+From a21876de16142dbe637ff50422353f5f2619f8ba Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 3 Jan 2022 17:46:53 +0500
 Subject: [PATCH] Port Velocity ProtocolVersion
@@ -446,10 +446,10 @@ index cde732f7..dfe60ab5 100644
          int expectedMaxLen = packet.expectedMaxLength(buf, direction, protocolVersion);
          if (expectedMaxLen != -1 && buf.readableBytes() > expectedMaxLen) {
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 014383b3..5b6663db 100644
+index f5a675a9..09416927 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -6,6 +6,8 @@ import gnu.trove.map.TIntObjectMap;
+@@ -8,6 +8,8 @@ import gnu.trove.map.TIntObjectMap;
  import gnu.trove.map.TObjectIntMap;
  import gnu.trove.map.hash.TIntObjectHashMap;
  import gnu.trove.map.hash.TObjectIntHashMap;
@@ -458,7 +458,7 @@ index 014383b3..5b6663db 100644
  import java.util.function.Supplier;
  import lombok.Data;
  import lombok.Getter;
-@@ -51,6 +53,7 @@ import net.md_5.bungee.protocol.packet.Title;
+@@ -53,6 +55,7 @@ import net.md_5.bungee.protocol.packet.Title;
  import net.md_5.bungee.protocol.packet.TitleTimes;
  import net.md_5.bungee.protocol.packet.ViewDistance;
  
@@ -466,7 +466,7 @@ index 014383b3..5b6663db 100644
  public enum Protocol
  {
  
-@@ -62,7 +65,7 @@ public enum Protocol
+@@ -64,7 +67,7 @@ public enum Protocol
              TO_SERVER.registerPacket(
                      Handshake.class,
                      Handshake::new,
@@ -475,7 +475,7 @@ index 014383b3..5b6663db 100644
              );
          }
      },
-@@ -74,339 +77,341 @@ public enum Protocol
+@@ -76,339 +79,341 @@ public enum Protocol
              TO_CLIENT.registerPacket(
                      KeepAlive.class,
                      KeepAlive::new,
@@ -589,17 +589,17 @@ index 014383b3..5b6663db 100644
                      EntityEffect.class,
                      EntityEffect::new,
 -                    map(ProtocolConstants.MINECRAFT_1_8, 0x1D),
--                    map(ProtocolConstants.MINECRAFT_1_9, Integer.MIN_VALUE)
+-                    map(ProtocolConstants.MINECRAFT_1_9, -1)
 +                    map(ProtocolVersion.MINECRAFT_1_8, 0x1D),
-+                    map(ProtocolVersion.MINECRAFT_1_9, Integer.MIN_VALUE)
++                    map(ProtocolVersion.MINECRAFT_1_9, -1)
              );
              TO_CLIENT.registerPacket(
                      EntityRemoveEffect.class,
                      EntityRemoveEffect::new,
 -                    map(ProtocolConstants.MINECRAFT_1_8, 0x1E),
--                    map(ProtocolConstants.MINECRAFT_1_9, Integer.MIN_VALUE)
+-                    map(ProtocolConstants.MINECRAFT_1_9, -1)
 +                    map(ProtocolVersion.MINECRAFT_1_8, 0x1E),
-+                    map(ProtocolVersion.MINECRAFT_1_9, Integer.MIN_VALUE)
++                    map(ProtocolVersion.MINECRAFT_1_9, -1)
              );
              // Waterfall end
              TO_CLIENT.registerPacket(
@@ -1025,7 +1025,7 @@ index 014383b3..5b6663db 100644
              );
          }
      },
-@@ -418,23 +423,23 @@ public enum Protocol
+@@ -420,23 +425,23 @@ public enum Protocol
              TO_CLIENT.registerPacket(
                      StatusResponse.class,
                      StatusResponse::new,
@@ -1053,7 +1053,7 @@ index 014383b3..5b6663db 100644
              );
          }
      },
-@@ -446,65 +451,65 @@ public enum Protocol
+@@ -448,65 +453,65 @@ public enum Protocol
              TO_CLIENT.registerPacket(
                      Kick.class,
                      Kick::new,
@@ -1133,7 +1133,7 @@ index 014383b3..5b6663db 100644
          }
      }
  
-@@ -529,8 +534,8 @@ public enum Protocol
+@@ -531,8 +536,8 @@ public enum Protocol
      @Data
      private static class ProtocolData
      {
@@ -1144,7 +1144,7 @@ index 014383b3..5b6663db 100644
          private final TObjectIntMap<Class<? extends DefinedPacket>> packetMap = new TObjectIntHashMap<>( MAX_PACKET_ID );
          @SuppressWarnings("unchecked")
          private final Supplier<? extends DefinedPacket>[] packetConstructors = new Supplier[ MAX_PACKET_ID ];
-@@ -539,15 +544,15 @@ public enum Protocol
+@@ -541,15 +546,15 @@ public enum Protocol
      @Data
      private static class ProtocolMapping
      {
@@ -1164,7 +1164,7 @@ index 014383b3..5b6663db 100644
      }
  
      static final class DirectionData
-@@ -557,16 +562,16 @@ public enum Protocol
+@@ -559,16 +564,16 @@ public enum Protocol
          //
          private final Protocol protocolPhase;
          @Getter
@@ -1185,7 +1185,7 @@ index 014383b3..5b6663db 100644
              }
          }
  
-@@ -584,12 +589,12 @@ public enum Protocol
+@@ -586,12 +591,12 @@ public enum Protocol
              return supportsForge || i >= 0 && i <= MAX_PACKET_ID;
          }
  
@@ -1200,7 +1200,7 @@ index 014383b3..5b6663db 100644
          {
              ProtocolData protocolData = getProtocolData( version );
              if ( protocolData == null )
-@@ -609,22 +614,24 @@ public enum Protocol
+@@ -611,22 +616,24 @@ public enum Protocol
          {
              int mappingIndex = 0;
              ProtocolMapping mapping = mappings[mappingIndex];
@@ -2931,7 +2931,7 @@ index 4252c00f..35d860c3 100644
          buf.writeInt( fadeIn );
          buf.writeInt( stay );
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index 32be5c3c..7d3220f9 100644
+index 52d6e0cd..c95301d9 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 @@ -1,9 +1,9 @@
@@ -3185,7 +3185,7 @@ index 97c4b210..dd1afc0d 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index c1288389..ce004c69 100644
+index 2063fa98..f14faaef 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -3,6 +3,7 @@ package net.md_5.bungee.connection;
@@ -3196,7 +3196,7 @@ index c1288389..ce004c69 100644
  import java.math.BigInteger;
  import java.net.InetSocketAddress;
  import java.net.SocketAddress;
-@@ -54,7 +55,6 @@ import net.md_5.bungee.protocol.DefinedPacket;
+@@ -53,7 +54,6 @@ import net.md_5.bungee.protocol.DefinedPacket;
  import net.md_5.bungee.protocol.PacketWrapper;
  import net.md_5.bungee.protocol.PlayerPublicKey;
  import net.md_5.bungee.protocol.Protocol;
@@ -3204,7 +3204,7 @@ index c1288389..ce004c69 100644
  import net.md_5.bungee.protocol.packet.EncryptionRequest;
  import net.md_5.bungee.protocol.packet.EncryptionResponse;
  import net.md_5.bungee.protocol.packet.Handshake;
-@@ -248,7 +248,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -268,7 +268,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
  
          ServerInfo forced = AbstractReconnectHandler.getForcedHost( this );
          final String motd = ( forced != null ) ? forced.getMotd() : listener.getMotd();
@@ -3213,7 +3213,7 @@ index c1288389..ce004c69 100644
  
          Callback<ServerPing> pingBack = new Callback<ServerPing>()
          {
-@@ -362,7 +362,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -382,7 +382,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  thisState = State.USERNAME;
                  ch.setProtocol( Protocol.LOGIN );
  
@@ -3222,7 +3222,7 @@ index c1288389..ce004c69 100644
                  {
                      if ( handshake.getProtocolVersion() > bungee.getProtocolVersion() )
                      {
-@@ -677,6 +677,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -697,6 +697,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          return ( handshake == null ) ? -1 : handshake.getProtocolVersion();
      }
  
@@ -3234,7 +3234,7 @@ index c1288389..ce004c69 100644
      @Override
      public InetSocketAddress getAddress()
      {
-@@ -719,7 +724,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -739,7 +744,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      @Override
      public String toString()
      {
@@ -4404,5 +4404,5 @@ index faca17fa..25e167e8 100644
              for ( int i = 0; i < components.length; i++ )
              {
 -- 
-2.36.1.windows.1
+2.37.1.windows.1
 

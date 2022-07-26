@@ -1,11 +1,11 @@
-From 5b026ecd78576a9b993f6e0b8b3b70ad831e4187 Mon Sep 17 00:00:00 2001
+From 8c3a8287997924ab70194409e8e0c03aa8ed2026 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 10 Jan 2022 02:59:49 +0500
 Subject: [PATCH] Amethyst motd system
 
 
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-index b61fd540..1a68ee88 100644
+index dd9124fa..c3bb4afc 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 @@ -1,5 +1,9 @@
@@ -59,7 +59,7 @@ index b61fd540..1a68ee88 100644
      /**
       * Minimum supported version.
       * Default: 1.8
-@@ -73,6 +111,12 @@ public class AmethystConfig extends AbstractYamlConfig {
+@@ -77,6 +115,12 @@ public class AmethystConfig extends AbstractYamlConfig {
      @Override
      protected void loadContent()
      {
@@ -73,7 +73,7 @@ index b61fd540..1a68ee88 100644
          maxVersion = getString( "versions.max", maxVersion );
  
 diff --git a/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java b/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java
-index 7e0fedb3..e8c575c3 100644
+index 770ec61a..cb107d20 100644
 --- a/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java
 +++ b/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java
 @@ -1,6 +1,7 @@
@@ -84,7 +84,7 @@ index 7e0fedb3..e8c575c3 100644
  import io.sapphiremc.amethyst.module.CommandAlert;
  import io.sapphiremc.amethyst.module.CommandAlertRaw;
  import io.sapphiremc.amethyst.module.CommandFind;
-@@ -18,10 +19,13 @@ import net.md_5.bungee.command.CommandEnd;
+@@ -19,10 +20,13 @@ import net.md_5.bungee.command.CommandEnd;
  import net.md_5.bungee.command.CommandReload;
  
  public class AmethystModulesManager {
@@ -98,7 +98,7 @@ index 7e0fedb3..e8c575c3 100644
  
          manager.registerCommand(null, new CommandBungee());
          manager.registerCommand(null, new CommandEnd());
-@@ -48,5 +52,8 @@ public class AmethystModulesManager {
+@@ -50,5 +54,8 @@ public class AmethystModulesManager {
                  }
              }
          }
@@ -189,5 +189,5 @@ index 00000000..f566f10c
 +    }
 +}
 -- 
-2.36.1.windows.1
+2.37.1.windows.1
 

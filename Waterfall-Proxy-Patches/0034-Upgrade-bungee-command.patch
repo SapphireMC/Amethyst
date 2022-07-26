@@ -1,11 +1,11 @@
-From c065ab6eeac4bb89a7d7c29bcee147c16d7720c2 Mon Sep 17 00:00:00 2001
+From d97897045ed0cd64d667c7ad28076ea86176b666 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 25 Apr 2022 18:25:05 +0500
 Subject: [PATCH] Upgrade bungee command
 
 
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
-index 9dd83dd1..a6a42511 100644
+index 615f75b9..cbaf47a1 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
 @@ -22,6 +22,8 @@ public class MessagesConfig extends AbstractYamlConfig {
@@ -16,7 +16,7 @@ index 9dd83dd1..a6a42511 100644
 +        formattedMessages.put("command.bungee.plugins", ChatColor.translateAlternateColorCodes('&', getString("command.bungee.plugins", "&fPlugins ({0}): &r{1}")));
          formattedMessages.put("command.find.success", ChatColor.translateAlternateColorCodes('&', getString("command.find.success", "&a{0} &ris online at {1}")));
          formattedMessages.put("command.ip.success", ChatColor.translateAlternateColorCodes('&', getString("command.ip.success", "&9IP of {0} is {1}")));
-         formattedMessages.put("command.list.header", ChatColor.translateAlternateColorCodes('&', getString("command.list.header", "Available servers:")));
+         formattedMessages.put("command.kick.success", ChatColor.translateAlternateColorCodes('&', getString("command.kick.success", "&cYou have been kicked off the proxy.")));
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
 index 88486f5b..87feb6a5 100644
 --- a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
@@ -114,5 +114,5 @@ index 88486f5b..87feb6a5 100644
      }
  }
 -- 
-2.36.1.windows.1
+2.37.1.windows.1
 

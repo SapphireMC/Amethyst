@@ -1,14 +1,14 @@
-From 0719ccfa42b6011f5564bf7423506ac9fb683a73 Mon Sep 17 00:00:00 2001
+From c76997b6b306fdedb169407b06b8a2a4b3b5c75e Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Sun, 2 Jan 2022 16:26:25 +0500
 Subject: [PATCH] Don't declare uuid unsess it's null
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 76877578..a4626a3f 100644
+index 13daaf46..b4f1a6c9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -508,7 +508,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -528,7 +528,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                      {
                          loginProfile = obj;
                          name = obj.getName();
@@ -24,5 +24,5 @@ index 76877578..a4626a3f 100644
                          return;
                      }
 -- 
-2.36.1.windows.1
+2.37.1.windows.1
 

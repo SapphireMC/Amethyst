@@ -1,17 +1,17 @@
-From 3e685067e2e6c9c48e826c6328da7b4386847a91 Mon Sep 17 00:00:00 2001
+From 1e03f5ba51fc2b58f0e773cf61943f4f477bbcd9 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Sun, 2 Jan 2022 16:02:46 +0500
 Subject: [PATCH] Close connections & Don't flush if not necessary
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index ed1fe41a..76877578 100644
+index 24893418..13daaf46 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -194,6 +194,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
-                 }
+@@ -204,6 +204,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+                         }
  
-                 ServerPing legacy = result.getResponse();
+                         ServerPing legacy = result.getResponse();
 +                // Amethyst start - Close and return if legacy == null
 +                if (legacy == null)
 +                {
@@ -19,10 +19,10 @@ index ed1fe41a..76877578 100644
 +                    return;
 +                }
 +                // Amethyst end
-                 String kickMessage;
+                         String kickMessage;
  
-                 if ( v1_5 )
-@@ -259,6 +266,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+                         if ( v1_5 )
+@@ -279,6 +286,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                      @Override
                      public void done(ProxyPingEvent pingResult, Throwable error)
                      {
@@ -37,7 +37,7 @@ index ed1fe41a..76877578 100644
                          Gson gson = BungeeCord.getInstance().gson;
                          unsafe.sendPacket( new StatusResponse( gson.toJson( pingResult.getResponse() ) ) );
                          if ( bungee.getConnectionThrottle() != null )
-@@ -283,16 +298,19 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -303,16 +318,19 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          thisState = State.PING;
      }
  
@@ -61,7 +61,7 @@ index ed1fe41a..76877578 100644
      }
  
      @Override
-@@ -622,7 +640,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -642,7 +660,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      {
          if ( canSendKickMessage() )
          {
@@ -185,5 +185,5 @@ index 0c1ecfb8..a0b7a4ec 100644
                      listener.getHost().getHostString(), "MINECRAFT",  players, bungee.getGameVersion()));
              QueryResult result = bungee.getPluginManager().callEvent(event).getResult();
 -- 
-2.36.1.windows.1
+2.37.1.windows.1
 

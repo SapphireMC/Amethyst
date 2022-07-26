@@ -1,4 +1,4 @@
-From 4afe0ba853afeb03fba9b83fbe994a70c266f7dc Mon Sep 17 00:00:00 2001
+From a6957542e73aebcd1cf7ea925ebd9beaf793c120 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Sun, 2 Jan 2022 16:15:48 +0500
 Subject: [PATCH] Use local variables to reduce method calls
@@ -108,6 +108,25 @@ index 7ea239ac..c51caf1f 100644
              }
          }
      }
+diff --git a/module/cmd-kick/src/main/java/net/md_5/bungee/module/cmd/kick/CommandKick.java b/module/cmd-kick/src/main/java/net/md_5/bungee/module/cmd/kick/CommandKick.java
+index 6dab5cc8..68dab1ce 100644
+--- a/module/cmd-kick/src/main/java/net/md_5/bungee/module/cmd/kick/CommandKick.java
++++ b/module/cmd-kick/src/main/java/net/md_5/bungee/module/cmd/kick/CommandKick.java
+@@ -24,12 +24,13 @@ public class CommandKick extends Command implements TabExecutor
+     @Override
+     public void execute(CommandSender sender, String[] args)
+     {
++        ProxyServer proxy = ProxyServer.getInstance();
+         if ( args.length == 0 )
+         {
+             sender.sendMessage( ProxyServer.getInstance().getTranslation( "username_needed" ) );
+         } else
+         {
+-            ProxiedPlayer player = ProxyServer.getInstance().getPlayer( args[0] );
++            ProxiedPlayer player = proxy.getPlayer( args[0] );
+ 
+             if ( player == null )
+             {
 diff --git a/module/cmd-list/src/main/java/net/md_5/bungee/module/cmd/list/CommandList.java b/module/cmd-list/src/main/java/net/md_5/bungee/module/cmd/list/CommandList.java
 index c2227110..331ca78e 100644
 --- a/module/cmd-list/src/main/java/net/md_5/bungee/module/cmd/list/CommandList.java
@@ -463,5 +482,5 @@ index c3b69cef..2832cf62 100644
      }
  }
 -- 
-2.34.1.windows.1
+2.37.1.windows.1
 

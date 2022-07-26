@@ -1,11 +1,11 @@
-From beecff1abfc3dcf0bf6ded2273f99f4679ee1976 Mon Sep 17 00:00:00 2001
+From 3c0674c1c6f92ef716b2802a5481d8f07e075f4d Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 10 Jan 2022 00:39:35 +0500
 Subject: [PATCH] Logger options
 
 
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-index b35221d7..b61fd540 100644
+index b52bd616..dd9124fa 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 @@ -18,6 +18,19 @@ public class AmethystConfig extends AbstractYamlConfig {
@@ -28,7 +28,7 @@ index b35221d7..b61fd540 100644
      /**
       * A module that provides the /alert and /alertraw commands.
       */
-@@ -63,6 +76,10 @@ public class AmethystConfig extends AbstractYamlConfig {
+@@ -67,6 +80,10 @@ public class AmethystConfig extends AbstractYamlConfig {
          minVersion = getString( "versions.min", minVersion );
          maxVersion = getString( "versions.max", maxVersion );
  
@@ -78,10 +78,10 @@ index 7887c5e6..5e0a3e27 100644
          ProtocolVersion.register(); // Amethyst - register min and max supported versions
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 73973a16..b07d3384 100644
+index 1f53e2f8..4d8de315 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -346,7 +346,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -366,7 +366,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          {
              case 1:
                  // Ping
@@ -90,7 +90,7 @@ index 73973a16..b07d3384 100644
                  {
                      bungee.getLogger().log( Level.INFO, "{0} has pinged", this );
                  }
-@@ -355,7 +355,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -375,7 +375,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  break;
              case 2:
                  // Login
@@ -100,7 +100,7 @@ index 73973a16..b07d3384 100644
                      bungee.getLogger().log( Level.INFO, "{0} has connected", this );
                  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index 85676dfa..23c8391c 100644
+index c891f705..d151b406 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 @@ -44,7 +44,7 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
@@ -148,5 +148,5 @@ index 85676dfa..23c8391c 100644
              if ( logExceptions )
              {
 -- 
-2.36.1.windows.1
+2.37.1.windows.1
 

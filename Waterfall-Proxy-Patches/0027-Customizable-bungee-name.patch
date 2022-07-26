@@ -1,11 +1,11 @@
-From 17780b69bae8ddd9236b1a584017e91605237d0a Mon Sep 17 00:00:00 2001
+From 9022a3cfae5e77dc33763233918e6e37810899bd Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Sun, 6 Mar 2022 00:39:45 +0500
 Subject: [PATCH] Customizable bungee name
 
 
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-index 0f22a87e..d01b4510 100644
+index c45b34f8..0cc087d0 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 @@ -11,6 +11,11 @@ import net.md_5.bungee.config.ConfigurationProvider;
@@ -20,7 +20,7 @@ index 0f22a87e..d01b4510 100644
      /**
       * Enable or disable custom motd.
       */
-@@ -144,6 +149,8 @@ public class AmethystConfig extends AbstractYamlConfig {
+@@ -148,6 +153,8 @@ public class AmethystConfig extends AbstractYamlConfig {
      @Override
      protected void loadContent()
      {
@@ -43,5 +43,5 @@ index 9314daff..5c3f525e 100644
  
      @Override
 -- 
-2.36.1.windows.1
+2.37.1.windows.1
 

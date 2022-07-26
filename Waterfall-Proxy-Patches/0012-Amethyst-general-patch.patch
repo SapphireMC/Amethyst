@@ -1,4 +1,4 @@
-From f611afd60cc620ae53857ae63a372417605f3de9 Mon Sep 17 00:00:00 2001
+From 67dcc52ca94001620f7f561f851d8f155862ce2d Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 3 Jan 2022 01:19:36 +0500
 Subject: [PATCH] Amethyst general patch
@@ -650,7 +650,7 @@ index 8911bee8..76677c35 100644
      @Synchronized("serversLock") // Waterfall
      public void load()
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-index 10ccb6b7..787172e4 100644
+index 4c374b76..a8aae89e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 @@ -131,7 +131,7 @@ public class YamlConfig implements ConfigurationAdapter
@@ -663,10 +663,10 @@ index 10ccb6b7..787172e4 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index a4626a3f..c1288389 100644
+index b4f1a6c9..2063fa98 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -156,7 +156,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -155,7 +155,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      {
          if ( packet.packet == null )
          {
@@ -676,5 +676,5 @@ index a4626a3f..c1288389 100644
      }
  
 -- 
-2.36.1.windows.1
+2.37.1.windows.1
 

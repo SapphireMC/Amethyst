@@ -1,11 +1,11 @@
-From 532c65b5a6bfa4f274eaecfa978959266b9c4498 Mon Sep 17 00:00:00 2001
+From 766b54012bf22af56bd4fe597444b773cda3527b Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 10 Jan 2022 18:39:08 +0500
 Subject: [PATCH] Add lobby and hub commands
 
 
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-index 1a68ee88..1aff5459 100644
+index c3bb4afc..ea7affe9 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 @@ -56,6 +56,28 @@ public class AmethystConfig extends AbstractYamlConfig {
@@ -37,7 +37,7 @@ index 1a68ee88..1aff5459 100644
      /**
       * Enable or disable InitialHandler logging.
       */
-@@ -120,6 +142,10 @@ public class AmethystConfig extends AbstractYamlConfig {
+@@ -124,6 +146,10 @@ public class AmethystConfig extends AbstractYamlConfig {
          minVersion = getString( "versions.min", minVersion );
          maxVersion = getString( "versions.max", maxVersion );
  
@@ -49,10 +49,10 @@ index 1a68ee88..1aff5459 100644
          logExceptions = getBoolean("logger.exceptions", logExceptions);
          logHaProxy = getBoolean("logger.haProxy", logHaProxy);
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
-index df22c4bd..32873f04 100644
+index bf227f6d..ae72e7a3 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
-@@ -27,6 +27,9 @@ public class MessagesConfig extends AbstractYamlConfig {
+@@ -28,6 +28,9 @@ public class MessagesConfig extends AbstractYamlConfig {
          formattedMessages.put("command.list.header", ChatColor.translateAlternateColorCodes('&', getString("command.list.header", "Available servers:")));
          formattedMessages.put("command.list.entry", ChatColor.translateAlternateColorCodes('&', getString("command.list.entry", "&a[{0}] &e({1}): &r{2}")));
          formattedMessages.put("command.list.total", ChatColor.translateAlternateColorCodes('&', getString("command.list.total", "Total players online: {0}")));
@@ -63,20 +63,20 @@ index df22c4bd..32873f04 100644
          formattedMessages.put("command.perms.permissions", ChatColor.translateAlternateColorCodes('&', getString("command.perms.permissions", "=&9- {0}")));
          formattedMessages.put("command.reload.success", ChatColor.translateAlternateColorCodes('&', getString("command.reload.success", "&c&lAmethyst has been reloaded. This is NOT advisable and you will not be supported with any issues that arise! Please restart Amethyst ASAP.")));
 diff --git a/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java b/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java
-index e8c575c3..0c0bd76e 100644
+index cb107d20..cdbbeb21 100644
 --- a/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java
 +++ b/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java
-@@ -7,6 +7,7 @@ import io.sapphiremc.amethyst.module.CommandAlertRaw;
- import io.sapphiremc.amethyst.module.CommandFind;
+@@ -8,6 +8,7 @@ import io.sapphiremc.amethyst.module.CommandFind;
  import io.sapphiremc.amethyst.module.CommandIP;
+ import io.sapphiremc.amethyst.module.CommandKick;
  import io.sapphiremc.amethyst.module.CommandList;
 +import io.sapphiremc.amethyst.module.CommandLobby;
  import io.sapphiremc.amethyst.module.CommandPerms;
  import io.sapphiremc.amethyst.module.CommandSend;
  import io.sapphiremc.amethyst.module.CommandServer;
-@@ -39,6 +40,7 @@ public class AmethystModulesManager {
-         if (config.findEnabled) manager.registerCommand(null, new CommandFind());
+@@ -41,6 +42,7 @@ public class AmethystModulesManager {
          if (config.ipEnabled) manager.registerCommand(null, new CommandIP());
+         if (config.kickEnabled) manager.registerCommand(null, new CommandKick());
          if (config.listEnabled) manager.registerCommand(null, new CommandList());
 +        if (config.lobbyEnabled) manager.registerCommand(null, new CommandLobby());
          if (config.permsEnabled) manager.registerCommand(null, new CommandPerms());
@@ -127,5 +127,5 @@ index 00000000..f2da93b7
 +    }
 +}
 -- 
-2.36.1.windows.1
+2.37.1.windows.1
 

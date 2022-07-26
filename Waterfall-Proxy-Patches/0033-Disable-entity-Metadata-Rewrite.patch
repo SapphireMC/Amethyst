@@ -1,4 +1,4 @@
-From be27c408289e280e4c636ae5f3baa62ae0eba00c Mon Sep 17 00:00:00 2001
+From 1d79fa7f5af547d1c33d1ba53464d88214b6535c Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Sat, 23 Apr 2022 20:01:49 +0500
 Subject: [PATCH] Disable entity Metadata Rewrite
@@ -49,10 +49,10 @@ index 558d0dbb..35236382 100644
 -    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 5b6663db..5bd50d31 100644
+index 09416927..e5674843 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -22,8 +22,6 @@ import net.md_5.bungee.protocol.packet.EncryptionRequest;
+@@ -24,8 +24,6 @@ import net.md_5.bungee.protocol.packet.EncryptionRequest;
  import net.md_5.bungee.protocol.packet.EncryptionResponse;
  import net.md_5.bungee.protocol.packet.EntityStatus;
  import net.md_5.bungee.protocol.packet.GameState;
@@ -61,7 +61,7 @@ index 5b6663db..5bd50d31 100644
  import net.md_5.bungee.protocol.packet.Handshake;
  import net.md_5.bungee.protocol.packet.KeepAlive;
  import net.md_5.bungee.protocol.packet.Kick;
-@@ -139,20 +137,6 @@ public enum Protocol
+@@ -141,20 +139,6 @@ public enum Protocol
                      PlayerChat::new,
                      map( ProtocolVersion.MINECRAFT_1_19, 0x30 )
              );
@@ -70,13 +70,13 @@ index 5b6663db..5bd50d31 100644
 -                    EntityEffect.class,
 -                    EntityEffect::new,
 -                    map(ProtocolVersion.MINECRAFT_1_8, 0x1D),
--                    map(ProtocolVersion.MINECRAFT_1_9, Integer.MIN_VALUE)
+-                    map(ProtocolVersion.MINECRAFT_1_9, -1)
 -            );
 -            TO_CLIENT.registerPacket(
 -                    EntityRemoveEffect.class,
 -                    EntityRemoveEffect::new,
 -                    map(ProtocolVersion.MINECRAFT_1_8, 0x1E),
--                    map(ProtocolVersion.MINECRAFT_1_9, Integer.MIN_VALUE)
+-                    map(ProtocolVersion.MINECRAFT_1_9, -1)
 -            );
 -            // Waterfall end
              TO_CLIENT.registerPacket(
@@ -176,7 +176,7 @@ index 7ed2dc3a..00000000
 -    }
 -}
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index 5e4ff7f4..6758d2df 100644
+index cc02ff26..8744b09d 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 @@ -45,7 +45,6 @@ public class WaterfallConfiguration extends Configuration {
@@ -184,7 +184,7 @@ index 5e4ff7f4..6758d2df 100644
      private boolean disableModernTabLimiter = true;
  
 -    private boolean disableEntityMetadataRewrite = false;
-     private boolean disableTabListRewrite = false;
+     private boolean disableTabListRewrite = true;
  
      /*
 @@ -77,7 +76,6 @@ public class WaterfallConfiguration extends Configuration {
@@ -3038,5 +3038,5 @@ index d33dc314..da9f9343 100644
      }
  
 -- 
-2.36.1.windows.1
+2.37.1.windows.1
 
