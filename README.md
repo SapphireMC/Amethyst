@@ -1,4 +1,3 @@
-[website]: https://denaryworld.ru/
 [downloads]: https://github.com/SapphireMC/Amethyst/releases/
 [wiki]: https://github.com/SapphireMC/Amethyst/wiki/
 
@@ -6,10 +5,10 @@
 
 Waterfall fort that is used on our server
 
-[Our server (Currently closed)][website] - [Downloads][downloads] - [Wiki (Coming soon)][wiki]
+[Downloads][downloads] - [Wiki (Coming soon)][wiki]
 
 ## License
-[![MIT License](https://img-shields.io/githib/license/SapphireMC/Amethyst?&logo=github)](LICENSE)
+[![MIT License](https://img.shields.io/github/license/SapphireMC/Amethyst)](LICENSE)
 
 ## API
 
@@ -27,7 +26,7 @@ Waterfall fort that is used on our server
     <groupId>io.sapphiremc.amethyst</groupId>
     <!-- For any other modules use amethyst-<modulename> Example: amethyst-chat -->
     <artifactId>amethyst-api</artifactId>
-    <version>1.18-R0.1-SNAPSHOT</version>
+    <version>1.19-R0.1-SNAPSHOT</version>
     <scope>provided</scope>
 </dependency>
 ```
@@ -44,7 +43,7 @@ repositories {
 ```groovy
 dependencies {
     // For any other modules use amethyst-<modulename> Example: amethyst-chat
-    compileOnly 'io.sapphiremc.amethyst:amethyst-api:1.18-R0.1-SNAPSHOT'
+    compileOnly 'io.sapphiremc.amethyst:amethyst-api:1.19-R0.1-SNAPSHOT'
 }
 ```
 
@@ -59,7 +58,7 @@ repositories {
 ```kotlin
 dependencies {
     // For any other modules use amethyst-<modulename> Example: amethyst-chat
-    compileOnly("io.sapphiremc.amethyst:amethyst-api:1.18-R0.1-SNAPSHOT")
+    compileOnly("io.sapphiremc.amethyst:amethyst-api:1.19-R0.1-SNAPSHOT")
 }
 ```
 
@@ -82,4 +81,4 @@ Run the following command in the root directory:
 
 Use the command `mvn clean install` to build all modules and install it to your local maven repo.
 
-Compiled JAR will be placed under `Amethyst-Proxy/bootstrap/target/Amethyst-1.18-R0.1-SNAPSHOT.jar`.
+Compiled JAR will be placed under `Amethyst-Proxy/bootstrap/target/Amethyst-1.19-R0.1-SNAPSHOT.jar`.
