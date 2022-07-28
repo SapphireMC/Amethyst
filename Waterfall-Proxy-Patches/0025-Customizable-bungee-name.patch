@@ -1,4 +1,4 @@
-From ec127cfc07f93f1a6d647f0ccf5a7efdd249db4e Mon Sep 17 00:00:00 2001
+From d9e51665f88edba93881eff906e5d1a713bba79a Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Sun, 6 Mar 2022 00:39:45 +0500
 Subject: [PATCH] Customizable bungee name
@@ -30,7 +30,7 @@ index 0125b4ca..75fe48a2 100644
          motdFirstLines = getStringList("motd.firstLines", motdFirstLines);
          motdSecondLines = getStringList("motd.secondLines", motdSecondLines);
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index cc3ae50f..5775c44a 100644
+index 730332f7..c5461bd6 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -555,7 +555,7 @@ public class BungeeCord extends ProxyServer
@@ -38,7 +38,7 @@ index cc3ae50f..5775c44a 100644
      public String getName()
      {
 -        return "Amethyst";
-+        return (getAmethyst() != null && getAmethyst().getConfig() != null) ? getAmethyst().getConfig().bungeeName : "Amethyst";
++        return (Amethyst.getInstance() != null && Amethyst.getInstance().getConfig() != null) ? Amethyst.getInstance().getConfig().bungeeName : "Amethyst";
      }
  
      @Override

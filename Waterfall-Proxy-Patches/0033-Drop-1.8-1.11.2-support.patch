@@ -1,14 +1,14 @@
-From 98ecf88daf599d632020d7bc032858768fb8d6d7 Mon Sep 17 00:00:00 2001
+From e14f0159045e4c38afab8551ef663ec2b69ca8a4 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Tue, 26 Apr 2022 13:52:59 +0500
 Subject: [PATCH] Drop 1.8-1.11.2 support
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 6c19aae1..b2122d1e 100644
+index 57f59249..51619d77 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -62,7 +62,7 @@ public enum Protocol
+@@ -61,7 +61,7 @@ public enum Protocol
              TO_SERVER.registerPacket(
                      Handshake.class,
                      Handshake::new,
@@ -17,7 +17,7 @@ index 6c19aae1..b2122d1e 100644
              );
          }
      },
-@@ -74,8 +74,7 @@ public enum Protocol
+@@ -73,8 +73,7 @@ public enum Protocol
              TO_CLIENT.registerPacket(
                      KeepAlive.class,
                      KeepAlive::new,
@@ -37,7 +37,7 @@ index 6c19aae1..b2122d1e 100644
                      map( ProtocolConstants.MINECRAFT_1_13, 0x25 ),
                      map( ProtocolConstants.MINECRAFT_1_15, 0x26 ),
                      map( ProtocolConstants.MINECRAFT_1_16, 0x25 ),
-@@ -98,8 +96,7 @@ public enum Protocol
+@@ -99,8 +97,7 @@ public enum Protocol
              );
              TO_CLIENT.registerPacket( Chat.class,
                      Chat::new,
@@ -47,7 +47,7 @@ index 6c19aae1..b2122d1e 100644
                      map( ProtocolConstants.MINECRAFT_1_13, 0x0E ),
                      map( ProtocolConstants.MINECRAFT_1_15, 0x0F ),
                      map( ProtocolConstants.MINECRAFT_1_16, 0x0E ),
-@@ -109,8 +106,6 @@ public enum Protocol
+@@ -110,8 +107,6 @@ public enum Protocol
              TO_CLIENT.registerPacket(
                      Respawn.class,
                      Respawn::new,
@@ -56,7 +56,7 @@ index 6c19aae1..b2122d1e 100644
                      map( ProtocolConstants.MINECRAFT_1_12, 0x34 ),
                      map( ProtocolConstants.MINECRAFT_1_12_1, 0x35 ),
                      map( ProtocolConstants.MINECRAFT_1_13, 0x38 ),
-@@ -124,7 +119,7 @@ public enum Protocol
+@@ -126,7 +121,7 @@ public enum Protocol
              TO_CLIENT.registerPacket(
                      BossBar.class,
                      BossBar::new,
@@ -65,7 +65,7 @@ index 6c19aae1..b2122d1e 100644
                      map( ProtocolConstants.MINECRAFT_1_15, 0x0D ),
                      map( ProtocolConstants.MINECRAFT_1_16, 0x0C ),
                      map( ProtocolConstants.MINECRAFT_1_17, 0x0D ),
-@@ -138,8 +133,7 @@ public enum Protocol
+@@ -135,8 +130,7 @@ public enum Protocol
              TO_CLIENT.registerPacket(
                      PlayerListItem.class, // PlayerInfo
                      PlayerListItem::new,
@@ -75,7 +75,7 @@ index 6c19aae1..b2122d1e 100644
                      map( ProtocolConstants.MINECRAFT_1_12_1, 0x2E ),
                      map( ProtocolConstants.MINECRAFT_1_13, 0x30 ),
                      map( ProtocolConstants.MINECRAFT_1_14, 0x33 ),
-@@ -152,8 +146,7 @@ public enum Protocol
+@@ -150,8 +144,7 @@ public enum Protocol
              TO_CLIENT.registerPacket(
                      TabCompleteResponse.class,
                      TabCompleteResponse::new,
@@ -85,7 +85,7 @@ index 6c19aae1..b2122d1e 100644
                      map( ProtocolConstants.MINECRAFT_1_13, 0x10 ),
                      map( ProtocolConstants.MINECRAFT_1_15, 0x11 ),
                      map( ProtocolConstants.MINECRAFT_1_16, 0x10 ),
-@@ -164,8 +157,6 @@ public enum Protocol
+@@ -162,8 +155,6 @@ public enum Protocol
              TO_CLIENT.registerPacket(
                      ScoreboardObjective.class,
                      ScoreboardObjective::new,
@@ -94,7 +94,7 @@ index 6c19aae1..b2122d1e 100644
                      map( ProtocolConstants.MINECRAFT_1_12, 0x41 ),
                      map( ProtocolConstants.MINECRAFT_1_12_1, 0x42 ),
                      map( ProtocolConstants.MINECRAFT_1_13, 0x45 ),
-@@ -176,8 +167,6 @@ public enum Protocol
+@@ -175,8 +166,6 @@ public enum Protocol
              TO_CLIENT.registerPacket(
                      ScoreboardScore.class,
                      ScoreboardScore::new,
@@ -112,7 +112,7 @@ index 6c19aae1..b2122d1e 100644
                      map( ProtocolConstants.MINECRAFT_1_12, 0x3A ),
                      map( ProtocolConstants.MINECRAFT_1_12_1, 0x3B ),
                      map( ProtocolConstants.MINECRAFT_1_13, 0x3E ),
-@@ -200,8 +187,6 @@ public enum Protocol
+@@ -201,8 +188,6 @@ public enum Protocol
              TO_CLIENT.registerPacket(
                      Team.class,
                      Team::new,
@@ -121,7 +121,7 @@ index 6c19aae1..b2122d1e 100644
                      map( ProtocolConstants.MINECRAFT_1_12, 0x43 ),
                      map( ProtocolConstants.MINECRAFT_1_12_1, 0x44 ),
                      map( ProtocolConstants.MINECRAFT_1_13, 0x47 ),
-@@ -212,8 +197,7 @@ public enum Protocol
+@@ -214,8 +199,7 @@ public enum Protocol
              TO_CLIENT.registerPacket(
                      PluginMessage.class,
                      PluginMessage::new,
@@ -131,7 +131,7 @@ index 6c19aae1..b2122d1e 100644
                      map( ProtocolConstants.MINECRAFT_1_13, 0x19 ),
                      map( ProtocolConstants.MINECRAFT_1_14, 0x18 ),
                      map( ProtocolConstants.MINECRAFT_1_15, 0x19 ),
-@@ -225,8 +209,7 @@ public enum Protocol
+@@ -228,8 +212,7 @@ public enum Protocol
              TO_CLIENT.registerPacket(
                      Kick.class,
                      Kick::new,
@@ -141,7 +141,7 @@ index 6c19aae1..b2122d1e 100644
                      map( ProtocolConstants.MINECRAFT_1_13, 0x1B ),
                      map( ProtocolConstants.MINECRAFT_1_14, 0x1A ),
                      map( ProtocolConstants.MINECRAFT_1_15, 0x1B ),
-@@ -238,7 +221,6 @@ public enum Protocol
+@@ -242,7 +225,6 @@ public enum Protocol
              TO_CLIENT.registerPacket(
                      Title.class,
                      Title::new,
@@ -149,7 +149,7 @@ index 6c19aae1..b2122d1e 100644
                      map( ProtocolConstants.MINECRAFT_1_12, 0x47 ),
                      map( ProtocolConstants.MINECRAFT_1_12_1, 0x48 ),
                      map( ProtocolConstants.MINECRAFT_1_13, 0x4B ),
-@@ -274,9 +256,6 @@ public enum Protocol
+@@ -282,9 +264,6 @@ public enum Protocol
              TO_CLIENT.registerPacket(
                      PlayerListHeaderFooter.class,
                      PlayerListHeaderFooter::new,
@@ -159,7 +159,7 @@ index 6c19aae1..b2122d1e 100644
                      map( ProtocolConstants.MINECRAFT_1_12, 0x49 ),
                      map( ProtocolConstants.MINECRAFT_1_12_1, 0x4A ),
                      map( ProtocolConstants.MINECRAFT_1_13, 0x4E ),
-@@ -290,8 +269,7 @@ public enum Protocol
+@@ -299,8 +278,7 @@ public enum Protocol
              TO_CLIENT.registerPacket(
                      EntityStatus.class,
                      EntityStatus::new,
@@ -169,7 +169,7 @@ index 6c19aae1..b2122d1e 100644
                      map( ProtocolConstants.MINECRAFT_1_13, 0x1C ),
                      map( ProtocolConstants.MINECRAFT_1_14, 0x1B ),
                      map( ProtocolConstants.MINECRAFT_1_15, 0x1C ),
-@@ -332,8 +310,6 @@ public enum Protocol
+@@ -344,8 +322,6 @@ public enum Protocol
              TO_SERVER.registerPacket(
                      KeepAlive.class,
                      KeepAlive::new,
@@ -178,7 +178,7 @@ index 6c19aae1..b2122d1e 100644
                      map( ProtocolConstants.MINECRAFT_1_12, 0x0C ),
                      map( ProtocolConstants.MINECRAFT_1_12_1, 0x0B ),
                      map( ProtocolConstants.MINECRAFT_1_13, 0x0E ),
-@@ -344,8 +320,6 @@ public enum Protocol
+@@ -357,8 +333,6 @@ public enum Protocol
              );
              TO_SERVER.registerPacket( Chat.class,
                      Chat::new,
@@ -187,7 +187,7 @@ index 6c19aae1..b2122d1e 100644
                      map( ProtocolConstants.MINECRAFT_1_12, 0x03 ),
                      map( ProtocolConstants.MINECRAFT_1_12_1, 0x02 ),
                      map( ProtocolConstants.MINECRAFT_1_14, 0x03 ),
-@@ -364,8 +338,6 @@ public enum Protocol
+@@ -379,8 +353,6 @@ public enum Protocol
              TO_SERVER.registerPacket(
                      TabCompleteRequest.class,
                      TabCompleteRequest::new,
@@ -196,7 +196,7 @@ index 6c19aae1..b2122d1e 100644
                      map( ProtocolConstants.MINECRAFT_1_12, 0x02 ),
                      map( ProtocolConstants.MINECRAFT_1_12_1, 0x01 ),
                      map( ProtocolConstants.MINECRAFT_1_13, 0x05 ),
-@@ -375,8 +347,6 @@ public enum Protocol
+@@ -391,8 +363,6 @@ public enum Protocol
              TO_SERVER.registerPacket(
                      ClientSettings.class,
                      ClientSettings::new,
@@ -205,7 +205,7 @@ index 6c19aae1..b2122d1e 100644
                      map( ProtocolConstants.MINECRAFT_1_12, 0x05 ),
                      map( ProtocolConstants.MINECRAFT_1_12_1, 0x04 ),
                      map( ProtocolConstants.MINECRAFT_1_14, 0x05 ),
-@@ -385,8 +355,6 @@ public enum Protocol
+@@ -402,8 +372,6 @@ public enum Protocol
              TO_SERVER.registerPacket(
                      PluginMessage.class,
                      PluginMessage::new,
@@ -214,7 +214,7 @@ index 6c19aae1..b2122d1e 100644
                      map( ProtocolConstants.MINECRAFT_1_12, 0x0A ),
                      map( ProtocolConstants.MINECRAFT_1_12_1, 0x09 ),
                      map( ProtocolConstants.MINECRAFT_1_13, 0x0A ),
-@@ -404,23 +372,23 @@ public enum Protocol
+@@ -422,23 +390,23 @@ public enum Protocol
              TO_CLIENT.registerPacket(
                      StatusResponse.class,
                      StatusResponse::new,
@@ -242,7 +242,7 @@ index 6c19aae1..b2122d1e 100644
              );
          }
      },
-@@ -432,22 +400,22 @@ public enum Protocol
+@@ -450,22 +418,22 @@ public enum Protocol
              TO_CLIENT.registerPacket(
                      Kick.class,
                      Kick::new,
@@ -269,7 +269,7 @@ index 6c19aae1..b2122d1e 100644
              );
              TO_CLIENT.registerPacket(
                      LoginPayloadRequest.class,
-@@ -458,12 +426,12 @@ public enum Protocol
+@@ -476,12 +444,12 @@ public enum Protocol
              TO_SERVER.registerPacket(
                      LoginRequest.class,
                      LoginRequest::new,
@@ -458,15 +458,15 @@ index 331ac5c9..dc52f630 100644
          switch ( action )
          {
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 5775c44a..29de76b8 100644
+index c5461bd6..39c23213 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -228,7 +228,7 @@ public class BungeeCord extends ProxyServer
          logger = io.github.waterfallmc.waterfall.log4j.WaterfallLogger.create();
          // Waterfall end
  
--        logger.info("Booting up proxy server for minecraft 1.8 - 1.19"); // Amethyst - add logging on startup
-+        logger.info("Booting up proxy server for minecraft 1.12 - 1.19"); // Amethyst - add logging on startup
+-        logger.info("Booting up proxy server for minecraft 1.8 - 1.19.1"); // Amethyst - add logging on startup
++        logger.info("Booting up proxy server for minecraft 1.12 - 1.19.1"); // Amethyst - add logging on startup
          serverStartTime = System.nanoTime(); // Amethyst - add logging on startup
  
          pluginManager = new PluginManager( this );
@@ -474,16 +474,16 @@ index 5775c44a..29de76b8 100644
              }
          }
  
--        logger.info("This proxy is running " + getName() + " version " + getGitInfo() + " (MC: 1.8-1.19) (Implementing API version " + getVersion() + ")"); // Amethyst - add logging on startup
-+        logger.info("This proxy is running " + getName() + " version " + getGitInfo() + " (MC: 1.12-1.19) (Implementing API version " + getVersion() + ")"); // Amethyst - add logging on startup
+-        logger.info("This proxy is running " + getName() + " version " + getGitInfo() + " (MC: 1.8 - 1.19.1) (Implementing API version " + getVersion() + ")"); // Amethyst - add logging on startup
++        logger.info("This proxy is running " + getName() + " version " + getGitInfo() + " (MC: 1.12 - 1.19.1) (Implementing API version " + getVersion() + ")"); // Amethyst - add logging on startup
      }
  
      /**
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index bdb20a3e..14bc3764 100644
+index 9ac8343c..487cecec 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -542,18 +542,10 @@ public final class UserConnection implements ProxiedPlayer
+@@ -543,18 +543,10 @@ public final class UserConnection implements ProxiedPlayer
  
          if ( position == ChatMessageType.ACTION_BAR && getPendingConnection().getVersion() < ProtocolConstants.MINECRAFT_1_17 )
          {
@@ -507,15 +507,15 @@ index bdb20a3e..14bc3764 100644
          {
              sendMessage( position, sender, ComponentSerializer.toString( message ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
-index 0e3b996a..9b193656 100644
+index e0567da9..6b7b92c8 100644
 --- a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
 +++ b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
 @@ -84,7 +84,7 @@ public class CommandBungee extends Command
                  break;
              case "version":
              case "ver":
--                sender.sendMessage("This proxy is running " + proxy.getName() + " version " + proxy.getGitInfo() + " (MC: 1.8-1.19 ) (Implemented API version: " + proxy.getVersion() + ")");
-+                sender.sendMessage("This proxy is running " + proxy.getName() + " version " + proxy.getGitInfo() + " (MC: 1.12-1.19 ) (Implemented API version: " + proxy.getVersion() + ")");
+-                sender.sendMessage("This proxy is running " + proxy.getName() + " version " + proxy.getGitInfo() + " (MC: 1.8 - 1.19.1) (Implemented API version: " + proxy.getVersion() + ")");
++                sender.sendMessage("This proxy is running " + proxy.getName() + " version " + proxy.getGitInfo() + " (MC: 1.12 - 1.19.1) (Implemented API version: " + proxy.getVersion() + ")");
                  break;
              default:
                  sender.sendMessage( proxy.getTranslation( "bungee_cmd_usage" ) );

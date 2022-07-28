@@ -1,11 +1,11 @@
-From 7982529936cf2b5939679d86914365ed257a0b42 Mon Sep 17 00:00:00 2001
+From f1729744e03cea9dfc254e7a8e00c82bb6aa2b45 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Thu, 6 Jan 2022 18:32:40 +0500
 Subject: [PATCH] Amethyst message system
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-index 0fa0c0dd..cff49826 100644
+index bc063667..3dbf8100 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 @@ -59,7 +59,7 @@ public abstract class ProxyServer
@@ -75,10 +75,10 @@ index aad66497..934c0ccf 100644
  }
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
 new file mode 100644
-index 00000000..1888aef1
+index 00000000..45d561d9
 --- /dev/null
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
-@@ -0,0 +1,85 @@
+@@ -0,0 +1,86 @@
 +package io.sapphiremc.amethyst.conf;
 +
 +import io.sapphiremc.amethyst.Amethyst;
@@ -148,9 +148,10 @@ index 00000000..1888aef1
 +        formattedMessages.put("ping_cannot_connect", ChatColor.translateAlternateColorCodes('&', getString("error.ping-cannot-connect", "&c[Bungee] Can't connect to server.")));
 +        formattedMessages.put("player_only", ChatColor.translateAlternateColorCodes('&', getString("error.players-only", "&cOnly in game players can use this command")));
 +        formattedMessages.put("proxy_full", ChatColor.translateAlternateColorCodes('&', getString("error.proxy-full", "Server is full!")));
-+        formattedMessages.put("secure_profile_required", ChatColor.translateAlternateColorCodes('&', getString("error.secure-profile.required", "A secure profile is required to join this server.")));
 +        formattedMessages.put("secure_profile_expired", ChatColor.translateAlternateColorCodes('&', getString("error.secure-profile.expired", "Secure profile expired.")));
 +        formattedMessages.put("secure_profile_invalid", ChatColor.translateAlternateColorCodes('&', getString("error.secure-profile.invalid", "Secure profile invalid.")));
++        formattedMessages.put("secure_profile_required", ChatColor.translateAlternateColorCodes('&', getString("error.secure-profile.required", "A secure profile is required to join this server.")));
++        formattedMessages.put("secure_profile_unsupported", ChatColor.translateAlternateColorCodes('&', getString("error.secure-profile.unsupported", "Outdated client, secure profile not supported. Please use 1.19 or newer.")));
 +        formattedMessages.put("username_needed", ChatColor.translateAlternateColorCodes('&', getString("error.username-needed", "&cPlease follow this command by a user name.")));
 +    }
 +
@@ -225,7 +226,7 @@ index c3116ac0..a79cd918 100644
                      serverTextComponent.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/server " + server.getName() ) );
                      serverList.append( serverTextComponent );
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index d1f4f826..cc3ae50f 100644
+index 48dba02b..730332f7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -111,8 +111,8 @@ public class BungeeCord extends ProxyServer
@@ -277,7 +278,7 @@ index d1f4f826..cc3ae50f 100644
      public String getTranslation(String name, Object... args)
      {
 +        // Amethyst start - New messages system
-+        return getAmethyst().getMessages().getTranslation( name, args );
++        return Amethyst.getInstance().getMessages().getTranslation( name, args );
 +       /*
          String translation = "<translation '" + name + "' missing>";
          try
@@ -336,10 +337,10 @@ index 76677c35..93400997 100644
                          player.connect(destination, (success, cause) -> {
 diff --git a/proxy/src/main/resources/messages.properties b/proxy/src/main/resources/messages.properties
 deleted file mode 100644
-index 58380d4a..00000000
+index 50c16a95..00000000
 --- a/proxy/src/main/resources/messages.properties
 +++ /dev/null
-@@ -1,42 +0,0 @@
+@@ -1,43 +0,0 @@
 -alert=\u00a78[\u00a74Alert\u00a78]\u00a7r 
 -already_connected=\u00a7cYou are already connected to this server!
 -already_connected_proxy=\u00a7cYou are already connected to this proxy!
@@ -367,6 +368,7 @@ index 58380d4a..00000000
 -secure_profile_required=A secure profile is required to join this server.
 -secure_profile_expired=Secure profile expired.
 -secure_profile_invalid=Secure profile invalid.
+-secure_profile_unsupported=Outdated client, secure profile not supported. Please use 1.19 or newer.
 -message_needed=\u00a7cYou must supply a message.
 -error_occurred_player=\u00a7cAn error occurred while parsing your message. (Hover for details)
 -error_occurred_console=\u00a7cAn error occurred while parsing your message: {0}

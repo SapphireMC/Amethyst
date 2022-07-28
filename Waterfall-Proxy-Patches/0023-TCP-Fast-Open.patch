@@ -1,4 +1,4 @@
-From 44fbffb7da9f7e9973f7103e0aa0dadc9e177baf Mon Sep 17 00:00:00 2001
+From fbc5fcf65c6aabd27306573c43a6e59ac2749297 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Thu, 3 Mar 2022 00:54:41 +0500
 Subject: [PATCH] TCP Fast Open
@@ -37,17 +37,26 @@ index 857b77e7..0125b4ca 100644
          logExceptions = getBoolean("logger.exceptions", logExceptions);
          logHaProxy = getBoolean("logger.haProxy", logHaProxy);
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index cd811cfe..f1b11b9d 100644
+index cd811cfe..45043b83 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -193,6 +193,11 @@ public class PipelineUtils
+@@ -32,6 +32,8 @@ import java.net.SocketAddress;
+ import java.util.concurrent.ThreadFactory;
+ import java.util.concurrent.TimeUnit;
+ import java.util.logging.Level;
++
++import io.sapphiremc.amethyst.Amethyst;
+ import net.md_5.bungee.BungeeCord;
+ import net.md_5.bungee.Util;
+ import net.md_5.bungee.api.ProxyServer;
+@@ -193,6 +195,11 @@ public class PipelineUtils
                  // IP_TOS is not supported (Windows XP / Windows Server 2003)
              }
              ch.config().setOption( ChannelOption.TCP_NODELAY, true );
 +            // Amethyst start - TFO settings
-+            if ( ProxyServer.getInstance().getAmethyst().getConfig().connectionTFOEnable )
++            if ( Amethyst.getInstance().getConfig().connectionTFOEnable )
 +            {
-+                ch.config().setOption( ChannelOption.TCP_FASTOPEN, ProxyServer.getInstance().getAmethyst().getConfig().connectionTFOMaxPending );
++                ch.config().setOption( ChannelOption.TCP_FASTOPEN, Amethyst.getInstance().getConfig().connectionTFOMaxPending );
 +            }
              ch.config().setAllocator( PooledByteBufAllocator.DEFAULT );
              ch.config().setWriteBufferWaterMark( MARK );

@@ -1,4 +1,4 @@
-From 70219c1e28845a8aeecd4a99bdba298a60476eb3 Mon Sep 17 00:00:00 2001
+From e3c16a09714256e29515eabb8aa1190b97c9673e Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 10 Jan 2022 18:39:08 +0500
 Subject: [PATCH] Add lobby and hub commands
@@ -49,7 +49,7 @@ index 461ef7f7..857b77e7 100644
          logExceptions = getBoolean("logger.exceptions", logExceptions);
          logHaProxy = getBoolean("logger.haProxy", logHaProxy);
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
-index 1888aef1..c093cafd 100644
+index 45d561d9..d4f1309a 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
 @@ -28,6 +28,9 @@ public class MessagesConfig extends AbstractYamlConfig {
@@ -63,7 +63,7 @@ index 1888aef1..c093cafd 100644
          formattedMessages.put("command_perms_permission", ChatColor.translateAlternateColorCodes('&', getString("command.perms.permissions", "=&9- {0}")));
          formattedMessages.put("command_reload", ChatColor.translateAlternateColorCodes('&', getString("command.reload.success", "&c&lAmethyst has been reloaded. This is NOT advisable and you will not be supported with any issues that arise! Please restart Amethyst ASAP.")));
 diff --git a/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java b/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java
-index cb107d20..cdbbeb21 100644
+index 5d9877b0..e98bae50 100644
 --- a/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java
 +++ b/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java
 @@ -8,6 +8,7 @@ import io.sapphiremc.amethyst.module.CommandFind;
@@ -84,14 +84,14 @@ index cb107d20..cdbbeb21 100644
          if (config.serverEnabled) manager.registerCommand(null, new CommandServer());
 diff --git a/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandLobby.java b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandLobby.java
 new file mode 100644
-index 00000000..f7139ce3
+index 00000000..de46cc83
 --- /dev/null
 +++ b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandLobby.java
-@@ -0,0 +1,38 @@
+@@ -0,0 +1,37 @@
 +package io.sapphiremc.amethyst.module;
 +
++import io.sapphiremc.amethyst.Amethyst;
 +import io.sapphiremc.amethyst.conf.AmethystConfig;
-+import java.util.List;
 +import net.md_5.bungee.api.CommandSender;
 +import net.md_5.bungee.api.ProxyServer;
 +import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -105,24 +105,23 @@ index 00000000..f7139ce3
 +
 +    @Override
 +    public void execute(CommandSender sender, String[] args) {
-+        ProxyServer proxy = ProxyServer.getInstance();
 +        if (sender instanceof ProxiedPlayer) {
-+            AmethystConfig config = proxy.getAmethyst().getConfig();
++            AmethystConfig config = Amethyst.getInstance().getConfig();
 +            if (!config.lobbyServers.isEmpty()) {
 +                ProxiedPlayer player = (ProxiedPlayer) sender;
 +                if (!config.lobbyServers.contains(player.getServer().getInfo().getName())) {
-+                    player.connect(proxy.getServerInfo(config.getRandomLobby()));
++                    player.connect(ProxyServer.getInstance().getServerInfo(config.getRandomLobby()));
 +                    if (config.lobbyMessage) {
-+                        player.sendMessage(proxy.getTranslation("lobby_success"));
++                        player.sendMessage(ProxyServer.getInstance().getTranslation("lobby_success"));
 +                    }
 +                } else {
-+                    sender.sendMessage(proxy.getTranslation("already_in_lobby"));
++                    sender.sendMessage(ProxyServer.getInstance().getTranslation("already_in_lobby"));
 +                }
 +            } else {
-+                sender.sendMessage(proxy.getTranslation("lobby_not_found"));
++                sender.sendMessage(ProxyServer.getInstance().getTranslation("lobby_not_found"));
 +            }
 +        } else {
-+            sender.sendMessage(proxy.getTranslation("player_only"));
++            sender.sendMessage(ProxyServer.getInstance().getTranslation("player_only"));
 +        }
 +    }
 +}

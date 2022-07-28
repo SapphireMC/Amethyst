@@ -1,4 +1,4 @@
-From 98ce70d8d765c11d20277bc01665b758415e9bad Mon Sep 17 00:00:00 2001
+From cfad404f8e01f3af76650b67ec5d4620dcf368a0 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Sun, 6 Mar 2022 02:54:51 +0500
 Subject: [PATCH] Option to allow invalid usernames
@@ -28,15 +28,15 @@ index 75fe48a2..d9db2a97 100644
          motdEnabled = getBoolean("motd.enabled", motdEnabled);
          motdFirstLines = getStringList("motd.firstLines", motdFirstLines);
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 0e1551a7..26244ad3 100644
+index b91caa6f..01896bbe 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -443,7 +443,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -445,7 +445,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          Preconditions.checkState( thisState == State.USERNAME, "Not expecting USERNAME" );
          thisState = State.PROCESSING_USERNAME; // Amethyst
  
 -        if ( !AllowedCharacters.isValidName( loginRequest.getData(), onlineMode ) )
-+        if ( !bungee.getAmethyst().getConfig().allowInvalidUsernames && !AllowedCharacters.isValidName( loginRequest.getData(), onlineMode ) ) // Amethyst - option to allow invalid usernames
++        if ( !Amethyst.getInstance().getConfig().allowInvalidUsernames && !AllowedCharacters.isValidName( loginRequest.getData(), onlineMode ) ) // Amethyst - option to allow invalid usernames
          {
              disconnect( bungee.getTranslation( "name_invalid" ) );
              return;

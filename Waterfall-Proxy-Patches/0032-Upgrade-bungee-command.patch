@@ -1,11 +1,11 @@
-From c3e1bda033e571ef5dacd0172919cfcc45fd59f7 Mon Sep 17 00:00:00 2001
+From 335c20d3360ec8fc6ed5da9a030120ceab621d01 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 25 Apr 2022 18:25:05 +0500
 Subject: [PATCH] Upgrade bungee command
 
 
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
-index 641465ac..a520e2aa 100644
+index b0710a50..0ec583d3 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
 @@ -22,6 +22,8 @@ public class MessagesConfig extends AbstractYamlConfig {
@@ -18,7 +18,7 @@ index 641465ac..a520e2aa 100644
          formattedMessages.put("command_ip", ChatColor.translateAlternateColorCodes('&', getString("command.ip.success", "&9IP of {0} is {1}")));
          formattedMessages.put("kick_message", ChatColor.translateAlternateColorCodes('&', getString("command.kick.success", "&cYou have been kicked off the proxy.")));
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
-index 88486f5b..0e3b996a 100644
+index 88486f5b..e0567da9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
 +++ b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
 @@ -1,9 +1,14 @@
@@ -103,7 +103,7 @@ index 88486f5b..0e3b996a 100644
 +                break;
 +            case "version":
 +            case "ver":
-+                sender.sendMessage("This proxy is running " + proxy.getName() + " version " + proxy.getGitInfo() + " (MC: 1.8-1.19 ) (Implemented API version: " + proxy.getVersion() + ")");
++                sender.sendMessage("This proxy is running " + proxy.getName() + " version " + proxy.getGitInfo() + " (MC: 1.8 - 1.19.1) (Implemented API version: " + proxy.getVersion() + ")");
 +                break;
 +            default:
 +                sender.sendMessage( proxy.getTranslation( "bungee_cmd_usage" ) );

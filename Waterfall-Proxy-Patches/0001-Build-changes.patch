@@ -1,4 +1,4 @@
-From 8c2ee2b29e902bc95140a98051ef5270921d5c9c Mon Sep 17 00:00:00 2001
+From 0caa499594858f23e1ec5b9a2c3ccccb3acf2fd6 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Fri, 31 Dec 2021 13:46:52 +0500
 Subject: [PATCH] Build changes
@@ -374,6 +374,42 @@ index e0f346f9..34efb98d 100644
 @@ -1,5 +1,5 @@
  name: ${project.name}
  main: net.md_5.bungee.module.cmd.find.PluginFind
+-version: ${describe}
++version: ${project.version}
+ description: ${project.description}
+ author: ${module.author}
+diff --git a/module/cmd-kick/pom.xml b/module/cmd-kick/pom.xml
+index 17d3dc71..757fcc81 100644
+--- a/module/cmd-kick/pom.xml
++++ b/module/cmd-kick/pom.xml
+@@ -4,14 +4,13 @@
+     <modelVersion>4.0.0</modelVersion>
+ 
+     <parent>
+-        <groupId>io.github.waterfallmc</groupId>
+-        <artifactId>waterfall-module</artifactId>
++        <groupId>io.sapphiremc.amethyst</groupId>
++        <artifactId>amethyst-module</artifactId>
+         <version>1.19-R0.1-SNAPSHOT</version>
+         <relativePath>../pom.xml</relativePath>
+     </parent>
+ 
+-    <groupId>io.github.waterfallmc</groupId>
+-    <artifactId>waterfall-module-cmd-kick</artifactId>
++    <artifactId>amethyst-module-cmd-kick</artifactId>
+     <version>1.19-R0.1-SNAPSHOT</version>
+     <packaging>jar</packaging>
+ 
+diff --git a/module/cmd-kick/src/main/resources/plugin.yml b/module/cmd-kick/src/main/resources/bungee.yml
+similarity index 82%
+rename from module/cmd-kick/src/main/resources/plugin.yml
+rename to module/cmd-kick/src/main/resources/bungee.yml
+index 142d6901..1aea4eff 100644
+--- a/module/cmd-kick/src/main/resources/plugin.yml
++++ b/module/cmd-kick/src/main/resources/bungee.yml
+@@ -1,5 +1,5 @@
+ name: ${project.name}
+ main: net.md_5.bungee.module.cmd.kick.PluginKick
 -version: ${describe}
 +version: ${project.version}
  description: ${project.description}
@@ -777,7 +813,7 @@ index 93ae5952..6951c911 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index d81bf730..868a55ce 100644
+index 1036a2e7..42985681 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -4,18 +4,17 @@
@@ -803,7 +839,7 @@ index d81bf730..868a55ce 100644
      <description>Proxy component of the Elastic Portal Suite</description>
  
      <properties>
-@@ -64,32 +63,32 @@
+@@ -71,32 +70,32 @@
              <scope>compile</scope>
          </dependency>
          <dependency>
@@ -846,7 +882,7 @@ index d81bf730..868a55ce 100644
              <version>${project.version}</version>
              <scope>compile</scope>
          </dependency>
-@@ -154,6 +153,21 @@
+@@ -161,6 +160,21 @@
  
      <!-- Waterfall start - copy license files into jar -->
      <build>

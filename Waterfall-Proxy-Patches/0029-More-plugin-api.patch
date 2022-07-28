@@ -1,4 +1,4 @@
-From c3d90936a632d186a2f3d1d4b428e926c2af553d Mon Sep 17 00:00:00 2001
+From 9b319c1f77eabb331e3548b84b104ad35e98f550 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 7 Mar 2022 17:55:13 +0500
 Subject: [PATCH] More plugin api
@@ -6,12 +6,13 @@ Subject: [PATCH] More plugin api
 
 diff --git a/api/src/main/java/io/sapphiremc/amethyst/util/ApiVersionChecker.java b/api/src/main/java/io/sapphiremc/amethyst/util/ApiVersionChecker.java
 new file mode 100644
-index 00000000..edb851d0
+index 00000000..c823b8a6
 --- /dev/null
 +++ b/api/src/main/java/io/sapphiremc/amethyst/util/ApiVersionChecker.java
-@@ -0,0 +1,39 @@
+@@ -0,0 +1,40 @@
 +package io.sapphiremc.amethyst.util;
 +
++import io.sapphiremc.amethyst.Amethyst;
 +import net.md_5.bungee.api.ProxyServer;
 +import net.md_5.bungee.api.plugin.PluginDescription;
 +import net.md_5.bungee.api.plugin.PluginState;
@@ -20,10 +21,10 @@ index 00000000..edb851d0
 +import java.util.List;
 +
 +public class ApiVersionChecker {
-+    private static final List<String> SUPPORTED_API_VERSIONS = Arrays.asList("1.18");
++    private static final List<String> SUPPORTED_API_VERSIONS = Arrays.asList("1.18", "1.19");
 +
 +    public static PluginState checkApiVersion(PluginDescription description) {
-+        String minimumVersion = ProxyServer.getInstance().getAmethyst().getConfig().minApiVersion;
++        String minimumVersion = Amethyst.getInstance().getConfig().minApiVersion;
 +        if (minimumVersion.equals("none")) return PluginState.ENABLED;
 +
 +        int minimumIndex = SUPPORTED_API_VERSIONS.indexOf(minimumVersion);
@@ -41,7 +42,7 @@ index 00000000..edb851d0
 +                return PluginState.INCOMPATIBLE;
 +            }
 +        } else {
-+            if (ProxyServer.getInstance().getAmethyst().getConfig().logLegacyPluginWarning) {
++            if (Amethyst.getInstance().getConfig().logLegacyPluginWarning) {
 +                ProxyServer.getInstance().getLogger().warning("Legacy plugin " + description.getName() + " v" + description.getVersion() + " does not specify an api-version.");
 +            }
 +            return PluginState.UNKNOWN_API;

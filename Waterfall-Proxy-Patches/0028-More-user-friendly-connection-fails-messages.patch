@@ -1,4 +1,4 @@
-From bcd5bdca1a87d9b5eea11dac2ab168c38d5b5fe4 Mon Sep 17 00:00:00 2001
+From efcfae7a699756160324b315db25ed772bcc2d78 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Sun, 6 Mar 2022 23:35:34 +0500
 Subject: [PATCH] More user-friendly connection fails messages
@@ -28,12 +28,12 @@ index d9db2a97..b9c48351 100644
          alertEnabled = getBoolean( "modules.alert", alertEnabled );
          findEnabled = getBoolean( "modules.find", findEnabled );
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
-index d3d81ffa..641465ac 100644
+index 39b35422..b0710a50 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
-@@ -83,6 +83,8 @@ public class MessagesConfig extends AbstractYamlConfig {
-         formattedMessages.put("secure_profile_expired", ChatColor.translateAlternateColorCodes('&', getString("error.secure-profile.expired", "Secure profile expired.")));
-         formattedMessages.put("secure_profile_invalid", ChatColor.translateAlternateColorCodes('&', getString("error.secure-profile.invalid", "Secure profile invalid.")));
+@@ -84,6 +84,8 @@ public class MessagesConfig extends AbstractYamlConfig {
+         formattedMessages.put("secure_profile_required", ChatColor.translateAlternateColorCodes('&', getString("error.secure-profile.required", "A secure profile is required to join this server.")));
+         formattedMessages.put("secure_profile_unsupported", ChatColor.translateAlternateColorCodes('&', getString("error.secure-profile.unsupported", "Outdated client, secure profile not supported. Please use 1.19 or newer.")));
          formattedMessages.put("username_needed", ChatColor.translateAlternateColorCodes('&', getString("error.username-needed", "&cPlease follow this command by a user name.")));
 +        formattedMessages.put("timeout", ChatColor.translateAlternateColorCodes('&', getString("error.timeout", "Server not reachable (timeout). Offline? Incorrectly configured address/port/firewall?")));
 +        formattedMessages.put("server_unavailable", ChatColor.translateAlternateColorCodes('&', getString("error.server-unavailable", "This server is unavailable")));
@@ -41,7 +41,7 @@ index d3d81ffa..641465ac 100644
  
      public String getTranslation(final String name, final Object... args) {
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index ab1e3f42..d34caaa1 100644
+index ab1e3f42..42302b21 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -10,6 +10,7 @@ import io.netty.channel.ChannelFuture;
@@ -52,7 +52,15 @@ index ab1e3f42..d34caaa1 100644
  import io.netty.util.internal.PlatformDependent;
  import java.net.InetSocketAddress;
  import java.net.SocketAddress;
-@@ -379,10 +380,10 @@ public final class UserConnection implements ProxiedPlayer
+@@ -23,6 +24,7 @@ import java.util.Objects;
+ import java.util.Queue;
+ import java.util.UUID;
+ import java.util.logging.Level;
++import io.sapphiremc.amethyst.Amethyst;
+ import lombok.Getter;
+ import lombok.NonNull;
+ import lombok.RequiredArgsConstructor;
+@@ -379,10 +381,10 @@ public final class UserConnection implements ProxiedPlayer
                          connect( def, null, true, ServerConnectEvent.Reason.LOBBY_FALLBACK, request.getConnectTimeout(), request.isSendFeedback() ); // Waterfall
                      } else if ( dimensionChange )
                      {
@@ -65,7 +73,7 @@ index ab1e3f42..d34caaa1 100644
                      }
                  }
              }
-@@ -402,10 +403,25 @@ public final class UserConnection implements ProxiedPlayer
+@@ -402,10 +404,25 @@ public final class UserConnection implements ProxiedPlayer
          b.connect().addListener( listener );
      }
  
@@ -75,7 +83,7 @@ index ab1e3f42..d34caaa1 100644
 -        bungee.getLogger().log(Level.WARNING, "Error occurred processing connection for " + this.name + " " + Util.exception( cause, false )); // Waterfall
 -        return ""; // Waterfall
 +        // Amethyst start - More user-friendly connection fail messages
-+        if ( bungee.getAmethyst().getConfig().logBackendConnectionFailed )
++        if ( Amethyst.getInstance().getConfig().logBackendConnectionFailed )
 +        {
 +            bungee.getLogger().log( Level.WARNING, "[" + pendingConnection.getName() + "|" + pendingConnection.getAddress() + "] Failed to connect to server " + server, cause );
 +        }

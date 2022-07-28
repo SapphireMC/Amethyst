@@ -1,4 +1,4 @@
-From 81f61776e24373412f131ab9ade978505f8f9f84 Mon Sep 17 00:00:00 2001
+From d4ae72343bc07c247da9f04b2d898d05f2040933 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Sun, 6 Mar 2022 02:47:48 +0500
 Subject: [PATCH] Antibot system from FlameCord
@@ -923,7 +923,7 @@ index 00000000..dc21bf8d
 +    }
 +}
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
-index c093cafd..d3d81ffa 100644
+index d4f1309a..39b35422 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
 @@ -42,6 +42,15 @@ public class MessagesConfig extends AbstractYamlConfig {
@@ -943,7 +943,7 @@ index c093cafd..d3d81ffa 100644
          formattedMessages.put("fallback_kick_not_found", ChatColor.translateAlternateColorCodes('&', getString("event.fallback.reason.not-found", "&cThe server you were on was not found on reload")));
          formattedMessages.put("fallback_lobby", ChatColor.translateAlternateColorCodes('&', getString("event.fallback.lobby", "&cCould not connect to target server, you have been moved to a fallback server.")));
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 9fa73820..0e1551a7 100644
+index f3b04379..b91caa6f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -3,6 +3,8 @@ package net.md_5.bungee.connection;
@@ -955,19 +955,19 @@ index 9fa73820..0e1551a7 100644
  import java.math.BigInteger;
  import java.net.InetSocketAddress;
  import java.net.SocketAddress;
-@@ -365,6 +367,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -367,6 +369,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
  
          bungee.getPluginManager().callEvent( new PlayerHandshakeEvent( InitialHandler.this, handshake ) );
  
 +        // Amethyst start - Antibot system
-+        AddressData data = bungee.getAmethyst().getAddressDataManager().getAddressData( ch.getRemoteAddress() );
-+        CheckManager checkManager = bungee.getAmethyst().getCheckManager();
++        AddressData data = Amethyst.getInstance().getAddressDataManager().getAddressData( ch.getRemoteAddress() );
++        CheckManager checkManager = Amethyst.getInstance().getCheckManager();
 +        // Amethyst end
 +
          switch ( handshake.getRequestedProtocol() )
          {
              case 1:
-@@ -375,6 +382,20 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -377,6 +384,20 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  }
                  thisState = State.STATUS;
                  ch.setProtocol( Protocol.STATUS );
@@ -977,7 +977,7 @@ index 9fa73820..0e1551a7 100644
 +
 +                if ( checkManager.getRateLimitCheck().check( ch.getRemoteAddress() ) )
 +                {
-+                    if ( bungee.getAmethyst().getAntibotConfig().rateLimitLog )
++                    if ( Amethyst.getInstance().getAntibotConfig().rateLimitLog )
 +                    {
 +                        bungee.getLogger().log( Level.INFO, "[AntiBot] [{0}] is pinging too fast", ch.getRemoteAddress() );
 +                    }
@@ -988,7 +988,7 @@ index 9fa73820..0e1551a7 100644
                  break;
              case 2:
                  // Login
-@@ -385,6 +406,20 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -387,6 +408,20 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  thisState = State.USERNAME;
                  ch.setProtocol( Protocol.LOGIN );
  
@@ -997,7 +997,7 @@ index 9fa73820..0e1551a7 100644
 +
 +                if ( checkManager.getRateLimitCheck().check( ch.getRemoteAddress() ) )
 +                {
-+                    if ( bungee.getAmethyst().getAntibotConfig().rateLimitLog )
++                    if ( Amethyst.getInstance().getAntibotConfig().rateLimitLog )
 +                    {
 +                        bungee.getLogger().log( Level.INFO, "[AntiBot] [{0}] is connecting too fast", ch.getRemoteAddress() );
 +                    }
@@ -1009,13 +1009,13 @@ index 9fa73820..0e1551a7 100644
                  if ( !ProtocolConstants.SUPPORTED_VERSION_IDS.contains( handshake.getProtocolVersion() ) )
                  {
                      if ( handshake.getProtocolVersion() > bungee.getProtocolVersion() )
-@@ -445,6 +480,55 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -451,6 +486,55 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              return;
          }
  
 +        // Amethyst start - Antibot system
-+        AddressData data = bungee.getAmethyst().getAddressDataManager().getAddressData( ch.getRemoteAddress() );
-+        CheckManager checkManager = bungee.getAmethyst().getCheckManager();
++        AddressData data = Amethyst.getInstance().getAddressDataManager().getAddressData( ch.getRemoteAddress() );
++        CheckManager checkManager = Amethyst.getInstance().getCheckManager();
 +        String nickname = loginRequest.getData();
 +
 +        data.addNickname( loginRequest.getData() );
@@ -1023,7 +1023,7 @@ index 9fa73820..0e1551a7 100644
 +        // Check account
 +        if ( checkManager.getAccountsCheck().check( ch.getRemoteAddress(), nickname ) )
 +        {
-+            if ( bungee.getAmethyst().getAntibotConfig().accountsLog )
++            if ( Amethyst.getInstance().getAntibotConfig().accountsLog )
 +            {
 +                bungee.getLogger().log( Level.INFO, "[AntiBot] [{0}] has too many accounts", ch.getRemoteAddress() );
 +            }
@@ -1033,7 +1033,7 @@ index 9fa73820..0e1551a7 100644
 +        // Check nickname
 +        if ( checkManager.getNicknameCheck().check( ch.getRemoteAddress() ) )
 +        {
-+            if ( bungee.getAmethyst().getAntibotConfig().nicknameLog )
++            if ( Amethyst.getInstance().getAntibotConfig().nicknameLog )
 +            {
 +                bungee.getLogger().log( Level.INFO, "[AntiBot] [{0}] has a blacklisted nickname", ch.getRemoteAddress() );
 +            }
@@ -1043,17 +1043,17 @@ index 9fa73820..0e1551a7 100644
 +        // Check reconnect
 +        if ( checkManager.getReconnectCheck().check( ch.getRemoteAddress() ) )
 +        {
-+            if ( bungee.getAmethyst().getAntibotConfig().reconnectLog )
++            if ( Amethyst.getInstance().getAntibotConfig().reconnectLog )
 +            {
 +                bungee.getLogger().log( Level.INFO, "[AntiBot] [{0}] has to reconnect to join", ch.getRemoteAddress() );
 +            }
-+            disconnect( bungee.getTranslation( "antibot_reconnect", bungee.getAmethyst().getAntibotConfig().reconnectAttempts - data.getTotalConnections()));
++            disconnect( bungee.getTranslation( "antibot_reconnect", Amethyst.getInstance().getAntibotConfig().reconnectAttempts - data.getTotalConnections()));
 +            return;
 +        }
 +        // Check country
 +        if ( checkManager.getCountryCheck().check( ch.getRemoteAddress() ) )
 +        {
-+            if ( bungee.getAmethyst().getAntibotConfig().countryLog )
++            if ( Amethyst.getInstance().getAntibotConfig().countryLog )
 +            {
 +                bungee.getLogger().log( Level.INFO, "[AntiBot] [{0}] has his country blocked from the server", ch.getRemoteAddress() );
 +            }
@@ -1066,13 +1066,14 @@ index 9fa73820..0e1551a7 100644
          // We can just check by UUID here as names are based on UUID
          if ( !isOnlineMode() && bungee.getPlayer( getUniqueId() ) != null )
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 6240204e..535e3be8 100644
+index 6240204e..99657d3d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -5,9 +5,13 @@ import com.mojang.brigadier.context.StringRange;
+@@ -5,9 +5,14 @@ import com.mojang.brigadier.context.StringRange;
  import com.mojang.brigadier.suggestion.Suggestion;
  import com.mojang.brigadier.suggestion.Suggestions;
  import io.netty.channel.Channel;
++import io.sapphiremc.amethyst.Amethyst;
 +import io.sapphiremc.amethyst.antibot.CheckManager;
 +import io.sapphiremc.amethyst.antibot.address.AddressData;
  import java.util.ArrayList;
@@ -1083,17 +1084,17 @@ index 6240204e..535e3be8 100644
  import net.md_5.bungee.BungeeCord;
  import net.md_5.bungee.ServerConnection.KeepAliveData;
  import net.md_5.bungee.UserConnection;
-@@ -187,6 +191,31 @@ public class UpstreamBridge extends PacketHandler
+@@ -187,6 +192,31 @@ public class UpstreamBridge extends PacketHandler
          }
          Preconditions.checkArgument(!empty, "Chat message is empty");
  
 +        // Amethyst start - Antibot system
-+        CheckManager checkManager = bungee.getAmethyst().getCheckManager();
++        CheckManager checkManager = Amethyst.getInstance().getCheckManager();
 +
 +        // Check chat
 +        if ( checkManager.getFastChatCheck().check( con.getCh().getRemoteAddress() ) )
 +        {
-+            if ( bungee.getAmethyst().getAntibotConfig().fastChatLog )
++            if ( Amethyst.getInstance().getAntibotConfig().fastChatLog )
 +            {
 +                bungee.getLogger().log( Level.INFO, "[AntiBot] [{0}] is chatting too fast", con.getCh().getRemoteAddress() );
 +            }
@@ -1103,7 +1104,7 @@ index 6240204e..535e3be8 100644
 +        // Check password
 +        if ( checkManager.getPasswordCheck().check( con.getCh().getRemoteAddress(), message ) )
 +        {
-+            if ( bungee.getAmethyst().getAntibotConfig().passwordLog )
++            if ( Amethyst.getInstance().getAntibotConfig().passwordLog )
 +            {
 +                bungee.getLogger().log( Level.INFO, "[AntiBot] [{0}] has entered a repeated password", con.getCh().getRemoteAddress() );
 +            }
@@ -1116,21 +1117,12 @@ index 6240204e..535e3be8 100644
          if ( !bungee.getPluginManager().callEvent( chatEvent ).isCancelled() )
          {
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index 868f4211..e4515bf4 100644
+index eacc9ae0..4c4e3b49 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-@@ -10,6 +10,8 @@ import io.netty.handler.timeout.ReadTimeoutException;
- import java.io.IOException;
- import java.net.InetSocketAddress;
- import java.util.logging.Level;
-+
-+import io.sapphiremc.amethyst.Amethyst;
- import net.md_5.bungee.api.ProxyServer;
- import net.md_5.bungee.connection.CancelSendSignal;
- import net.md_5.bungee.connection.InitialHandler;
-@@ -151,6 +153,14 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+@@ -152,6 +152,14 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
          {
-             boolean logExceptions = !( handler instanceof PingHandler ) && ProxyServer.getInstance().getAmethyst().getConfig().logExceptions; // Amethyst - Option to fully disable exceptions logging.
+             boolean logExceptions = !( handler instanceof PingHandler ) && Amethyst.getInstance().getConfig().logExceptions; // Amethyst - Option to fully disable exceptions logging.
  
 +            // Amethyst start - Antibot system
 +            if ( Amethyst.getInstance().getAntibotConfig().firewallPackets.contains( cause.getClass().getName() ) )
@@ -1144,18 +1136,10 @@ index 868f4211..e4515bf4 100644
              {
                  if ( cause instanceof ReadTimeoutException )
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index f1b11b9d..8054d6a9 100644
+index 45043b83..02ea4c8d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -32,6 +32,7 @@ import java.net.SocketAddress;
- import java.util.concurrent.ThreadFactory;
- import java.util.concurrent.TimeUnit;
- import java.util.logging.Level;
-+import io.sapphiremc.amethyst.Amethyst;
- import net.md_5.bungee.BungeeCord;
- import net.md_5.bungee.Util;
- import net.md_5.bungee.api.ProxyServer;
-@@ -57,6 +58,18 @@ public class PipelineUtils
+@@ -59,6 +59,18 @@ public class PipelineUtils
          {
              SocketAddress remoteAddress = ( ch.remoteAddress() == null ) ? ch.parent().localAddress() : ch.remoteAddress();
  

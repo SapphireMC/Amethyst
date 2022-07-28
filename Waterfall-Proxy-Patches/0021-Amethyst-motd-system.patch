@@ -1,4 +1,4 @@
-From da52c9b66239c0f2c1950304ccaf306c99d5774f Mon Sep 17 00:00:00 2001
+From 2a9b87f86e104c1626253ad5e898bcfe58c9f44c Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 10 Jan 2022 02:59:49 +0500
 Subject: [PATCH] Amethyst motd system
@@ -73,7 +73,7 @@ index e5a30227..461ef7f7 100644
          logExceptions = getBoolean("logger.exceptions", logExceptions);
          logHaProxy = getBoolean("logger.haProxy", logHaProxy);
 diff --git a/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java b/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java
-index 770ec61a..cb107d20 100644
+index 93c519f4..5d9877b0 100644
 --- a/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java
 +++ b/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java
 @@ -1,6 +1,7 @@
@@ -91,7 +91,7 @@ index 770ec61a..cb107d20 100644
 +    private static final PingListener PING_LISTENER = new PingListener();
 +
      public static void registerModules(ProxyServer proxy) {
-         AmethystConfig config = proxy.getAmethyst().getConfig();
+         AmethystConfig config = Amethyst.getInstance().getConfig();
          PluginManager manager = proxy.getPluginManager();
          manager.unregisterCommands(null);
 +        manager.unregisterListener(PING_LISTENER);
@@ -109,16 +109,16 @@ index 770ec61a..cb107d20 100644
  }
 diff --git a/proxy/src/main/java/io/sapphiremc/amethyst/listeners/PingListener.java b/proxy/src/main/java/io/sapphiremc/amethyst/listeners/PingListener.java
 new file mode 100644
-index 00000000..f566f10c
+index 00000000..b05ed035
 --- /dev/null
 +++ b/proxy/src/main/java/io/sapphiremc/amethyst/listeners/PingListener.java
 @@ -0,0 +1,75 @@
 +package io.sapphiremc.amethyst.listeners;
 +
++import io.sapphiremc.amethyst.Amethyst;
 +import io.sapphiremc.amethyst.conf.AmethystConfig;
 +import java.util.ArrayList;
 +import java.util.List;
-+import java.util.Map;
 +import java.util.UUID;
 +import net.md_5.bungee.api.ChatColor;
 +import net.md_5.bungee.api.ProxyServer;
@@ -133,7 +133,7 @@ index 00000000..f566f10c
 +
 +    @EventHandler
 +    public void onPing(ProxyPingEvent event) {
-+        AmethystConfig config = ProxyServer.getInstance().getAmethyst().getConfig();
++        AmethystConfig config = Amethyst.getInstance().getConfig();
 +        if (!config.motdEnabled) return;
 +
 +        ServerPing ping = event.getResponse();

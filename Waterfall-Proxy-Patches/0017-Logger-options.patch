@@ -1,4 +1,4 @@
-From aa9c8dbc26168d008d419ee5d714512b79b0f5fb Mon Sep 17 00:00:00 2001
+From ce408613830cf35417cc139128c5821ccedb23d5 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 10 Jan 2022 00:39:35 +0500
 Subject: [PATCH] Logger options
@@ -40,55 +40,71 @@ index 80ec623a..e5a30227 100644
          findEnabled = getBoolean( "modules.find", findEnabled );
          ipEnabled = getBoolean( "modules.ip", ipEnabled );
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 2063fa98..2bba722a 100644
+index 0d166690..05f51bd7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -366,7 +366,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -18,6 +18,7 @@ import java.util.logging.Level;
+ import javax.crypto.SecretKey;
+ import javax.crypto.spec.SecretKeySpec;
+ 
++import io.sapphiremc.amethyst.Amethyst;
+ import lombok.Getter;
+ import lombok.RequiredArgsConstructor;
+ import net.md_5.bungee.BungeeCord;
+@@ -367,7 +368,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          {
              case 1:
                  // Ping
 -                if ( bungee.getConfig().isLogPings() )
-+                if ( bungee.getConfig().isLogPings() && bungee.getAmethyst().getConfig().logInitialHandler ) // Amethyst - Option to fully disable InitialHandler logging.
++                if ( bungee.getConfig().isLogPings() && Amethyst.getInstance().getConfig().logInitialHandler ) // Amethyst - Option to fully disable InitialHandler logging.
                  {
                      bungee.getLogger().log( Level.INFO, "{0} has pinged", this );
                  }
-@@ -375,7 +375,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -376,7 +377,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  break;
              case 2:
                  // Login
 -                if (BungeeCord.getInstance().getConfig().isLogInitialHandlerConnections() ) // Waterfall
-+                if ( BungeeCord.getInstance().getConfig().isLogInitialHandlerConnections() && bungee.getAmethyst().getConfig().logInitialHandler ) // Waterfall  // Amethyst - Option to fully disable InitialHandler logging.
++                if ( BungeeCord.getInstance().getConfig().isLogInitialHandlerConnections() && Amethyst.getInstance().getConfig().logInitialHandler ) // Waterfall  // Amethyst - Option to fully disable InitialHandler logging.
                  {
                      bungee.getLogger().log( Level.INFO, "{0} has connected", this );
                  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index c891f705..6550d1d7 100644
+index c891f705..4f3694db 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-@@ -44,7 +44,7 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+@@ -10,6 +10,7 @@ import io.netty.handler.timeout.ReadTimeoutException;
+ import java.io.IOException;
+ import java.net.InetSocketAddress;
+ import java.util.logging.Level;
++import io.sapphiremc.amethyst.Amethyst;
+ import net.md_5.bungee.api.ProxyServer;
+ import net.md_5.bungee.connection.CancelSendSignal;
+ import net.md_5.bungee.connection.InitialHandler;
+@@ -44,7 +45,7 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
              channel = new ChannelWrapper( ctx );
              handler.connected( channel );
  
 -            if ( !( handler instanceof InitialHandler || handler instanceof PingHandler ) )
-+            if ( !( handler instanceof InitialHandler || handler instanceof PingHandler ) && ProxyServer.getInstance().getAmethyst().getConfig().logInitialHandler ) // Amethyst - Option to fully disable InitialHandler logging.
++            if ( !( handler instanceof InitialHandler || handler instanceof PingHandler ) && Amethyst.getInstance().getConfig().logInitialHandler ) // Amethyst - Option to fully disable InitialHandler logging.
              {
                  ProxyServer.getInstance().getLogger().log( Level.INFO, "{0} has connected", handler );
              }
-@@ -59,7 +59,7 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+@@ -59,7 +60,7 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
              channel.markClosed();
              handler.disconnected( channel );
  
 -            if ( !( handler instanceof InitialHandler || handler instanceof PingHandler ) )
-+            if ( !( handler instanceof InitialHandler || handler instanceof PingHandler ) && ProxyServer.getInstance().getAmethyst().getConfig().logInitialHandler ) // Amethyst - Option to fully disable InitialHandler logging.
++            if ( !( handler instanceof InitialHandler || handler instanceof PingHandler ) && Amethyst.getInstance().getConfig().logInitialHandler ) // Amethyst - Option to fully disable InitialHandler logging.
              {
                  ProxyServer.getInstance().getLogger().log( Level.INFO, "{0} has disconnected", handler );
              }
-@@ -98,10 +98,13 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+@@ -98,10 +99,13 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
                  {
                      InetSocketAddress newAddress = new InetSocketAddress( proxy.sourceAddress(), proxy.sourcePort() );
  
 -                    ProxyServer.getInstance().getLogger().log( Level.FINE, "Set remote address via PROXY {0} -> {1}", new Object[]
-+                    if ( ProxyServer.getInstance().getAmethyst().getConfig().logHaProxy ) // Amethyst - Option to fully disable InitialHandler logging.
++                    if ( Amethyst.getInstance().getConfig().logHaProxy ) // Amethyst - Option to fully disable InitialHandler logging.
                      {
 -                        channel.getRemoteAddress(), newAddress
 -                    } );
@@ -100,12 +116,12 @@ index c891f705..6550d1d7 100644
  
                      channel.setRemoteAddress( newAddress );
                  }
-@@ -144,7 +147,7 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+@@ -144,7 +148,7 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
      {
          if ( ctx.channel().isActive() )
          {
 -            boolean logExceptions = !( handler instanceof PingHandler );
-+            boolean logExceptions = !( handler instanceof PingHandler ) && ProxyServer.getInstance().getAmethyst().getConfig().logExceptions; // Amethyst - Option to fully disable exceptions logging.
++            boolean logExceptions = !( handler instanceof PingHandler ) && Amethyst.getInstance().getConfig().logExceptions; // Amethyst - Option to fully disable exceptions logging.
  
              if ( logExceptions )
              {
