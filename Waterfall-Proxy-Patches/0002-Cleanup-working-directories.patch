@@ -1,9 +1,140 @@
-From aa2889d010a48344f6353acfc27f754344976ae8 Mon Sep 17 00:00:00 2001
+From 9b62c58d0b4eba60c8fdd16da90dc03a43694999 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Fri, 31 Dec 2021 13:57:07 +0500
 Subject: [PATCH] Cleanup working directories
 
 
+diff --git a/.github/ISSUE_TEMPLATE/bug_report.yml b/.github/ISSUE_TEMPLATE/bug_report.yml
+deleted file mode 100644
+index 04805f78..00000000
+--- a/.github/ISSUE_TEMPLATE/bug_report.yml
++++ /dev/null
+@@ -1,63 +0,0 @@
+-name: Bug inside BungeeCord
+-description: Create a bug report about a problem inside BungeeCord.
+-body:
+-  - type: markdown
+-    attributes:
+-      value: |
+-        #### Report a bug inside bungeecord
+-        Issues happening with forks of BungeeCord should **not** be reported here.
+-  - type: input
+-    id: bungee-version
+-    attributes:
+-      label: Bungeecord version
+-      description: The output of the /bungee command (or just the bungee build number) (execute in bungeecord console for easy text copy)
+-      placeholder: e.g. git:BungeeCord-Bootstrap:1.xx-SNAPSHOT:xxxxxxx:xxxx
+-    validations:
+-      required: true
+-  - type: input
+-    id: server-version
+-    attributes:
+-      label: Server version
+-      description: The output of the /version command (execute in server console for easy text copy)
+-      placeholder: "e.g. git-Spigot-xxxxxxx-xxxxxxx (MC: 1.x.x)"
+-  - type: input
+-    id: client-version
+-    attributes:
+-      label: Client version
+-      description: Minecraft Client Version
+-      placeholder: e.g. 1.18.2
+-  - type: textarea
+-    id: bungee-plugins
+-    attributes:
+-      label: Bungeecord plugins
+-      description: Please list all BungeeCord plugins you are using.
+-    validations:
+-      required: true
+-  - type: textarea
+-    id: the-bug
+-    attributes:
+-      label: The bug
+-      description: Please describe the bug. Include **details** you find neccessary. If you just have a question, please ask it in [SpigotMC Forums](https://www.spigotmc.org) and not here.
+-    validations:
+-      required: true
+-  - type: textarea
+-    id: logs
+-    attributes:
+-      label: Log output (links)
+-      description: Please put your log output inbetween three backticks (```` ``` ````). Upload your log files to [gist.github.com](https://gist.github.com) and put them in here.
+-      placeholder: |
+-        ```
+-        log output
+-        ```
+-  - type: checkboxes
+-    id: checkboxes
+-    attributes:
+-      label: Checking
+-      options:
+-        - label: I am using BungeeCord and **not a fork**. Issues with forks should not be reported here.
+-          required: true
+-        - label: I think this is **not** an issue with a bungeecord plugin.
+-          required: true
+-        - label: I have not read these checkboxes and therefore I just ticked them all.
+-        - label: This is not a question or plugin creation help request.
+-          required: true
+diff --git a/.github/ISSUE_TEMPLATE/config.yml b/.github/ISSUE_TEMPLATE/config.yml
+deleted file mode 100644
+index ae21e57e..00000000
+--- a/.github/ISSUE_TEMPLATE/config.yml
++++ /dev/null
+@@ -1,14 +0,0 @@
+-blank_issues_enabled: false
+-contact_links:
+-  - name: Configuration help
+-    url: https://www.spigotmc.org/forums/bungeecord-help.70/create-thread
+-    about: Help for configuring bungeecord will only be answered in spigotmc.org forums.
+-  - name: I have a problem with a bungee plugin
+-    url: https://www.spigotmc.org/forums/bungeecord-plugin-help.71/create-thread
+-    about: Help about plugins can be recieved in spigotmc.org forums.
+-  - name: Questions and discussions
+-    url: https://www.spigotmc.org/forums/bungeecord-discussion.21/create-thread
+-    about: spigotmc.org forums are the best place to ask your questions regarding bungeecord.
+-  - name: Plugin creation help
+-    url: https://www.spigotmc.org/forums/bungeecord-plugin-development.23/create-thread
+-    about: Plugin creation help for bungee plugins can be recieved in spigotmc.org forums.
+diff --git a/.github/ISSUE_TEMPLATE/feature_request.yml b/.github/ISSUE_TEMPLATE/feature_request.yml
+deleted file mode 100644
+index 4a2f40da..00000000
+--- a/.github/ISSUE_TEMPLATE/feature_request.yml
++++ /dev/null
+@@ -1,36 +0,0 @@
+-name: Feature request
+-description: Suggest a feature which bungeecord should include.
+-body:
+-  - type: textarea
+-    id: the-feature
+-    attributes:
+-      label: Feature description
+-      description: Please describe your feature or improvement. Please include **details**.
+-    validations:
+-      required: true
+-  - type: textarea
+-    id: goal
+-    attributes:
+-      label: Goal of the feature
+-      description: What is the goal of your feature?
+-    validations:
+-      required: true
+-  - type: textarea
+-    id: alternatives
+-    attributes:
+-      label: Unfitting alternatives
+-      description: What alternatives have you considered and why are they not sufficient for your use case?
+-    validations:
+-      required: true
+-  - type: checkboxes
+-    id: checkboxes
+-    attributes:
+-      label: Checking
+-      options:
+-        - label: This is not a question or plugin creation help request.
+-          required: true
+-        - label: This is a **feature or improvement request**.
+-          required: true
+-        - label: I have not read these checkboxes and therefore I just ticked them all.
+-        - label: I did not use this form to report a bug.
+-          required: true
 diff --git a/.github/workflows/maven.yml b/.github/workflows/maven.yml
 deleted file mode 100644
 index c835bbcd..00000000
@@ -694,5 +825,5 @@ index 7e465924..00000000
 -    </properties>
 -</project-shared-configuration>
 -- 
-2.34.1.windows.1
+2.37.1.windows.1
 

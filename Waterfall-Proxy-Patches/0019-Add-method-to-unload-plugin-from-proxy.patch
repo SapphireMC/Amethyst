@@ -1,11 +1,11 @@
-From 59b5c43588fd79c1666ca601a90366b297af4d24 Mon Sep 17 00:00:00 2001
+From f4e45d9eee150b1c8015b104f228858b0668e539 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 10 Jan 2022 01:47:11 +0500
 Subject: [PATCH] Add method to unload plugin from proxy
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index 369ab407..359ce881 100644
+index b24888f2..c03fb079 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 @@ -25,6 +25,7 @@ import java.util.Set;
@@ -78,5 +78,5 @@ index 369ab407..359ce881 100644
       * Load all plugins from the specified folder.
       *
 -- 
-2.35.1
+2.37.1.windows.1
 

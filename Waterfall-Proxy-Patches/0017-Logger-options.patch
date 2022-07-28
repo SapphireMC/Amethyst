@@ -1,17 +1,17 @@
-From 3c0674c1c6f92ef716b2802a5481d8f07e075f4d Mon Sep 17 00:00:00 2001
+From aa9c8dbc26168d008d419ee5d714512b79b0f5fb Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 10 Jan 2022 00:39:35 +0500
 Subject: [PATCH] Logger options
 
 
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-index b52bd616..dd9124fa 100644
+index 80ec623a..e5a30227 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-@@ -18,6 +18,19 @@ public class AmethystConfig extends AbstractYamlConfig {
-      */
-     public String maxVersion = "1.18.2";
- 
+@@ -7,6 +7,19 @@ import net.md_5.bungee.config.ConfigurationProvider;
+  * Use this only to get parameter values!
+  */
+ public class AmethystConfig extends AbstractYamlConfig {
 +    /**
 +     * Enable or disable InitialHandler logging.
 +     */
@@ -28,10 +28,10 @@ index b52bd616..dd9124fa 100644
      /**
       * A module that provides the /alert and /alertraw commands.
       */
-@@ -67,6 +80,10 @@ public class AmethystConfig extends AbstractYamlConfig {
-         minVersion = getString( "versions.min", minVersion );
-         maxVersion = getString( "versions.max", maxVersion );
- 
+@@ -53,6 +66,10 @@ public class AmethystConfig extends AbstractYamlConfig {
+     @Override
+     protected void loadContent()
+     {
 +        logInitialHandler = getBoolean("logger.initialHandler", logInitialHandler);
 +        logExceptions = getBoolean("logger.exceptions", logExceptions);
 +        logHaProxy = getBoolean("logger.haProxy", logHaProxy);
@@ -39,46 +39,8 @@ index b52bd616..dd9124fa 100644
          alertEnabled = getBoolean( "modules.alert", alertEnabled );
          findEnabled = getBoolean( "modules.find", findEnabled );
          ipEnabled = getBoolean( "modules.ip", ipEnabled );
-diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 167603de..9314daff 100644
---- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-+++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -293,7 +293,7 @@ public class BungeeCord extends ProxyServer
-         pluginManager.loadPlugins();
-         config.load();
- 
--        Amethyst.getInstance().load(logger); // Amethyst - load our configs
-+        Amethyst.getInstance().load( logger); // Amethyst - load our configs
-         AmethystModulesManager.registerModules(this); // Amethyst - register modules
-         ProtocolVersion.register(); // Amethyst - configurable min and max versions
- 
-diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
-index 7887c5e6..5e0a3e27 100644
---- a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
-+++ b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
-@@ -3,8 +3,11 @@ package net.md_5.bungee.command;
- import io.sapphiremc.amethyst.Amethyst;
- import io.sapphiremc.amethyst.AmethystModulesManager;
- import io.sapphiremc.amethyst.api.protocol.ProtocolVersion;
-+import java.util.Collection;
-+import java.util.HashSet;
- import net.md_5.bungee.BungeeCord;
- import net.md_5.bungee.api.CommandSender;
-+import net.md_5.bungee.api.config.ServerInfo;
- import net.md_5.bungee.api.connection.PendingConnection;
- import net.md_5.bungee.api.connection.ProxiedPlayer;
- import net.md_5.bungee.api.event.ProxyReloadEvent;
-@@ -28,7 +31,7 @@ public class CommandReload extends Command
-         proxy.startListeners();
-         proxy.getPluginManager().callEvent( new ProxyReloadEvent( sender ) );
- 
--        Amethyst.getInstance().load( BungeeCord.getInstance().getLogger() ); // Amethyst - load our configs
-+        Amethyst.getInstance().load( BungeeCord.getInstance().getLogger()); // Amethyst - load our configs
-         AmethystModulesManager.registerModules( BungeeCord.getInstance() ); // Amethyst - register modules
-         ProtocolVersion.register(); // Amethyst - register min and max supported versions
- 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 1f53e2f8..4d8de315 100644
+index 2063fa98..2bba722a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -366,7 +366,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -95,12 +57,12 @@ index 1f53e2f8..4d8de315 100644
              case 2:
                  // Login
 -                if (BungeeCord.getInstance().getConfig().isLogInitialHandlerConnections() ) // Waterfall
-+                if (BungeeCord.getInstance().getConfig().isLogInitialHandlerConnections() && bungee.getAmethyst().getConfig().logInitialHandler) // Waterfall  // Amethyst - Option to fully disable InitialHandler logging.
++                if ( BungeeCord.getInstance().getConfig().isLogInitialHandlerConnections() && bungee.getAmethyst().getConfig().logInitialHandler ) // Waterfall  // Amethyst - Option to fully disable InitialHandler logging.
                  {
                      bungee.getLogger().log( Level.INFO, "{0} has connected", this );
                  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index c891f705..d151b406 100644
+index c891f705..6550d1d7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 @@ -44,7 +44,7 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
@@ -143,7 +105,7 @@ index c891f705..d151b406 100644
          if ( ctx.channel().isActive() )
          {
 -            boolean logExceptions = !( handler instanceof PingHandler );
-+            boolean logExceptions = ProxyServer.getInstance().getAmethyst().getConfig().logExceptions && !(handler instanceof PingHandler); // Amethyst - Option to fully disable exceptions logging.
++            boolean logExceptions = !( handler instanceof PingHandler ) && ProxyServer.getInstance().getAmethyst().getConfig().logExceptions; // Amethyst - Option to fully disable exceptions logging.
  
              if ( logExceptions )
              {

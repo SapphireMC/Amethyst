@@ -1,11 +1,11 @@
-From 8c3a8287997924ab70194409e8e0c03aa8ed2026 Mon Sep 17 00:00:00 2001
+From da52c9b66239c0f2c1950304ccaf306c99d5774f Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 10 Jan 2022 02:59:49 +0500
 Subject: [PATCH] Amethyst motd system
 
 
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-index dd9124fa..c3bb4afc 100644
+index e5a30227..461ef7f7 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 @@ -1,5 +1,9 @@
@@ -57,9 +57,9 @@ index dd9124fa..c3bb4afc 100644
 +    public List<String> motdHoverBoxContent = Arrays.asList("&eAmethyst", "", "&7Online: &f%online%", "", "&bServers:", "&8- &7Lobby: &f%online_lobby%", "", "&eexample.net");
 +
      /**
-      * Minimum supported version.
-      * Default: 1.8
-@@ -77,6 +115,12 @@ public class AmethystConfig extends AbstractYamlConfig {
+      * Enable or disable InitialHandler logging.
+      */
+@@ -66,6 +104,12 @@ public class AmethystConfig extends AbstractYamlConfig {
      @Override
      protected void loadContent()
      {
@@ -69,9 +69,9 @@ index dd9124fa..c3bb4afc 100644
 +        motdHoverBoxEnabled = getBoolean("motd.hoverBox.enabled", motdHoverBoxEnabled);
 +        motdHoverBoxContent = getStringList("motd.hoverBox.content", motdHoverBoxContent);
 +
-         minVersion = getString( "versions.min", minVersion );
-         maxVersion = getString( "versions.max", maxVersion );
- 
+         logInitialHandler = getBoolean("logger.initialHandler", logInitialHandler);
+         logExceptions = getBoolean("logger.exceptions", logExceptions);
+         logHaProxy = getBoolean("logger.haProxy", logHaProxy);
 diff --git a/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java b/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java
 index 770ec61a..cb107d20 100644
 --- a/proxy/src/main/java/io/sapphiremc/amethyst/AmethystModulesManager.java

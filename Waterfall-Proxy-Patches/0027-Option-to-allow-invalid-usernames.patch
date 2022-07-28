@@ -1,11 +1,11 @@
-From bd49bcb935cd73c312f48f057cca325908087a4e Mon Sep 17 00:00:00 2001
+From 98ce70d8d765c11d20277bc01665b758415e9bad Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Sun, 6 Mar 2022 02:54:51 +0500
 Subject: [PATCH] Option to allow invalid usernames
 
 
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-index 0cc087d0..05addf5a 100644
+index 75fe48a2..d9db2a97 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 @@ -15,6 +15,10 @@ public class AmethystConfig extends AbstractYamlConfig {
@@ -19,7 +19,7 @@ index 0cc087d0..05addf5a 100644
  
      /**
       * Enable or disable custom motd.
-@@ -154,6 +158,7 @@ public class AmethystConfig extends AbstractYamlConfig {
+@@ -143,6 +147,7 @@ public class AmethystConfig extends AbstractYamlConfig {
      protected void loadContent()
      {
          bungeeName = getString("general.bungee-name", bungeeName);
@@ -28,7 +28,7 @@ index 0cc087d0..05addf5a 100644
          motdEnabled = getBoolean("motd.enabled", motdEnabled);
          motdFirstLines = getStringList("motd.firstLines", motdFirstLines);
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 5bac99c8..bba8a39a 100644
+index 0e1551a7..26244ad3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -443,7 +443,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -38,7 +38,7 @@ index 5bac99c8..bba8a39a 100644
 -        if ( !AllowedCharacters.isValidName( loginRequest.getData(), onlineMode ) )
 +        if ( !bungee.getAmethyst().getConfig().allowInvalidUsernames && !AllowedCharacters.isValidName( loginRequest.getData(), onlineMode ) ) // Amethyst - option to allow invalid usernames
          {
-             disconnect( bungee.getTranslationComponent( "error.name-invalid" ) );
+             disconnect( bungee.getTranslation( "name_invalid" ) );
              return;
 -- 
 2.37.1.windows.1

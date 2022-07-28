@@ -1,4 +1,4 @@
-From 1d79fa7f5af547d1c33d1ba53464d88214b6535c Mon Sep 17 00:00:00 2001
+From 26bb3c25da6d50058768693ef9f6f3e559065d74 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Sat, 23 Apr 2022 20:01:49 +0500
 Subject: [PATCH] Disable entity Metadata Rewrite
@@ -49,10 +49,10 @@ index 558d0dbb..35236382 100644
 -    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 09416927..e5674843 100644
+index f5a675a9..6c19aae1 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -24,8 +24,6 @@ import net.md_5.bungee.protocol.packet.EncryptionRequest;
+@@ -22,8 +22,6 @@ import net.md_5.bungee.protocol.packet.EncryptionRequest;
  import net.md_5.bungee.protocol.packet.EncryptionResponse;
  import net.md_5.bungee.protocol.packet.EntityStatus;
  import net.md_5.bungee.protocol.packet.GameState;
@@ -61,22 +61,22 @@ index 09416927..e5674843 100644
  import net.md_5.bungee.protocol.packet.Handshake;
  import net.md_5.bungee.protocol.packet.KeepAlive;
  import net.md_5.bungee.protocol.packet.Kick;
-@@ -141,20 +139,6 @@ public enum Protocol
+@@ -137,20 +135,6 @@ public enum Protocol
                      PlayerChat::new,
-                     map( ProtocolVersion.MINECRAFT_1_19, 0x30 )
+                     map( ProtocolConstants.MINECRAFT_1_19, 0x30 )
              );
 -            // Waterfall start
 -            TO_CLIENT.registerPacket(
 -                    EntityEffect.class,
 -                    EntityEffect::new,
--                    map(ProtocolVersion.MINECRAFT_1_8, 0x1D),
--                    map(ProtocolVersion.MINECRAFT_1_9, -1)
+-                    map(ProtocolConstants.MINECRAFT_1_8, 0x1D),
+-                    map(ProtocolConstants.MINECRAFT_1_9, -1)
 -            );
 -            TO_CLIENT.registerPacket(
 -                    EntityRemoveEffect.class,
 -                    EntityRemoveEffect::new,
--                    map(ProtocolVersion.MINECRAFT_1_8, 0x1E),
--                    map(ProtocolVersion.MINECRAFT_1_9, -1)
+-                    map(ProtocolConstants.MINECRAFT_1_8, 0x1E),
+-                    map(ProtocolConstants.MINECRAFT_1_9, -1)
 -            );
 -            // Waterfall end
              TO_CLIENT.registerPacket(
@@ -176,10 +176,10 @@ index 7ed2dc3a..00000000
 -    }
 -}
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index cc02ff26..8744b09d 100644
+index 52d6e0cd..2a78cec8 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-@@ -45,7 +45,6 @@ public class WaterfallConfiguration extends Configuration {
+@@ -42,7 +42,6 @@ public class WaterfallConfiguration extends Configuration {
      private int tabThrottle = 1000;
      private boolean disableModernTabLimiter = true;
  
@@ -187,7 +187,7 @@ index cc02ff26..8744b09d 100644
      private boolean disableTabListRewrite = true;
  
      /*
-@@ -77,7 +76,6 @@ public class WaterfallConfiguration extends Configuration {
+@@ -74,7 +73,6 @@ public class WaterfallConfiguration extends Configuration {
          // Throttling options
          tabThrottle = config.getInt("throttling.tab_complete", tabThrottle);
          disableModernTabLimiter = config.getBoolean("disable_modern_tab_limiter", disableModernTabLimiter);
@@ -195,7 +195,7 @@ index cc02ff26..8744b09d 100644
          disableTabListRewrite = config.getBoolean("disable_tab_list_rewrite", disableTabListRewrite);
          pluginChannelLimit = config.getInt("registered_plugin_channels_limit", pluginChannelLimit);
          pluginChannelNameLimit = config.getInt("plugin_channel_name_limit", pluginChannelNameLimit);
-@@ -108,11 +106,6 @@ public class WaterfallConfiguration extends Configuration {
+@@ -105,11 +103,6 @@ public class WaterfallConfiguration extends Configuration {
          return disableModernTabLimiter;
      }
  
@@ -208,11 +208,11 @@ index cc02ff26..8744b09d 100644
      public boolean isDisableTabListRewrite() {
          return disableTabListRewrite;
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index e33b4b82..ca6c4232 100644
+index d4587c58..761ff19c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -241,11 +241,6 @@ public class ServerConnector extends PacketHandler
-             ch.write( new PluginMessage( ProtocolVersion.MINECRAFT_1_13.isBeforeOrEq( user.getPendingConnection().getVersion() ) ? "minecraft:register" : "REGISTER", Joiner.on( "\0" ).join( registeredChannels ).getBytes( StandardCharsets.UTF_8 ), false ) );
+@@ -240,11 +240,6 @@ public class ServerConnector extends PacketHandler
+             ch.write( new PluginMessage( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_13 ? "minecraft:register" : "REGISTER", Joiner.on( "\0" ).join( registeredChannels ).getBytes( StandardCharsets.UTF_8 ), false ) );
          }
  
 -        if (!user.isDisableEntityMetadataRewrite() && user.getSettings() != null )
@@ -223,7 +223,7 @@ index e33b4b82..ca6c4232 100644
          if ( user.getForgeClientHandler().getClientModList() == null && !user.getForgeClientHandler().isHandshakeComplete() ) // Vanilla
          {
              user.getForgeClientHandler().setHandshakeComplete();
-@@ -294,20 +289,6 @@ public class ServerConnector extends PacketHandler
+@@ -293,20 +288,6 @@ public class ServerConnector extends PacketHandler
              user.getTabListHandler().onServerChange();
  
              Scoreboard serverScoreboard = user.getServerSentScoreboard();
@@ -244,7 +244,7 @@ index e33b4b82..ca6c4232 100644
              serverScoreboard.clear();
  
              for ( UUID bossbar : user.getSentBossBars() )
-@@ -326,33 +307,26 @@ public class ServerConnector extends PacketHandler
+@@ -325,33 +306,26 @@ public class ServerConnector extends PacketHandler
              }
  
              user.setDimensionChange( true );
@@ -293,10 +293,10 @@ index e33b4b82..ca6c4232 100644
              // Waterfall end
              user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false, login.getDeathLocation() ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 679fe5cd..715c91f8 100644
+index d34caaa1..bdb20a3e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -45,7 +45,6 @@ import net.md_5.bungee.api.event.ServerConnectEvent;
+@@ -44,7 +44,6 @@ import net.md_5.bungee.api.event.ServerConnectEvent;
  import net.md_5.bungee.api.score.Scoreboard;
  import net.md_5.bungee.chat.ComponentSerializer;
  import net.md_5.bungee.connection.InitialHandler;
@@ -334,10 +334,10 @@ index 679fe5cd..715c91f8 100644
 -    // Waterfall end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index a5ae8ebc..6f43f426 100644
+index 97c4b210..4b1fe8a0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -23,7 +23,7 @@ import java.util.ArrayList;
+@@ -22,7 +22,7 @@ import java.util.ArrayList;
  import java.util.HashMap; // Waterfall
  import java.util.List;
  import java.util.Map;
@@ -346,7 +346,7 @@ index a5ae8ebc..6f43f426 100644
  import lombok.RequiredArgsConstructor;
  import net.md_5.bungee.ServerConnection;
  import net.md_5.bungee.ServerConnection.KeepAliveData;
-@@ -46,15 +46,12 @@ import net.md_5.bungee.api.score.Score;
+@@ -45,7 +45,6 @@ import net.md_5.bungee.api.score.Score;
  import net.md_5.bungee.api.score.Scoreboard;
  import net.md_5.bungee.api.score.Team;
  import net.md_5.bungee.chat.ComponentSerializer;
@@ -354,7 +354,8 @@ index a5ae8ebc..6f43f426 100644
  import net.md_5.bungee.netty.ChannelWrapper;
  import net.md_5.bungee.netty.PacketHandler;
  import net.md_5.bungee.protocol.DefinedPacket;
- import net.md_5.bungee.protocol.PacketWrapper;
+@@ -53,8 +52,6 @@ import net.md_5.bungee.protocol.PacketWrapper;
+ import net.md_5.bungee.protocol.ProtocolConstants;
  import net.md_5.bungee.protocol.packet.BossBar;
  import net.md_5.bungee.protocol.packet.Commands;
 -import net.md_5.bungee.protocol.packet.EntityEffect;
@@ -410,10 +411,10 @@ index a5ae8ebc..6f43f426 100644
      public void handle(Respawn respawn)
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 0c54578b..d2f30f3d 100644
+index 535e3be8..4d9a3e4a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -24,7 +24,6 @@ import net.md_5.bungee.api.event.PlayerDisconnectEvent;
+@@ -23,7 +23,6 @@ import net.md_5.bungee.api.event.PlayerDisconnectEvent;
  import net.md_5.bungee.api.event.PluginMessageEvent;
  import net.md_5.bungee.api.event.SettingsChangedEvent;
  import net.md_5.bungee.api.event.TabCompleteEvent;
@@ -435,21 +436,20 @@ index 0c54578b..d2f30f3d 100644
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 deleted file mode 100644
-index 1301a327..00000000
+index 10064c65..00000000
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ /dev/null
-@@ -1,375 +0,0 @@
+@@ -1,364 +0,0 @@
 -package net.md_5.bungee.entitymap;
 -
 -import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 -import io.netty.buffer.ByteBuf;
 -import io.netty.buffer.ByteBufInputStream;
--import io.sapphiremc.amethyst.api.protocol.ProtocolDirection;
--import io.sapphiremc.amethyst.api.protocol.ProtocolVersion;
 -import java.io.DataInputStream;
 -import lombok.AccessLevel;
 -import lombok.NoArgsConstructor;
 -import net.md_5.bungee.protocol.DefinedPacket;
+-import net.md_5.bungee.protocol.ProtocolConstants;
 -import se.llbit.nbt.NamedTag;
 -import se.llbit.nbt.Tag;
 -
@@ -466,80 +466,70 @@ index 1301a327..00000000
 -    private final boolean[] serverboundInts = new boolean[ 256 ];
 -    private final boolean[] serverboundVarInts = new boolean[ 256 ];
 -
--    /**
--     * Returns the correct entity map for the protocol version
--     *
--     * @param version protocol version
--     * @return EntityMap for that protocol version
--     */
+-    // Returns the correct entity map for the protocol version
 -    public static EntityMap getEntityMap(int version)
--    {
--        return getEntityMap( ProtocolVersion.getProtocolVersion( version ) );
--    }
--
--    public static EntityMap getEntityMap(ProtocolVersion protocolVersion)
 -    {
 -        // Waterfall start
 -        if (net.md_5.bungee.api.ProxyServer.getInstance().getConfig().isDisableEntityMetadataRewrite()) {
 -            return EntityMap_Dummy.INSTANCE;
 -        }
 -        // Waterfall end
--        switch ( protocolVersion )
+-        switch ( version )
 -        {
--            case MINECRAFT_1_8:
+-            case ProtocolConstants.MINECRAFT_1_8:
 -                return EntityMap_1_8.INSTANCE;
--            case MINECRAFT_1_9:
--            case MINECRAFT_1_9_1:
--            case MINECRAFT_1_9_2:
+-            case ProtocolConstants.MINECRAFT_1_9:
+-            case ProtocolConstants.MINECRAFT_1_9_1:
+-            case ProtocolConstants.MINECRAFT_1_9_2:
 -                return EntityMap_1_9.INSTANCE;
--            case MINECRAFT_1_9_4:
+-            case ProtocolConstants.MINECRAFT_1_9_4:
 -                return EntityMap_1_9_4.INSTANCE;
--            case MINECRAFT_1_10:
+-            case ProtocolConstants.MINECRAFT_1_10:
 -                return EntityMap_1_10.INSTANCE;
--            case MINECRAFT_1_11:
--            case MINECRAFT_1_11_1:
+-            case ProtocolConstants.MINECRAFT_1_11:
+-            case ProtocolConstants.MINECRAFT_1_11_1:
 -                return EntityMap_1_11.INSTANCE;
--            case MINECRAFT_1_12:
+-            case ProtocolConstants.MINECRAFT_1_12:
 -                return EntityMap_1_12.INSTANCE;
--            case MINECRAFT_1_12_1:
--            case MINECRAFT_1_12_2:
+-            case ProtocolConstants.MINECRAFT_1_12_1:
+-            case ProtocolConstants.MINECRAFT_1_12_2:
 -                return EntityMap_1_12_1.INSTANCE;
--            case MINECRAFT_1_13:
--            case MINECRAFT_1_13_1:
--            case MINECRAFT_1_13_2:
+-            case ProtocolConstants.MINECRAFT_1_13:
+-            case ProtocolConstants.MINECRAFT_1_13_1:
+-            case ProtocolConstants.MINECRAFT_1_13_2:
 -                return EntityMap_1_13.INSTANCE;
--            case MINECRAFT_1_14:
--            case MINECRAFT_1_14_1:
--            case MINECRAFT_1_14_2:
--            case MINECRAFT_1_14_3:
--            case MINECRAFT_1_14_4:
+-            case ProtocolConstants.MINECRAFT_1_14:
+-            case ProtocolConstants.MINECRAFT_1_14_1:
+-            case ProtocolConstants.MINECRAFT_1_14_2:
+-            case ProtocolConstants.MINECRAFT_1_14_3:
+-            case ProtocolConstants.MINECRAFT_1_14_4:
 -                return EntityMap_1_14.INSTANCE;
--            case MINECRAFT_1_15:
--            case MINECRAFT_1_15_1:
--            case MINECRAFT_1_15_2:
+-            case ProtocolConstants.MINECRAFT_1_15:
+-            case ProtocolConstants.MINECRAFT_1_15_1:
+-            case ProtocolConstants.MINECRAFT_1_15_2:
 -                return EntityMap_1_15.INSTANCE;
--            case MINECRAFT_1_16:
--            case MINECRAFT_1_16_1:
+-            case ProtocolConstants.MINECRAFT_1_16:
+-            case ProtocolConstants.MINECRAFT_1_16_1:
 -                return EntityMap_1_16.INSTANCE;
--            case MINECRAFT_1_16_2:
--            case MINECRAFT_1_16_3:
--            case MINECRAFT_1_16_4:
+-            case ProtocolConstants.MINECRAFT_1_16_2:
+-            case ProtocolConstants.MINECRAFT_1_16_3:
+-            case ProtocolConstants.MINECRAFT_1_16_4:
 -                return EntityMap_1_16_2.INSTANCE_1_16_2;
--            case MINECRAFT_1_17:
--            case MINECRAFT_1_17_1:
+-            case ProtocolConstants.MINECRAFT_1_17:
+-            case ProtocolConstants.MINECRAFT_1_17_1:
 -                return EntityMap_1_16_2.INSTANCE_1_17;
--            case MINECRAFT_1_18:
--            case MINECRAFT_1_18_2:
+-            case ProtocolConstants.MINECRAFT_1_18:
+-            case ProtocolConstants.MINECRAFT_1_18_2:
 -                return EntityMap_1_16_2.INSTANCE_1_18;
--            case MINECRAFT_1_19:
+-            case ProtocolConstants.MINECRAFT_1_19:
 -                return EntityMap_1_16_2.INSTANCE_1_19;
 -        }
--        throw new RuntimeException( "Version " + protocolVersion.getVersionIntroducedIn() + " with protocol " + protocolVersion.getProtocol() + " has no entity map" );
+-        throw new RuntimeException( "Version " + version + " has no entity map" );
 -    }
 -
--    protected void addRewrite(int id, ProtocolDirection direction, boolean varint)
+-    protected void addRewrite(int id, ProtocolConstants.Direction direction, boolean varint)
 -    {
--        if ( direction == ProtocolDirection.TO_CLIENT )
+-        if ( direction == ProtocolConstants.Direction.TO_CLIENT )
 -        {
 -            if ( varint )
 -            {
@@ -624,7 +614,7 @@ index 1301a327..00000000
 -        while ( ( index = packet.readUnsignedByte() ) != 0xFF )
 -        {
 -            int type = DefinedPacket.readVarInt( packet );
--            if ( ProtocolVersion.MINECRAFT_1_13.isBeforeOrEq( protocolVersion ) )
+-            if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_13 )
 -            {
 -                switch ( type )
 -                {
@@ -637,7 +627,7 @@ index 1301a327..00000000
 -                    case 15: // particle
 -                        int particleId = DefinedPacket.readVarInt( packet );
 -
--                        if ( ProtocolVersion.MINECRAFT_1_14.isBeforeOrEq( protocolVersion ) )
+-                        if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_14 )
 -                        {
 -                            switch ( particleId )
 -                            {
@@ -755,7 +745,7 @@ index 1301a327..00000000
 -                    break;
 -                default:
 -                    // Waterfall start - Don't lie
--                    if ( ProtocolVersion.MINECRAFT_1_13.isBeforeOrEq( protocolVersion ) )
+-                    if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_13 )
 -                    {
 -                        type++;
 -                    }
@@ -769,13 +759,13 @@ index 1301a327..00000000
 -
 -    private static void readSkipSlot(ByteBuf packet, int protocolVersion)
 -    {
--        if ( ( ProtocolVersion.MINECRAFT_1_13_2.isBeforeOrEq( protocolVersion ) ) ? packet.readBoolean() : packet.readShort() != -1 )
+-        if ( ( protocolVersion >= ProtocolConstants.MINECRAFT_1_13_2 ) ? packet.readBoolean() : packet.readShort() != -1 )
 -        {
--            if ( ProtocolVersion.MINECRAFT_1_13_2.isBeforeOrEq( protocolVersion ) )
+-            if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_13_2 )
 -            {
 -                DefinedPacket.readVarInt( packet );
 -            }
--            packet.skipBytes( ( ProtocolVersion.MINECRAFT_1_13.isBeforeOrEq( protocolVersion ) ) ? 1 : 3 ); // byte vs byte, short
+-            packet.skipBytes( ( protocolVersion >= ProtocolConstants.MINECRAFT_1_13 ) ? 1 : 3 ); // byte vs byte, short
 -
 -            int position = packet.readerIndex();
 -            if ( packet.readByte() != 0 )
@@ -816,7 +806,7 @@ index 1301a327..00000000
 -}
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_10.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_10.java
 deleted file mode 100644
-index 487957a9..00000000
+index 6db530c3..00000000
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_10.java
 +++ /dev/null
 @@ -1,182 +0,0 @@
@@ -824,12 +814,12 @@ index 487957a9..00000000
 -
 -import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 -import io.netty.buffer.ByteBuf;
--import io.sapphiremc.amethyst.api.protocol.ProtocolDirection;
 -import java.util.UUID;
 -import net.md_5.bungee.BungeeCord;
 -import net.md_5.bungee.UserConnection;
 -import net.md_5.bungee.api.connection.ProxiedPlayer;
 -import net.md_5.bungee.protocol.DefinedPacket;
+-import net.md_5.bungee.protocol.ProtocolConstants;
 -
 -class EntityMap_1_10 extends EntityMap
 -{
@@ -838,34 +828,34 @@ index 487957a9..00000000
 -
 -    EntityMap_1_10()
 -    {
--        addRewrite( 0x00, ProtocolDirection.TO_CLIENT, true ); // Spawn Object : PacketPlayOutSpawnEntity
--        addRewrite( 0x01, ProtocolDirection.TO_CLIENT, true ); // Spawn Experience Orb : PacketPlayOutSpawnEntityExperienceOrb
--        addRewrite( 0x03, ProtocolDirection.TO_CLIENT, true ); // Spawn Mob : PacketPlayOutSpawnEntityLiving
--        addRewrite( 0x04, ProtocolDirection.TO_CLIENT, true ); // Spawn Painting : PacketPlayOutSpawnEntityPainting
--        addRewrite( 0x05, ProtocolDirection.TO_CLIENT, true ); // Spawn Player : PacketPlayOutNamedEntitySpawn
--        addRewrite( 0x06, ProtocolDirection.TO_CLIENT, true ); // Animation : PacketPlayOutAnimation
--        addRewrite( 0x08, ProtocolDirection.TO_CLIENT, true ); // Block Break Animation : PacketPlayOutBlockBreakAnimation
--        addRewrite( 0x1B, ProtocolDirection.TO_CLIENT, false ); // Entity Status : PacketPlayOutEntityStatus
--        addRewrite( 0x25, ProtocolDirection.TO_CLIENT, true ); // Entity Relative Move : PacketPlayOutRelEntityMove
--        addRewrite( 0x26, ProtocolDirection.TO_CLIENT, true ); // Entity Look and Relative Move : PacketPlayOutRelEntityMoveLook
--        addRewrite( 0x27, ProtocolDirection.TO_CLIENT, true ); // Entity Look : PacketPlayOutEntityLook
--        addRewrite( 0x28, ProtocolDirection.TO_CLIENT, true ); // Entity : PacketPlayOutEntity
--        addRewrite( 0x2F, ProtocolDirection.TO_CLIENT, true ); // Use bed : PacketPlayOutBed
--        addRewrite( 0x31, ProtocolDirection.TO_CLIENT, true ); // Remove Entity Effect : PacketPlayOutRemoveEntityEffect
--        addRewrite( 0x34, ProtocolDirection.TO_CLIENT, true ); // Entity Head Look : PacketPlayOutEntityHeadRotation
--        addRewrite( 0x36, ProtocolDirection.TO_CLIENT, true ); // Camera : PacketPlayOutCamera
--        addRewrite( 0x39, ProtocolDirection.TO_CLIENT, true ); // Entity Metadata : PacketPlayOutEntityMetadata
--        addRewrite( 0x3A, ProtocolDirection.TO_CLIENT, false ); // Attach Entity : PacketPlayOutAttachEntity
--        addRewrite( 0x3B, ProtocolDirection.TO_CLIENT, true ); // Entity Velocity : PacketPlayOutEntityVelocity
--        addRewrite( 0x3C, ProtocolDirection.TO_CLIENT, true ); // Entity Equipment : PacketPlayOutEntityEquipment
--        addRewrite( 0x40, ProtocolDirection.TO_CLIENT, true ); // Attach Entity : PacketPlayOutMount
--        addRewrite( 0x48, ProtocolDirection.TO_CLIENT, true ); // Collect Item : PacketPlayOutCollect
--        addRewrite( 0x49, ProtocolDirection.TO_CLIENT, true ); // Entity Teleport : PacketPlayOutEntityTeleport
--        addRewrite( 0x4A, ProtocolDirection.TO_CLIENT, true ); // Entity Properties : PacketPlayOutUpdateAttributes
--        addRewrite( 0x4B, ProtocolDirection.TO_CLIENT, true ); // Entity Effect : PacketPlayOutEntityEffect
+-        addRewrite( 0x00, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Object : PacketPlayOutSpawnEntity
+-        addRewrite( 0x01, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Experience Orb : PacketPlayOutSpawnEntityExperienceOrb
+-        addRewrite( 0x03, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Mob : PacketPlayOutSpawnEntityLiving
+-        addRewrite( 0x04, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Painting : PacketPlayOutSpawnEntityPainting
+-        addRewrite( 0x05, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Player : PacketPlayOutNamedEntitySpawn
+-        addRewrite( 0x06, ProtocolConstants.Direction.TO_CLIENT, true ); // Animation : PacketPlayOutAnimation
+-        addRewrite( 0x08, ProtocolConstants.Direction.TO_CLIENT, true ); // Block Break Animation : PacketPlayOutBlockBreakAnimation
+-        addRewrite( 0x1B, ProtocolConstants.Direction.TO_CLIENT, false ); // Entity Status : PacketPlayOutEntityStatus
+-        addRewrite( 0x25, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Relative Move : PacketPlayOutRelEntityMove
+-        addRewrite( 0x26, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Look and Relative Move : PacketPlayOutRelEntityMoveLook
+-        addRewrite( 0x27, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Look : PacketPlayOutEntityLook
+-        addRewrite( 0x28, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity : PacketPlayOutEntity
+-        addRewrite( 0x2F, ProtocolConstants.Direction.TO_CLIENT, true ); // Use bed : PacketPlayOutBed
+-        addRewrite( 0x31, ProtocolConstants.Direction.TO_CLIENT, true ); // Remove Entity Effect : PacketPlayOutRemoveEntityEffect
+-        addRewrite( 0x34, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Head Look : PacketPlayOutEntityHeadRotation
+-        addRewrite( 0x36, ProtocolConstants.Direction.TO_CLIENT, true ); // Camera : PacketPlayOutCamera
+-        addRewrite( 0x39, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Metadata : PacketPlayOutEntityMetadata
+-        addRewrite( 0x3A, ProtocolConstants.Direction.TO_CLIENT, false ); // Attach Entity : PacketPlayOutAttachEntity
+-        addRewrite( 0x3B, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Velocity : PacketPlayOutEntityVelocity
+-        addRewrite( 0x3C, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Equipment : PacketPlayOutEntityEquipment
+-        addRewrite( 0x40, ProtocolConstants.Direction.TO_CLIENT, true ); // Attach Entity : PacketPlayOutMount
+-        addRewrite( 0x48, ProtocolConstants.Direction.TO_CLIENT, true ); // Collect Item : PacketPlayOutCollect
+-        addRewrite( 0x49, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Teleport : PacketPlayOutEntityTeleport
+-        addRewrite( 0x4A, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Properties : PacketPlayOutUpdateAttributes
+-        addRewrite( 0x4B, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Effect : PacketPlayOutEntityEffect
 -
--        addRewrite( 0x0A, ProtocolDirection.TO_SERVER, true ); // Use Entity : PacketPlayInUseEntity
--        addRewrite( 0x14, ProtocolDirection.TO_SERVER, true ); // Entity Action : PacketPlayInEntityAction
+-        addRewrite( 0x0A, ProtocolConstants.Direction.TO_SERVER, true ); // Use Entity : PacketPlayInUseEntity
+-        addRewrite( 0x14, ProtocolConstants.Direction.TO_SERVER, true ); // Entity Action : PacketPlayInEntityAction
 -    }
 -
 -    @Override
@@ -1004,7 +994,7 @@ index 487957a9..00000000
 -}
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_11.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_11.java
 deleted file mode 100644
-index 29d83fdc..00000000
+index 36822127..00000000
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_11.java
 +++ /dev/null
 @@ -1,183 +0,0 @@
@@ -1012,12 +1002,12 @@ index 29d83fdc..00000000
 -
 -import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 -import io.netty.buffer.ByteBuf;
--import io.sapphiremc.amethyst.api.protocol.ProtocolDirection;
 -import java.util.UUID;
 -import net.md_5.bungee.BungeeCord;
 -import net.md_5.bungee.UserConnection;
 -import net.md_5.bungee.api.connection.ProxiedPlayer;
 -import net.md_5.bungee.protocol.DefinedPacket;
+-import net.md_5.bungee.protocol.ProtocolConstants;
 -
 -class EntityMap_1_11 extends EntityMap
 -{
@@ -1026,34 +1016,34 @@ index 29d83fdc..00000000
 -
 -    EntityMap_1_11()
 -    {
--        addRewrite( 0x00, ProtocolDirection.TO_CLIENT, true ); // Spawn Object : PacketPlayOutSpawnEntity
--        addRewrite( 0x01, ProtocolDirection.TO_CLIENT, true ); // Spawn Experience Orb : PacketPlayOutSpawnEntityExperienceOrb
--        addRewrite( 0x03, ProtocolDirection.TO_CLIENT, true ); // Spawn Mob : PacketPlayOutSpawnEntityLiving
--        addRewrite( 0x04, ProtocolDirection.TO_CLIENT, true ); // Spawn Painting : PacketPlayOutSpawnEntityPainting
--        addRewrite( 0x05, ProtocolDirection.TO_CLIENT, true ); // Spawn Player : PacketPlayOutNamedEntitySpawn
--        addRewrite( 0x06, ProtocolDirection.TO_CLIENT, true ); // Animation : PacketPlayOutAnimation
--        addRewrite( 0x08, ProtocolDirection.TO_CLIENT, true ); // Block Break Animation : PacketPlayOutBlockBreakAnimation
--        addRewrite( 0x1B, ProtocolDirection.TO_CLIENT, false ); // Entity Status : PacketPlayOutEntityStatus
--        addRewrite( 0x25, ProtocolDirection.TO_CLIENT, true ); // Entity Relative Move : PacketPlayOutRelEntityMove
--        addRewrite( 0x26, ProtocolDirection.TO_CLIENT, true ); // Entity Look and Relative Move : PacketPlayOutRelEntityMoveLook
--        addRewrite( 0x27, ProtocolDirection.TO_CLIENT, true ); // Entity Look : PacketPlayOutEntityLook
--        addRewrite( 0x28, ProtocolDirection.TO_CLIENT, true ); // Entity : PacketPlayOutEntity
--        addRewrite( 0x2F, ProtocolDirection.TO_CLIENT, true ); // Use bed : PacketPlayOutBed
--        addRewrite( 0x31, ProtocolDirection.TO_CLIENT, true ); // Remove Entity Effect : PacketPlayOutRemoveEntityEffect
--        addRewrite( 0x34, ProtocolDirection.TO_CLIENT, true ); // Entity Head Look : PacketPlayOutEntityHeadRotation
--        addRewrite( 0x36, ProtocolDirection.TO_CLIENT, true ); // Camera : PacketPlayOutCamera
--        addRewrite( 0x39, ProtocolDirection.TO_CLIENT, true ); // Entity Metadata : PacketPlayOutEntityMetadata
--        addRewrite( 0x3A, ProtocolDirection.TO_CLIENT, false ); // Attach Entity : PacketPlayOutAttachEntity
--        addRewrite( 0x3B, ProtocolDirection.TO_CLIENT, true ); // Entity Velocity : PacketPlayOutEntityVelocity
--        addRewrite( 0x3C, ProtocolDirection.TO_CLIENT, true ); // Entity Equipment : PacketPlayOutEntityEquipment
--        addRewrite( 0x40, ProtocolDirection.TO_CLIENT, true ); // Attach Entity : PacketPlayOutMount
--        addRewrite( 0x48, ProtocolDirection.TO_CLIENT, true ); // Collect Item : PacketPlayOutCollect
--        addRewrite( 0x49, ProtocolDirection.TO_CLIENT, true ); // Entity Teleport : PacketPlayOutEntityTeleport
--        addRewrite( 0x4A, ProtocolDirection.TO_CLIENT, true ); // Entity Properties : PacketPlayOutUpdateAttributes
--        addRewrite( 0x4B, ProtocolDirection.TO_CLIENT, true ); // Entity Effect : PacketPlayOutEntityEffect
+-        addRewrite( 0x00, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Object : PacketPlayOutSpawnEntity
+-        addRewrite( 0x01, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Experience Orb : PacketPlayOutSpawnEntityExperienceOrb
+-        addRewrite( 0x03, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Mob : PacketPlayOutSpawnEntityLiving
+-        addRewrite( 0x04, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Painting : PacketPlayOutSpawnEntityPainting
+-        addRewrite( 0x05, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Player : PacketPlayOutNamedEntitySpawn
+-        addRewrite( 0x06, ProtocolConstants.Direction.TO_CLIENT, true ); // Animation : PacketPlayOutAnimation
+-        addRewrite( 0x08, ProtocolConstants.Direction.TO_CLIENT, true ); // Block Break Animation : PacketPlayOutBlockBreakAnimation
+-        addRewrite( 0x1B, ProtocolConstants.Direction.TO_CLIENT, false ); // Entity Status : PacketPlayOutEntityStatus
+-        addRewrite( 0x25, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Relative Move : PacketPlayOutRelEntityMove
+-        addRewrite( 0x26, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Look and Relative Move : PacketPlayOutRelEntityMoveLook
+-        addRewrite( 0x27, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Look : PacketPlayOutEntityLook
+-        addRewrite( 0x28, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity : PacketPlayOutEntity
+-        addRewrite( 0x2F, ProtocolConstants.Direction.TO_CLIENT, true ); // Use bed : PacketPlayOutBed
+-        addRewrite( 0x31, ProtocolConstants.Direction.TO_CLIENT, true ); // Remove Entity Effect : PacketPlayOutRemoveEntityEffect
+-        addRewrite( 0x34, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Head Look : PacketPlayOutEntityHeadRotation
+-        addRewrite( 0x36, ProtocolConstants.Direction.TO_CLIENT, true ); // Camera : PacketPlayOutCamera
+-        addRewrite( 0x39, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Metadata : PacketPlayOutEntityMetadata
+-        addRewrite( 0x3A, ProtocolConstants.Direction.TO_CLIENT, false ); // Attach Entity : PacketPlayOutAttachEntity
+-        addRewrite( 0x3B, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Velocity : PacketPlayOutEntityVelocity
+-        addRewrite( 0x3C, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Equipment : PacketPlayOutEntityEquipment
+-        addRewrite( 0x40, ProtocolConstants.Direction.TO_CLIENT, true ); // Attach Entity : PacketPlayOutMount
+-        addRewrite( 0x48, ProtocolConstants.Direction.TO_CLIENT, true ); // Collect Item : PacketPlayOutCollect
+-        addRewrite( 0x49, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Teleport : PacketPlayOutEntityTeleport
+-        addRewrite( 0x4A, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Properties : PacketPlayOutUpdateAttributes
+-        addRewrite( 0x4B, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Effect : PacketPlayOutEntityEffect
 -
--        addRewrite( 0x0A, ProtocolDirection.TO_SERVER, true ); // Use Entity : PacketPlayInUseEntity
--        addRewrite( 0x14, ProtocolDirection.TO_SERVER, true ); // Entity Action : PacketPlayInEntityAction
+-        addRewrite( 0x0A, ProtocolConstants.Direction.TO_SERVER, true ); // Use Entity : PacketPlayInUseEntity
+-        addRewrite( 0x14, ProtocolConstants.Direction.TO_SERVER, true ); // Entity Action : PacketPlayInEntityAction
 -    }
 -
 -    @Override
@@ -1193,7 +1183,7 @@ index 29d83fdc..00000000
 -}
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_12.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_12.java
 deleted file mode 100644
-index ecc8113a..00000000
+index 38e12ce4..00000000
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_12.java
 +++ /dev/null
 @@ -1,183 +0,0 @@
@@ -1201,12 +1191,12 @@ index ecc8113a..00000000
 -
 -import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 -import io.netty.buffer.ByteBuf;
--import io.sapphiremc.amethyst.api.protocol.ProtocolDirection;
 -import java.util.UUID;
 -import net.md_5.bungee.BungeeCord;
 -import net.md_5.bungee.UserConnection;
 -import net.md_5.bungee.api.connection.ProxiedPlayer;
 -import net.md_5.bungee.protocol.DefinedPacket;
+-import net.md_5.bungee.protocol.ProtocolConstants;
 -
 -class EntityMap_1_12 extends EntityMap
 -{
@@ -1215,34 +1205,34 @@ index ecc8113a..00000000
 -
 -    EntityMap_1_12()
 -    {
--        addRewrite( 0x00, ProtocolDirection.TO_CLIENT, true ); // Spawn Object : PacketPlayOutSpawnEntity
--        addRewrite( 0x01, ProtocolDirection.TO_CLIENT, true ); // Spawn Experience Orb : PacketPlayOutSpawnEntityExperienceOrb
--        addRewrite( 0x03, ProtocolDirection.TO_CLIENT, true ); // Spawn Mob : PacketPlayOutSpawnEntityLiving
--        addRewrite( 0x04, ProtocolDirection.TO_CLIENT, true ); // Spawn Painting : PacketPlayOutSpawnEntityPainting
--        addRewrite( 0x05, ProtocolDirection.TO_CLIENT, true ); // Spawn Player : PacketPlayOutNamedEntitySpawn
--        addRewrite( 0x06, ProtocolDirection.TO_CLIENT, true ); // Animation : PacketPlayOutAnimation
--        addRewrite( 0x08, ProtocolDirection.TO_CLIENT, true ); // Block Break Animation : PacketPlayOutBlockBreakAnimation
--        addRewrite( 0x1B, ProtocolDirection.TO_CLIENT, false ); // Entity Status : PacketPlayOutEntityStatus
--        addRewrite( 0x25, ProtocolDirection.TO_CLIENT, true ); // Entity : PacketPlayOutEntity
--        addRewrite( 0x26, ProtocolDirection.TO_CLIENT, true ); // Entity Relative Move : PacketPlayOutRelEntityMove
--        addRewrite( 0x27, ProtocolDirection.TO_CLIENT, true ); // Entity Look and Relative Move : PacketPlayOutRelEntityMoveLook
--        addRewrite( 0x28, ProtocolDirection.TO_CLIENT, true ); // Entity Look : PacketPlayOutEntityLook
--        addRewrite( 0x2F, ProtocolDirection.TO_CLIENT, true ); // Use bed : PacketPlayOutBed
--        addRewrite( 0x32, ProtocolDirection.TO_CLIENT, true ); // Remove Entity Effect : PacketPlayOutRemoveEntityEffect
--        addRewrite( 0x35, ProtocolDirection.TO_CLIENT, true ); // Entity Head Look : PacketPlayOutEntityHeadRotation
--        addRewrite( 0x38, ProtocolDirection.TO_CLIENT, true ); // Camera : PacketPlayOutCamera
--        addRewrite( 0x3B, ProtocolDirection.TO_CLIENT, true ); // Entity Metadata : PacketPlayOutEntityMetadata
--        addRewrite( 0x3C, ProtocolDirection.TO_CLIENT, false ); // Attach Entity : PacketPlayOutAttachEntity
--        addRewrite( 0x3D, ProtocolDirection.TO_CLIENT, true ); // Entity Velocity : PacketPlayOutEntityVelocity
--        addRewrite( 0x3E, ProtocolDirection.TO_CLIENT, true ); // Entity Equipment : PacketPlayOutEntityEquipment
--        addRewrite( 0x42, ProtocolDirection.TO_CLIENT, true ); // Set Passengers : PacketPlayOutMount
--        addRewrite( 0x4A, ProtocolDirection.TO_CLIENT, true ); // Collect Item : PacketPlayOutCollect
--        addRewrite( 0x4B, ProtocolDirection.TO_CLIENT, true ); // Entity Teleport : PacketPlayOutEntityTeleport
--        addRewrite( 0x4D, ProtocolDirection.TO_CLIENT, true ); // Entity Properties : PacketPlayOutUpdateAttributes
--        addRewrite( 0x4E, ProtocolDirection.TO_CLIENT, true ); // Entity Effect : PacketPlayOutEntityEffect
+-        addRewrite( 0x00, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Object : PacketPlayOutSpawnEntity
+-        addRewrite( 0x01, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Experience Orb : PacketPlayOutSpawnEntityExperienceOrb
+-        addRewrite( 0x03, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Mob : PacketPlayOutSpawnEntityLiving
+-        addRewrite( 0x04, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Painting : PacketPlayOutSpawnEntityPainting
+-        addRewrite( 0x05, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Player : PacketPlayOutNamedEntitySpawn
+-        addRewrite( 0x06, ProtocolConstants.Direction.TO_CLIENT, true ); // Animation : PacketPlayOutAnimation
+-        addRewrite( 0x08, ProtocolConstants.Direction.TO_CLIENT, true ); // Block Break Animation : PacketPlayOutBlockBreakAnimation
+-        addRewrite( 0x1B, ProtocolConstants.Direction.TO_CLIENT, false ); // Entity Status : PacketPlayOutEntityStatus
+-        addRewrite( 0x25, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity : PacketPlayOutEntity
+-        addRewrite( 0x26, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Relative Move : PacketPlayOutRelEntityMove
+-        addRewrite( 0x27, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Look and Relative Move : PacketPlayOutRelEntityMoveLook
+-        addRewrite( 0x28, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Look : PacketPlayOutEntityLook
+-        addRewrite( 0x2F, ProtocolConstants.Direction.TO_CLIENT, true ); // Use bed : PacketPlayOutBed
+-        addRewrite( 0x32, ProtocolConstants.Direction.TO_CLIENT, true ); // Remove Entity Effect : PacketPlayOutRemoveEntityEffect
+-        addRewrite( 0x35, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Head Look : PacketPlayOutEntityHeadRotation
+-        addRewrite( 0x38, ProtocolConstants.Direction.TO_CLIENT, true ); // Camera : PacketPlayOutCamera
+-        addRewrite( 0x3B, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Metadata : PacketPlayOutEntityMetadata
+-        addRewrite( 0x3C, ProtocolConstants.Direction.TO_CLIENT, false ); // Attach Entity : PacketPlayOutAttachEntity
+-        addRewrite( 0x3D, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Velocity : PacketPlayOutEntityVelocity
+-        addRewrite( 0x3E, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Equipment : PacketPlayOutEntityEquipment
+-        addRewrite( 0x42, ProtocolConstants.Direction.TO_CLIENT, true ); // Set Passengers : PacketPlayOutMount
+-        addRewrite( 0x4A, ProtocolConstants.Direction.TO_CLIENT, true ); // Collect Item : PacketPlayOutCollect
+-        addRewrite( 0x4B, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Teleport : PacketPlayOutEntityTeleport
+-        addRewrite( 0x4D, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Properties : PacketPlayOutUpdateAttributes
+-        addRewrite( 0x4E, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Effect : PacketPlayOutEntityEffect
 -
--        addRewrite( 0x0B, ProtocolDirection.TO_SERVER, true ); // Use Entity : PacketPlayInUseEntity
--        addRewrite( 0x15, ProtocolDirection.TO_SERVER, true ); // Entity Action : PacketPlayInEntityAction
+-        addRewrite( 0x0B, ProtocolConstants.Direction.TO_SERVER, true ); // Use Entity : PacketPlayInUseEntity
+-        addRewrite( 0x15, ProtocolConstants.Direction.TO_SERVER, true ); // Entity Action : PacketPlayInEntityAction
 -    }
 -
 -    @Override
@@ -1382,7 +1372,7 @@ index ecc8113a..00000000
 -}
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_12_1.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_12_1.java
 deleted file mode 100644
-index d67166c1..00000000
+index 5f296839..00000000
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_12_1.java
 +++ /dev/null
 @@ -1,183 +0,0 @@
@@ -1390,12 +1380,12 @@ index d67166c1..00000000
 -
 -import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 -import io.netty.buffer.ByteBuf;
--import io.sapphiremc.amethyst.api.protocol.ProtocolDirection;
 -import java.util.UUID;
 -import net.md_5.bungee.BungeeCord;
 -import net.md_5.bungee.UserConnection;
 -import net.md_5.bungee.api.connection.ProxiedPlayer;
 -import net.md_5.bungee.protocol.DefinedPacket;
+-import net.md_5.bungee.protocol.ProtocolConstants;
 -
 -class EntityMap_1_12_1 extends EntityMap
 -{
@@ -1404,34 +1394,34 @@ index d67166c1..00000000
 -
 -    EntityMap_1_12_1()
 -    {
--        addRewrite( 0x00, ProtocolDirection.TO_CLIENT, true ); // Spawn Object : PacketPlayOutSpawnEntity
--        addRewrite( 0x01, ProtocolDirection.TO_CLIENT, true ); // Spawn Experience Orb : PacketPlayOutSpawnEntityExperienceOrb
--        addRewrite( 0x03, ProtocolDirection.TO_CLIENT, true ); // Spawn Mob : PacketPlayOutSpawnEntityLiving
--        addRewrite( 0x04, ProtocolDirection.TO_CLIENT, true ); // Spawn Painting : PacketPlayOutSpawnEntityPainting
--        addRewrite( 0x05, ProtocolDirection.TO_CLIENT, true ); // Spawn Player : PacketPlayOutNamedEntitySpawn
--        addRewrite( 0x06, ProtocolDirection.TO_CLIENT, true ); // Animation : PacketPlayOutAnimation
--        addRewrite( 0x08, ProtocolDirection.TO_CLIENT, true ); // Block Break Animation : PacketPlayOutBlockBreakAnimation
--        addRewrite( 0x1B, ProtocolDirection.TO_CLIENT, false ); // Entity Status : PacketPlayOutEntityStatus
--        addRewrite( 0x25, ProtocolDirection.TO_CLIENT, true ); // Entity : PacketPlayOutEntity
--        addRewrite( 0x26, ProtocolDirection.TO_CLIENT, true ); // Entity Relative Move : PacketPlayOutRelEntityMove
--        addRewrite( 0x27, ProtocolDirection.TO_CLIENT, true ); // Entity Look and Relative Move : PacketPlayOutRelEntityMoveLook
--        addRewrite( 0x28, ProtocolDirection.TO_CLIENT, true ); // Entity Look : PacketPlayOutEntityLook
--        addRewrite( 0x30, ProtocolDirection.TO_CLIENT, true ); // Use bed : PacketPlayOutBed
--        addRewrite( 0x33, ProtocolDirection.TO_CLIENT, true ); // Remove Entity Effect : PacketPlayOutRemoveEntityEffect
--        addRewrite( 0x36, ProtocolDirection.TO_CLIENT, true ); // Entity Head Look : PacketPlayOutEntityHeadRotation
--        addRewrite( 0x39, ProtocolDirection.TO_CLIENT, true ); // Camera : PacketPlayOutCamera
--        addRewrite( 0x3C, ProtocolDirection.TO_CLIENT, true ); // Entity Metadata : PacketPlayOutEntityMetadata
--        addRewrite( 0x3D, ProtocolDirection.TO_CLIENT, false ); // Attach Entity : PacketPlayOutAttachEntity
--        addRewrite( 0x3E, ProtocolDirection.TO_CLIENT, true ); // Entity Velocity : PacketPlayOutEntityVelocity
--        addRewrite( 0x3F, ProtocolDirection.TO_CLIENT, true ); // Entity Equipment : PacketPlayOutEntityEquipment
--        addRewrite( 0x43, ProtocolDirection.TO_CLIENT, true ); // Set Passengers : PacketPlayOutMount
--        addRewrite( 0x4B, ProtocolDirection.TO_CLIENT, true ); // Collect Item : PacketPlayOutCollect
--        addRewrite( 0x4C, ProtocolDirection.TO_CLIENT, true ); // Entity Teleport : PacketPlayOutEntityTeleport
--        addRewrite( 0x4E, ProtocolDirection.TO_CLIENT, true ); // Entity Properties : PacketPlayOutUpdateAttributes
--        addRewrite( 0x4F, ProtocolDirection.TO_CLIENT, true ); // Entity Effect : PacketPlayOutEntityEffect
+-        addRewrite( 0x00, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Object : PacketPlayOutSpawnEntity
+-        addRewrite( 0x01, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Experience Orb : PacketPlayOutSpawnEntityExperienceOrb
+-        addRewrite( 0x03, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Mob : PacketPlayOutSpawnEntityLiving
+-        addRewrite( 0x04, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Painting : PacketPlayOutSpawnEntityPainting
+-        addRewrite( 0x05, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Player : PacketPlayOutNamedEntitySpawn
+-        addRewrite( 0x06, ProtocolConstants.Direction.TO_CLIENT, true ); // Animation : PacketPlayOutAnimation
+-        addRewrite( 0x08, ProtocolConstants.Direction.TO_CLIENT, true ); // Block Break Animation : PacketPlayOutBlockBreakAnimation
+-        addRewrite( 0x1B, ProtocolConstants.Direction.TO_CLIENT, false ); // Entity Status : PacketPlayOutEntityStatus
+-        addRewrite( 0x25, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity : PacketPlayOutEntity
+-        addRewrite( 0x26, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Relative Move : PacketPlayOutRelEntityMove
+-        addRewrite( 0x27, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Look and Relative Move : PacketPlayOutRelEntityMoveLook
+-        addRewrite( 0x28, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Look : PacketPlayOutEntityLook
+-        addRewrite( 0x30, ProtocolConstants.Direction.TO_CLIENT, true ); // Use bed : PacketPlayOutBed
+-        addRewrite( 0x33, ProtocolConstants.Direction.TO_CLIENT, true ); // Remove Entity Effect : PacketPlayOutRemoveEntityEffect
+-        addRewrite( 0x36, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Head Look : PacketPlayOutEntityHeadRotation
+-        addRewrite( 0x39, ProtocolConstants.Direction.TO_CLIENT, true ); // Camera : PacketPlayOutCamera
+-        addRewrite( 0x3C, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Metadata : PacketPlayOutEntityMetadata
+-        addRewrite( 0x3D, ProtocolConstants.Direction.TO_CLIENT, false ); // Attach Entity : PacketPlayOutAttachEntity
+-        addRewrite( 0x3E, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Velocity : PacketPlayOutEntityVelocity
+-        addRewrite( 0x3F, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Equipment : PacketPlayOutEntityEquipment
+-        addRewrite( 0x43, ProtocolConstants.Direction.TO_CLIENT, true ); // Set Passengers : PacketPlayOutMount
+-        addRewrite( 0x4B, ProtocolConstants.Direction.TO_CLIENT, true ); // Collect Item : PacketPlayOutCollect
+-        addRewrite( 0x4C, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Teleport : PacketPlayOutEntityTeleport
+-        addRewrite( 0x4E, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Properties : PacketPlayOutUpdateAttributes
+-        addRewrite( 0x4F, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Effect : PacketPlayOutEntityEffect
 -
--        addRewrite( 0x0A, ProtocolDirection.TO_SERVER, true ); // Use Entity : PacketPlayInUseEntity
--        addRewrite( 0x15, ProtocolDirection.TO_SERVER, true ); // Entity Action : PacketPlayInEntityAction
+-        addRewrite( 0x0A, ProtocolConstants.Direction.TO_SERVER, true ); // Use Entity : PacketPlayInUseEntity
+-        addRewrite( 0x15, ProtocolConstants.Direction.TO_SERVER, true ); // Entity Action : PacketPlayInEntityAction
 -    }
 -
 -    @Override
@@ -1571,7 +1561,7 @@ index d67166c1..00000000
 -}
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_13.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_13.java
 deleted file mode 100644
-index a126f2e0..00000000
+index f3372f08..00000000
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_13.java
 +++ /dev/null
 @@ -1,183 +0,0 @@
@@ -1579,12 +1569,12 @@ index a126f2e0..00000000
 -
 -import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 -import io.netty.buffer.ByteBuf;
--import io.sapphiremc.amethyst.api.protocol.ProtocolDirection;
 -import java.util.UUID;
 -import net.md_5.bungee.BungeeCord;
 -import net.md_5.bungee.UserConnection;
 -import net.md_5.bungee.api.connection.ProxiedPlayer;
 -import net.md_5.bungee.protocol.DefinedPacket;
+-import net.md_5.bungee.protocol.ProtocolConstants;
 -
 -class EntityMap_1_13 extends EntityMap
 -{
@@ -1593,34 +1583,34 @@ index a126f2e0..00000000
 -
 -    EntityMap_1_13()
 -    {
--        addRewrite( 0x00, ProtocolDirection.TO_CLIENT, true ); // Spawn Object : PacketPlayOutSpawnEntity
--        addRewrite( 0x01, ProtocolDirection.TO_CLIENT, true ); // Spawn Experience Orb : PacketPlayOutSpawnEntityExperienceOrb
--        addRewrite( 0x03, ProtocolDirection.TO_CLIENT, true ); // Spawn Mob : PacketPlayOutSpawnEntityLiving
--        addRewrite( 0x04, ProtocolDirection.TO_CLIENT, true ); // Spawn Painting : PacketPlayOutSpawnEntityPainting
--        addRewrite( 0x05, ProtocolDirection.TO_CLIENT, true ); // Spawn Player : PacketPlayOutNamedEntitySpawn
--        addRewrite( 0x06, ProtocolDirection.TO_CLIENT, true ); // Animation : PacketPlayOutAnimation
--        addRewrite( 0x08, ProtocolDirection.TO_CLIENT, true ); // Block Break Animation : PacketPlayOutBlockBreakAnimation
--        addRewrite( 0x1C, ProtocolDirection.TO_CLIENT, false ); // Entity Status : PacketPlayOutEntityStatus
--        addRewrite( 0x27, ProtocolDirection.TO_CLIENT, true ); // Entity : PacketPlayOutEntity
--        addRewrite( 0x28, ProtocolDirection.TO_CLIENT, true ); // Entity Relative Move : PacketPlayOutRelEntityMove
--        addRewrite( 0x29, ProtocolDirection.TO_CLIENT, true ); // Entity Look and Relative Move : PacketPlayOutRelEntityMoveLook
--        addRewrite( 0x2A, ProtocolDirection.TO_CLIENT, true ); // Entity Look : PacketPlayOutEntityLook
--        addRewrite( 0x33, ProtocolDirection.TO_CLIENT, true ); // Use bed : PacketPlayOutBed
--        addRewrite( 0x36, ProtocolDirection.TO_CLIENT, true ); // Remove Entity Effect : PacketPlayOutRemoveEntityEffect
--        addRewrite( 0x39, ProtocolDirection.TO_CLIENT, true ); // Entity Head Look : PacketPlayOutEntityHeadRotation
--        addRewrite( 0x3C, ProtocolDirection.TO_CLIENT, true ); // Camera : PacketPlayOutCamera
--        addRewrite( 0x3F, ProtocolDirection.TO_CLIENT, true ); // Entity Metadata : PacketPlayOutEntityMetadata
--        addRewrite( 0x40, ProtocolDirection.TO_CLIENT, false ); // Attach Entity : PacketPlayOutAttachEntity
--        addRewrite( 0x41, ProtocolDirection.TO_CLIENT, true ); // Entity Velocity : PacketPlayOutEntityVelocity
--        addRewrite( 0x42, ProtocolDirection.TO_CLIENT, true ); // Entity Equipment : PacketPlayOutEntityEquipment
--        addRewrite( 0x46, ProtocolDirection.TO_CLIENT, true ); // Set Passengers : PacketPlayOutMount
--        addRewrite( 0x4F, ProtocolDirection.TO_CLIENT, true ); // Collect Item : PacketPlayOutCollect
--        addRewrite( 0x50, ProtocolDirection.TO_CLIENT, true ); // Entity Teleport : PacketPlayOutEntityTeleport
--        addRewrite( 0x52, ProtocolDirection.TO_CLIENT, true ); // Entity Properties : PacketPlayOutUpdateAttributes
--        addRewrite( 0x53, ProtocolDirection.TO_CLIENT, true ); // Entity Effect : PacketPlayOutEntityEffect
+-        addRewrite( 0x00, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Object : PacketPlayOutSpawnEntity
+-        addRewrite( 0x01, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Experience Orb : PacketPlayOutSpawnEntityExperienceOrb
+-        addRewrite( 0x03, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Mob : PacketPlayOutSpawnEntityLiving
+-        addRewrite( 0x04, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Painting : PacketPlayOutSpawnEntityPainting
+-        addRewrite( 0x05, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Player : PacketPlayOutNamedEntitySpawn
+-        addRewrite( 0x06, ProtocolConstants.Direction.TO_CLIENT, true ); // Animation : PacketPlayOutAnimation
+-        addRewrite( 0x08, ProtocolConstants.Direction.TO_CLIENT, true ); // Block Break Animation : PacketPlayOutBlockBreakAnimation
+-        addRewrite( 0x1C, ProtocolConstants.Direction.TO_CLIENT, false ); // Entity Status : PacketPlayOutEntityStatus
+-        addRewrite( 0x27, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity : PacketPlayOutEntity
+-        addRewrite( 0x28, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Relative Move : PacketPlayOutRelEntityMove
+-        addRewrite( 0x29, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Look and Relative Move : PacketPlayOutRelEntityMoveLook
+-        addRewrite( 0x2A, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Look : PacketPlayOutEntityLook
+-        addRewrite( 0x33, ProtocolConstants.Direction.TO_CLIENT, true ); // Use bed : PacketPlayOutBed
+-        addRewrite( 0x36, ProtocolConstants.Direction.TO_CLIENT, true ); // Remove Entity Effect : PacketPlayOutRemoveEntityEffect
+-        addRewrite( 0x39, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Head Look : PacketPlayOutEntityHeadRotation
+-        addRewrite( 0x3C, ProtocolConstants.Direction.TO_CLIENT, true ); // Camera : PacketPlayOutCamera
+-        addRewrite( 0x3F, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Metadata : PacketPlayOutEntityMetadata
+-        addRewrite( 0x40, ProtocolConstants.Direction.TO_CLIENT, false ); // Attach Entity : PacketPlayOutAttachEntity
+-        addRewrite( 0x41, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Velocity : PacketPlayOutEntityVelocity
+-        addRewrite( 0x42, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Equipment : PacketPlayOutEntityEquipment
+-        addRewrite( 0x46, ProtocolConstants.Direction.TO_CLIENT, true ); // Set Passengers : PacketPlayOutMount
+-        addRewrite( 0x4F, ProtocolConstants.Direction.TO_CLIENT, true ); // Collect Item : PacketPlayOutCollect
+-        addRewrite( 0x50, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Teleport : PacketPlayOutEntityTeleport
+-        addRewrite( 0x52, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Properties : PacketPlayOutUpdateAttributes
+-        addRewrite( 0x53, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Effect : PacketPlayOutEntityEffect
 -
--        addRewrite( 0x0D, ProtocolDirection.TO_SERVER, true ); // Use Entity : PacketPlayInUseEntity
--        addRewrite( 0x19, ProtocolDirection.TO_SERVER, true ); // Entity Action : PacketPlayInEntityAction
+-        addRewrite( 0x0D, ProtocolConstants.Direction.TO_SERVER, true ); // Use Entity : PacketPlayInUseEntity
+-        addRewrite( 0x19, ProtocolConstants.Direction.TO_SERVER, true ); // Entity Action : PacketPlayInEntityAction
 -    }
 -
 -    @Override
@@ -1760,7 +1750,7 @@ index a126f2e0..00000000
 -}
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_14.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_14.java
 deleted file mode 100644
-index 01aa6d18..00000000
+index 8210b0a7..00000000
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_14.java
 +++ /dev/null
 @@ -1,187 +0,0 @@
@@ -1768,12 +1758,12 @@ index 01aa6d18..00000000
 -
 -import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 -import io.netty.buffer.ByteBuf;
--import io.sapphiremc.amethyst.api.protocol.ProtocolDirection;
 -import java.util.UUID;
 -import net.md_5.bungee.BungeeCord;
 -import net.md_5.bungee.UserConnection;
 -import net.md_5.bungee.api.connection.ProxiedPlayer;
 -import net.md_5.bungee.protocol.DefinedPacket;
+-import net.md_5.bungee.protocol.ProtocolConstants;
 -
 -class EntityMap_1_14 extends EntityMap
 -{
@@ -1782,33 +1772,33 @@ index 01aa6d18..00000000
 -
 -    EntityMap_1_14()
 -    {
--        addRewrite( 0x00, ProtocolDirection.TO_CLIENT, true ); // Spawn Object : PacketPlayOutSpawnEntity
--        addRewrite( 0x01, ProtocolDirection.TO_CLIENT, true ); // Spawn Experience Orb : PacketPlayOutSpawnEntityExperienceOrb
--        addRewrite( 0x03, ProtocolDirection.TO_CLIENT, true ); // Spawn Mob : PacketPlayOutSpawnEntityLiving
--        addRewrite( 0x04, ProtocolDirection.TO_CLIENT, true ); // Spawn Painting : PacketPlayOutSpawnEntityPainting
--        addRewrite( 0x05, ProtocolDirection.TO_CLIENT, true ); // Spawn Player : PacketPlayOutNamedEntitySpawn
--        addRewrite( 0x06, ProtocolDirection.TO_CLIENT, true ); // Animation : PacketPlayOutAnimation
--        addRewrite( 0x08, ProtocolDirection.TO_CLIENT, true ); // Block Break Animation : PacketPlayOutBlockBreakAnimation
--        addRewrite( 0x1B, ProtocolDirection.TO_CLIENT, false ); // Entity Status : PacketPlayOutEntityStatus
--        addRewrite( 0x28, ProtocolDirection.TO_CLIENT, true ); // Entity Relative Move : PacketPlayOutRelEntityMove
--        addRewrite( 0x29, ProtocolDirection.TO_CLIENT, true ); // Entity Look and Relative Move : PacketPlayOutRelEntityMoveLook
--        addRewrite( 0x2A, ProtocolDirection.TO_CLIENT, true ); // Entity Look : PacketPlayOutEntityLook
--        addRewrite( 0x2B, ProtocolDirection.TO_CLIENT, true ); // Entity : PacketPlayOutEntity
--        addRewrite( 0x38, ProtocolDirection.TO_CLIENT, true ); // Remove Entity Effect : PacketPlayOutRemoveEntityEffect
--        addRewrite( 0x3B, ProtocolDirection.TO_CLIENT, true ); // Entity Head Look : PacketPlayOutEntityHeadRotation
--        addRewrite( 0x3E, ProtocolDirection.TO_CLIENT, true ); // Camera : PacketPlayOutCamera
--        addRewrite( 0x43, ProtocolDirection.TO_CLIENT, true ); // Entity Metadata : PacketPlayOutEntityMetadata
--        addRewrite( 0x44, ProtocolDirection.TO_CLIENT, false ); // Attach Entity : PacketPlayOutAttachEntity
--        addRewrite( 0x45, ProtocolDirection.TO_CLIENT, true ); // Entity Velocity : PacketPlayOutEntityVelocity
--        addRewrite( 0x46, ProtocolDirection.TO_CLIENT, true ); // Entity Equipment : PacketPlayOutEntityEquipment
--        addRewrite( 0x4A, ProtocolDirection.TO_CLIENT, true ); // Set Passengers : PacketPlayOutMount
--        addRewrite( 0x55, ProtocolDirection.TO_CLIENT, true ); // Collect Item : PacketPlayOutCollect
--        addRewrite( 0x56, ProtocolDirection.TO_CLIENT, true ); // Entity Teleport : PacketPlayOutEntityTeleport
--        addRewrite( 0x58, ProtocolDirection.TO_CLIENT, true ); // Entity Properties : PacketPlayOutUpdateAttributes
--        addRewrite( 0x59, ProtocolDirection.TO_CLIENT, true ); // Entity Effect : PacketPlayOutEntityEffect
+-        addRewrite( 0x00, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Object : PacketPlayOutSpawnEntity
+-        addRewrite( 0x01, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Experience Orb : PacketPlayOutSpawnEntityExperienceOrb
+-        addRewrite( 0x03, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Mob : PacketPlayOutSpawnEntityLiving
+-        addRewrite( 0x04, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Painting : PacketPlayOutSpawnEntityPainting
+-        addRewrite( 0x05, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Player : PacketPlayOutNamedEntitySpawn
+-        addRewrite( 0x06, ProtocolConstants.Direction.TO_CLIENT, true ); // Animation : PacketPlayOutAnimation
+-        addRewrite( 0x08, ProtocolConstants.Direction.TO_CLIENT, true ); // Block Break Animation : PacketPlayOutBlockBreakAnimation
+-        addRewrite( 0x1B, ProtocolConstants.Direction.TO_CLIENT, false ); // Entity Status : PacketPlayOutEntityStatus
+-        addRewrite( 0x28, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Relative Move : PacketPlayOutRelEntityMove
+-        addRewrite( 0x29, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Look and Relative Move : PacketPlayOutRelEntityMoveLook
+-        addRewrite( 0x2A, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Look : PacketPlayOutEntityLook
+-        addRewrite( 0x2B, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity : PacketPlayOutEntity
+-        addRewrite( 0x38, ProtocolConstants.Direction.TO_CLIENT, true ); // Remove Entity Effect : PacketPlayOutRemoveEntityEffect
+-        addRewrite( 0x3B, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Head Look : PacketPlayOutEntityHeadRotation
+-        addRewrite( 0x3E, ProtocolConstants.Direction.TO_CLIENT, true ); // Camera : PacketPlayOutCamera
+-        addRewrite( 0x43, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Metadata : PacketPlayOutEntityMetadata
+-        addRewrite( 0x44, ProtocolConstants.Direction.TO_CLIENT, false ); // Attach Entity : PacketPlayOutAttachEntity
+-        addRewrite( 0x45, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Velocity : PacketPlayOutEntityVelocity
+-        addRewrite( 0x46, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Equipment : PacketPlayOutEntityEquipment
+-        addRewrite( 0x4A, ProtocolConstants.Direction.TO_CLIENT, true ); // Set Passengers : PacketPlayOutMount
+-        addRewrite( 0x55, ProtocolConstants.Direction.TO_CLIENT, true ); // Collect Item : PacketPlayOutCollect
+-        addRewrite( 0x56, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Teleport : PacketPlayOutEntityTeleport
+-        addRewrite( 0x58, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Properties : PacketPlayOutUpdateAttributes
+-        addRewrite( 0x59, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Effect : PacketPlayOutEntityEffect
 -
--        addRewrite( 0x0E, ProtocolDirection.TO_SERVER, true ); // Use Entity : PacketPlayInUseEntity
--        addRewrite( 0x1B, ProtocolDirection.TO_SERVER, true ); // Entity Action : PacketPlayInEntityAction
+-        addRewrite( 0x0E, ProtocolConstants.Direction.TO_SERVER, true ); // Use Entity : PacketPlayInUseEntity
+-        addRewrite( 0x1B, ProtocolConstants.Direction.TO_SERVER, true ); // Entity Action : PacketPlayInEntityAction
 -    }
 -
 -    @Override
@@ -1953,7 +1943,7 @@ index 01aa6d18..00000000
 -}
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_15.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_15.java
 deleted file mode 100644
-index 9f0fb564..00000000
+index c2cf810f..00000000
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_15.java
 +++ /dev/null
 @@ -1,187 +0,0 @@
@@ -1961,12 +1951,12 @@ index 9f0fb564..00000000
 -
 -import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 -import io.netty.buffer.ByteBuf;
--import io.sapphiremc.amethyst.api.protocol.ProtocolDirection;
 -import java.util.UUID;
 -import net.md_5.bungee.BungeeCord;
 -import net.md_5.bungee.UserConnection;
 -import net.md_5.bungee.api.connection.ProxiedPlayer;
 -import net.md_5.bungee.protocol.DefinedPacket;
+-import net.md_5.bungee.protocol.ProtocolConstants;
 -
 -class EntityMap_1_15 extends EntityMap
 -{
@@ -1975,33 +1965,33 @@ index 9f0fb564..00000000
 -
 -    EntityMap_1_15()
 -    {
--        addRewrite( 0x00, ProtocolDirection.TO_CLIENT, true ); // Spawn Object : PacketPlayOutSpawnEntity
--        addRewrite( 0x01, ProtocolDirection.TO_CLIENT, true ); // Spawn Experience Orb : PacketPlayOutSpawnEntityExperienceOrb
--        addRewrite( 0x03, ProtocolDirection.TO_CLIENT, true ); // Spawn Mob : PacketPlayOutSpawnEntityLiving
--        addRewrite( 0x04, ProtocolDirection.TO_CLIENT, true ); // Spawn Painting : PacketPlayOutSpawnEntityPainting
--        addRewrite( 0x05, ProtocolDirection.TO_CLIENT, true ); // Spawn Player : PacketPlayOutNamedEntitySpawn
--        addRewrite( 0x06, ProtocolDirection.TO_CLIENT, true ); // Animation : PacketPlayOutAnimation
--        addRewrite( 0x09, ProtocolDirection.TO_CLIENT, true ); // Block Break Animation : PacketPlayOutBlockBreakAnimation
--        addRewrite( 0x1C, ProtocolDirection.TO_CLIENT, false ); // Entity Status : PacketPlayOutEntityStatus
--        addRewrite( 0x29, ProtocolDirection.TO_CLIENT, true ); // Entity Relative Move : PacketPlayOutRelEntityMove
--        addRewrite( 0x2A, ProtocolDirection.TO_CLIENT, true ); // Entity Look and Relative Move : PacketPlayOutRelEntityMoveLook
--        addRewrite( 0x2B, ProtocolDirection.TO_CLIENT, true ); // Entity Look : PacketPlayOutEntityLook
--        addRewrite( 0x2C, ProtocolDirection.TO_CLIENT, true ); // Entity : PacketPlayOutEntity
--        addRewrite( 0x39, ProtocolDirection.TO_CLIENT, true ); // Remove Entity Effect : PacketPlayOutRemoveEntityEffect
--        addRewrite( 0x3C, ProtocolDirection.TO_CLIENT, true ); // Entity Head Look : PacketPlayOutEntityHeadRotation
--        addRewrite( 0x3F, ProtocolDirection.TO_CLIENT, true ); // Camera : PacketPlayOutCamera
--        addRewrite( 0x44, ProtocolDirection.TO_CLIENT, true ); // Entity Metadata : PacketPlayOutEntityMetadata
--        addRewrite( 0x45, ProtocolDirection.TO_CLIENT, false ); // Attach Entity : PacketPlayOutAttachEntity
--        addRewrite( 0x46, ProtocolDirection.TO_CLIENT, true ); // Entity Velocity : PacketPlayOutEntityVelocity
--        addRewrite( 0x47, ProtocolDirection.TO_CLIENT, true ); // Entity Equipment : PacketPlayOutEntityEquipment
--        addRewrite( 0x4B, ProtocolDirection.TO_CLIENT, true ); // Set Passengers : PacketPlayOutMount
--        addRewrite( 0x56, ProtocolDirection.TO_CLIENT, true ); // Collect Item : PacketPlayOutCollect
--        addRewrite( 0x57, ProtocolDirection.TO_CLIENT, true ); // Entity Teleport : PacketPlayOutEntityTeleport
--        addRewrite( 0x59, ProtocolDirection.TO_CLIENT, true ); // Entity Properties : PacketPlayOutUpdateAttributes
--        addRewrite( 0x5A, ProtocolDirection.TO_CLIENT, true ); // Entity Effect : PacketPlayOutEntityEffect
+-        addRewrite( 0x00, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Object : PacketPlayOutSpawnEntity
+-        addRewrite( 0x01, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Experience Orb : PacketPlayOutSpawnEntityExperienceOrb
+-        addRewrite( 0x03, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Mob : PacketPlayOutSpawnEntityLiving
+-        addRewrite( 0x04, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Painting : PacketPlayOutSpawnEntityPainting
+-        addRewrite( 0x05, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Player : PacketPlayOutNamedEntitySpawn
+-        addRewrite( 0x06, ProtocolConstants.Direction.TO_CLIENT, true ); // Animation : PacketPlayOutAnimation
+-        addRewrite( 0x09, ProtocolConstants.Direction.TO_CLIENT, true ); // Block Break Animation : PacketPlayOutBlockBreakAnimation
+-        addRewrite( 0x1C, ProtocolConstants.Direction.TO_CLIENT, false ); // Entity Status : PacketPlayOutEntityStatus
+-        addRewrite( 0x29, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Relative Move : PacketPlayOutRelEntityMove
+-        addRewrite( 0x2A, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Look and Relative Move : PacketPlayOutRelEntityMoveLook
+-        addRewrite( 0x2B, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Look : PacketPlayOutEntityLook
+-        addRewrite( 0x2C, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity : PacketPlayOutEntity
+-        addRewrite( 0x39, ProtocolConstants.Direction.TO_CLIENT, true ); // Remove Entity Effect : PacketPlayOutRemoveEntityEffect
+-        addRewrite( 0x3C, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Head Look : PacketPlayOutEntityHeadRotation
+-        addRewrite( 0x3F, ProtocolConstants.Direction.TO_CLIENT, true ); // Camera : PacketPlayOutCamera
+-        addRewrite( 0x44, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Metadata : PacketPlayOutEntityMetadata
+-        addRewrite( 0x45, ProtocolConstants.Direction.TO_CLIENT, false ); // Attach Entity : PacketPlayOutAttachEntity
+-        addRewrite( 0x46, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Velocity : PacketPlayOutEntityVelocity
+-        addRewrite( 0x47, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Equipment : PacketPlayOutEntityEquipment
+-        addRewrite( 0x4B, ProtocolConstants.Direction.TO_CLIENT, true ); // Set Passengers : PacketPlayOutMount
+-        addRewrite( 0x56, ProtocolConstants.Direction.TO_CLIENT, true ); // Collect Item : PacketPlayOutCollect
+-        addRewrite( 0x57, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Teleport : PacketPlayOutEntityTeleport
+-        addRewrite( 0x59, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Properties : PacketPlayOutUpdateAttributes
+-        addRewrite( 0x5A, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Effect : PacketPlayOutEntityEffect
 -
--        addRewrite( 0x0E, ProtocolDirection.TO_SERVER, true ); // Use Entity : PacketPlayInUseEntity
--        addRewrite( 0x1B, ProtocolDirection.TO_SERVER, true ); // Entity Action : PacketPlayInEntityAction
+-        addRewrite( 0x0E, ProtocolConstants.Direction.TO_SERVER, true ); // Use Entity : PacketPlayInUseEntity
+-        addRewrite( 0x1B, ProtocolConstants.Direction.TO_SERVER, true ); // Entity Action : PacketPlayInEntityAction
 -    }
 -
 -    @Override
@@ -2146,7 +2136,7 @@ index 9f0fb564..00000000
 -}
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_16.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_16.java
 deleted file mode 100644
-index 0ae65109..00000000
+index c8b06707..00000000
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_16.java
 +++ /dev/null
 @@ -1,187 +0,0 @@
@@ -2154,12 +2144,12 @@ index 0ae65109..00000000
 -
 -import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 -import io.netty.buffer.ByteBuf;
--import io.sapphiremc.amethyst.api.protocol.ProtocolDirection;
 -import java.util.UUID;
 -import net.md_5.bungee.BungeeCord;
 -import net.md_5.bungee.UserConnection;
 -import net.md_5.bungee.api.connection.ProxiedPlayer;
 -import net.md_5.bungee.protocol.DefinedPacket;
+-import net.md_5.bungee.protocol.ProtocolConstants;
 -
 -class EntityMap_1_16 extends EntityMap
 -{
@@ -2168,33 +2158,33 @@ index 0ae65109..00000000
 -
 -    EntityMap_1_16()
 -    {
--        addRewrite( 0x00, ProtocolDirection.TO_CLIENT, true ); // Spawn Object : PacketPlayOutSpawnEntity
--        addRewrite( 0x01, ProtocolDirection.TO_CLIENT, true ); // Spawn Experience Orb : PacketPlayOutSpawnEntityExperienceOrb
--        addRewrite( 0x02, ProtocolDirection.TO_CLIENT, true ); // Spawn Mob : PacketPlayOutSpawnEntityLiving
--        addRewrite( 0x03, ProtocolDirection.TO_CLIENT, true ); // Spawn Painting : PacketPlayOutSpawnEntityPainting
--        addRewrite( 0x04, ProtocolDirection.TO_CLIENT, true ); // Spawn Player : PacketPlayOutNamedEntitySpawn
--        addRewrite( 0x05, ProtocolDirection.TO_CLIENT, true ); // Animation : PacketPlayOutAnimation
--        addRewrite( 0x08, ProtocolDirection.TO_CLIENT, true ); // Block Break Animation : PacketPlayOutBlockBreakAnimation
--        addRewrite( 0x1B, ProtocolDirection.TO_CLIENT, false ); // Entity Status : PacketPlayOutEntityStatus
--        addRewrite( 0x28, ProtocolDirection.TO_CLIENT, true ); // Entity Relative Move : PacketPlayOutRelEntityMove
--        addRewrite( 0x29, ProtocolDirection.TO_CLIENT, true ); // Entity Look and Relative Move : PacketPlayOutRelEntityMoveLook
--        addRewrite( 0x2A, ProtocolDirection.TO_CLIENT, true ); // Entity Look : PacketPlayOutEntityLook
--        addRewrite( 0x2B, ProtocolDirection.TO_CLIENT, true ); // Entity : PacketPlayOutEntity
--        addRewrite( 0x38, ProtocolDirection.TO_CLIENT, true ); // Remove Entity Effect : PacketPlayOutRemoveEntityEffect
--        addRewrite( 0x3B, ProtocolDirection.TO_CLIENT, true ); // Entity Head Look : PacketPlayOutEntityHeadRotation
--        addRewrite( 0x3E, ProtocolDirection.TO_CLIENT, true ); // Camera : PacketPlayOutCamera
--        addRewrite( 0x44, ProtocolDirection.TO_CLIENT, true ); // Entity Metadata : PacketPlayOutEntityMetadata
--        addRewrite( 0x45, ProtocolDirection.TO_CLIENT, false ); // Attach Entity : PacketPlayOutAttachEntity
--        addRewrite( 0x46, ProtocolDirection.TO_CLIENT, true ); // Entity Velocity : PacketPlayOutEntityVelocity
--        addRewrite( 0x47, ProtocolDirection.TO_CLIENT, true ); // Entity Equipment : PacketPlayOutEntityEquipment
--        addRewrite( 0x4B, ProtocolDirection.TO_CLIENT, true ); // Set Passengers : PacketPlayOutMount
--        addRewrite( 0x55, ProtocolDirection.TO_CLIENT, true ); // Collect Item : PacketPlayOutCollect
--        addRewrite( 0x56, ProtocolDirection.TO_CLIENT, true ); // Entity Teleport : PacketPlayOutEntityTeleport
--        addRewrite( 0x58, ProtocolDirection.TO_CLIENT, true ); // Entity Properties : PacketPlayOutUpdateAttributes
--        addRewrite( 0x59, ProtocolDirection.TO_CLIENT, true ); // Entity Effect : PacketPlayOutEntityEffect
+-        addRewrite( 0x00, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Object : PacketPlayOutSpawnEntity
+-        addRewrite( 0x01, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Experience Orb : PacketPlayOutSpawnEntityExperienceOrb
+-        addRewrite( 0x02, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Mob : PacketPlayOutSpawnEntityLiving
+-        addRewrite( 0x03, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Painting : PacketPlayOutSpawnEntityPainting
+-        addRewrite( 0x04, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Player : PacketPlayOutNamedEntitySpawn
+-        addRewrite( 0x05, ProtocolConstants.Direction.TO_CLIENT, true ); // Animation : PacketPlayOutAnimation
+-        addRewrite( 0x08, ProtocolConstants.Direction.TO_CLIENT, true ); // Block Break Animation : PacketPlayOutBlockBreakAnimation
+-        addRewrite( 0x1B, ProtocolConstants.Direction.TO_CLIENT, false ); // Entity Status : PacketPlayOutEntityStatus
+-        addRewrite( 0x28, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Relative Move : PacketPlayOutRelEntityMove
+-        addRewrite( 0x29, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Look and Relative Move : PacketPlayOutRelEntityMoveLook
+-        addRewrite( 0x2A, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Look : PacketPlayOutEntityLook
+-        addRewrite( 0x2B, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity : PacketPlayOutEntity
+-        addRewrite( 0x38, ProtocolConstants.Direction.TO_CLIENT, true ); // Remove Entity Effect : PacketPlayOutRemoveEntityEffect
+-        addRewrite( 0x3B, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Head Look : PacketPlayOutEntityHeadRotation
+-        addRewrite( 0x3E, ProtocolConstants.Direction.TO_CLIENT, true ); // Camera : PacketPlayOutCamera
+-        addRewrite( 0x44, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Metadata : PacketPlayOutEntityMetadata
+-        addRewrite( 0x45, ProtocolConstants.Direction.TO_CLIENT, false ); // Attach Entity : PacketPlayOutAttachEntity
+-        addRewrite( 0x46, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Velocity : PacketPlayOutEntityVelocity
+-        addRewrite( 0x47, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Equipment : PacketPlayOutEntityEquipment
+-        addRewrite( 0x4B, ProtocolConstants.Direction.TO_CLIENT, true ); // Set Passengers : PacketPlayOutMount
+-        addRewrite( 0x55, ProtocolConstants.Direction.TO_CLIENT, true ); // Collect Item : PacketPlayOutCollect
+-        addRewrite( 0x56, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Teleport : PacketPlayOutEntityTeleport
+-        addRewrite( 0x58, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Properties : PacketPlayOutUpdateAttributes
+-        addRewrite( 0x59, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Effect : PacketPlayOutEntityEffect
 -
--        addRewrite( 0x0E, ProtocolDirection.TO_SERVER, true ); // Use Entity : PacketPlayInUseEntity
--        addRewrite( 0x1C, ProtocolDirection.TO_SERVER, true ); // Entity Action : PacketPlayInEntityAction
+-        addRewrite( 0x0E, ProtocolConstants.Direction.TO_SERVER, true ); // Use Entity : PacketPlayInUseEntity
+-        addRewrite( 0x1C, ProtocolConstants.Direction.TO_SERVER, true ); // Entity Action : PacketPlayInEntityAction
 -    }
 -
 -    @Override
@@ -2421,7 +2411,7 @@ index b9d0b651..00000000
 -}
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_8.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_8.java
 deleted file mode 100644
-index 59ca08f9..00000000
+index 8e2dbe69..00000000
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_8.java
 +++ /dev/null
 @@ -1,176 +0,0 @@
@@ -2429,12 +2419,12 @@ index 59ca08f9..00000000
 -
 -import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 -import io.netty.buffer.ByteBuf;
--import io.sapphiremc.amethyst.api.protocol.ProtocolDirection;
 -import java.util.UUID;
 -import net.md_5.bungee.BungeeCord;
 -import net.md_5.bungee.UserConnection;
 -import net.md_5.bungee.api.connection.ProxiedPlayer;
 -import net.md_5.bungee.protocol.DefinedPacket;
+-import net.md_5.bungee.protocol.ProtocolConstants;
 -
 -class EntityMap_1_8 extends EntityMap
 -{
@@ -2443,35 +2433,35 @@ index 59ca08f9..00000000
 -
 -    EntityMap_1_8()
 -    {
--        addRewrite( 0x04, ProtocolDirection.TO_CLIENT, true ); // Entity Equipment
--        addRewrite( 0x0A, ProtocolDirection.TO_CLIENT, true ); // Use bed
--        addRewrite( 0x0B, ProtocolDirection.TO_CLIENT, true ); // Animation
--        addRewrite( 0x0C, ProtocolDirection.TO_CLIENT, true ); // Spawn Player
--        addRewrite( 0x0D, ProtocolDirection.TO_CLIENT, true ); // Collect Item
--        addRewrite( 0x0E, ProtocolDirection.TO_CLIENT, true ); // Spawn Object
--        addRewrite( 0x0F, ProtocolDirection.TO_CLIENT, true ); // Spawn Mob
--        addRewrite( 0x10, ProtocolDirection.TO_CLIENT, true ); // Spawn Painting
--        addRewrite( 0x11, ProtocolDirection.TO_CLIENT, true ); // Spawn Experience Orb
--        addRewrite( 0x12, ProtocolDirection.TO_CLIENT, true ); // Entity Velocity
--        addRewrite( 0x14, ProtocolDirection.TO_CLIENT, true ); // Entity
--        addRewrite( 0x15, ProtocolDirection.TO_CLIENT, true ); // Entity Relative Move
--        addRewrite( 0x16, ProtocolDirection.TO_CLIENT, true ); // Entity Look
--        addRewrite( 0x17, ProtocolDirection.TO_CLIENT, true ); // Entity Look and Relative Move
--        addRewrite( 0x18, ProtocolDirection.TO_CLIENT, true ); // Entity Teleport
--        addRewrite( 0x19, ProtocolDirection.TO_CLIENT, true ); // Entity Head Look
--        addRewrite( 0x1A, ProtocolDirection.TO_CLIENT, false ); // Entity Status
--        addRewrite( 0x1B, ProtocolDirection.TO_CLIENT, false ); // Attach Entity
--        addRewrite( 0x1C, ProtocolDirection.TO_CLIENT, true ); // Entity Metadata
--        addRewrite( 0x1D, ProtocolDirection.TO_CLIENT, true ); // Entity Effect
--        addRewrite( 0x1E, ProtocolDirection.TO_CLIENT, true ); // Remove Entity Effect
--        addRewrite( 0x20, ProtocolDirection.TO_CLIENT, true ); // Entity Properties
--        addRewrite( 0x25, ProtocolDirection.TO_CLIENT, true ); // Block Break Animation
--        addRewrite( 0x2C, ProtocolDirection.TO_CLIENT, true ); // Spawn Global Entity
--        addRewrite( 0x43, ProtocolDirection.TO_CLIENT, true ); // Camera
--        addRewrite( 0x49, ProtocolDirection.TO_CLIENT, true ); // Update Entity NBT
+-        addRewrite( 0x04, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Equipment
+-        addRewrite( 0x0A, ProtocolConstants.Direction.TO_CLIENT, true ); // Use bed
+-        addRewrite( 0x0B, ProtocolConstants.Direction.TO_CLIENT, true ); // Animation
+-        addRewrite( 0x0C, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Player
+-        addRewrite( 0x0D, ProtocolConstants.Direction.TO_CLIENT, true ); // Collect Item
+-        addRewrite( 0x0E, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Object
+-        addRewrite( 0x0F, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Mob
+-        addRewrite( 0x10, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Painting
+-        addRewrite( 0x11, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Experience Orb
+-        addRewrite( 0x12, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Velocity
+-        addRewrite( 0x14, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity
+-        addRewrite( 0x15, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Relative Move
+-        addRewrite( 0x16, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Look
+-        addRewrite( 0x17, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Look and Relative Move
+-        addRewrite( 0x18, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Teleport
+-        addRewrite( 0x19, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Head Look
+-        addRewrite( 0x1A, ProtocolConstants.Direction.TO_CLIENT, false ); // Entity Status
+-        addRewrite( 0x1B, ProtocolConstants.Direction.TO_CLIENT, false ); // Attach Entity
+-        addRewrite( 0x1C, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Metadata
+-        addRewrite( 0x1D, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Effect
+-        addRewrite( 0x1E, ProtocolConstants.Direction.TO_CLIENT, true ); // Remove Entity Effect
+-        addRewrite( 0x20, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Properties
+-        addRewrite( 0x25, ProtocolConstants.Direction.TO_CLIENT, true ); // Block Break Animation
+-        addRewrite( 0x2C, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Global Entity
+-        addRewrite( 0x43, ProtocolConstants.Direction.TO_CLIENT, true ); // Camera
+-        addRewrite( 0x49, ProtocolConstants.Direction.TO_CLIENT, true ); // Update Entity NBT
 -
--        addRewrite( 0x02, ProtocolDirection.TO_SERVER, true ); // Use Entity
--        addRewrite( 0x0B, ProtocolDirection.TO_SERVER, true ); // Entity Action
+-        addRewrite( 0x02, ProtocolConstants.Direction.TO_SERVER, true ); // Use Entity
+-        addRewrite( 0x0B, ProtocolConstants.Direction.TO_SERVER, true ); // Entity Action
 -    }
 -
 -    @Override
@@ -2603,7 +2593,7 @@ index 59ca08f9..00000000
 -}
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_9.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_9.java
 deleted file mode 100644
-index 3b41ca6c..00000000
+index d61dc0cb..00000000
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_9.java
 +++ /dev/null
 @@ -1,182 +0,0 @@
@@ -2611,12 +2601,12 @@ index 3b41ca6c..00000000
 -
 -import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 -import io.netty.buffer.ByteBuf;
--import io.sapphiremc.amethyst.api.protocol.ProtocolDirection;
 -import java.util.UUID;
 -import net.md_5.bungee.BungeeCord;
 -import net.md_5.bungee.UserConnection;
 -import net.md_5.bungee.api.connection.ProxiedPlayer;
 -import net.md_5.bungee.protocol.DefinedPacket;
+-import net.md_5.bungee.protocol.ProtocolConstants;
 -
 -class EntityMap_1_9 extends EntityMap
 -{
@@ -2625,34 +2615,34 @@ index 3b41ca6c..00000000
 -
 -    EntityMap_1_9()
 -    {
--        addRewrite( 0x00, ProtocolDirection.TO_CLIENT, true ); // Spawn Object : PacketPlayOutSpawnEntity
--        addRewrite( 0x01, ProtocolDirection.TO_CLIENT, true ); // Spawn Experience Orb : PacketPlayOutSpawnEntityExperienceOrb
--        addRewrite( 0x03, ProtocolDirection.TO_CLIENT, true ); // Spawn Mob : PacketPlayOutSpawnEntityLiving
--        addRewrite( 0x04, ProtocolDirection.TO_CLIENT, true ); // Spawn Painting : PacketPlayOutSpawnEntityPainting
--        addRewrite( 0x05, ProtocolDirection.TO_CLIENT, true ); // Spawn Player : PacketPlayOutNamedEntitySpawn
--        addRewrite( 0x06, ProtocolDirection.TO_CLIENT, true ); // Animation : PacketPlayOutAnimation
--        addRewrite( 0x08, ProtocolDirection.TO_CLIENT, true ); // Block Break Animation : PacketPlayOutBlockBreakAnimation
--        addRewrite( 0x1B, ProtocolDirection.TO_CLIENT, false ); // Entity Status : PacketPlayOutEntityStatus
--        addRewrite( 0x25, ProtocolDirection.TO_CLIENT, true ); // Entity Relative Move : PacketPlayOutRelEntityMove
--        addRewrite( 0x26, ProtocolDirection.TO_CLIENT, true ); // Entity Look and Relative Move : PacketPlayOutRelEntityMoveLook
--        addRewrite( 0x27, ProtocolDirection.TO_CLIENT, true ); // Entity Look : PacketPlayOutEntityLook
--        addRewrite( 0x28, ProtocolDirection.TO_CLIENT, true ); // Entity : PacketPlayOutEntity
--        addRewrite( 0x2F, ProtocolDirection.TO_CLIENT, true ); // Use bed : PacketPlayOutBed
--        addRewrite( 0x31, ProtocolDirection.TO_CLIENT, true ); // Remove Entity Effect : PacketPlayOutRemoveEntityEffect
--        addRewrite( 0x34, ProtocolDirection.TO_CLIENT, true ); // Entity Head Look : PacketPlayOutEntityHeadRotation
--        addRewrite( 0x36, ProtocolDirection.TO_CLIENT, true ); // Camera : PacketPlayOutCamera
--        addRewrite( 0x39, ProtocolDirection.TO_CLIENT, true ); // Entity Metadata : PacketPlayOutEntityMetadata
--        addRewrite( 0x3A, ProtocolDirection.TO_CLIENT, false ); // Attach Entity : PacketPlayOutAttachEntity
--        addRewrite( 0x3B, ProtocolDirection.TO_CLIENT, true ); // Entity Velocity : PacketPlayOutEntityVelocity
--        addRewrite( 0x3C, ProtocolDirection.TO_CLIENT, true ); // Entity Equipment : PacketPlayOutEntityEquipment
--        addRewrite( 0x40, ProtocolDirection.TO_CLIENT, true ); // Attach Entity : PacketPlayOutMount
--        addRewrite( 0x49, ProtocolDirection.TO_CLIENT, true ); // Collect Item : PacketPlayOutCollect
--        addRewrite( 0x4A, ProtocolDirection.TO_CLIENT, true ); // Entity Teleport : PacketPlayOutEntityTeleport
--        addRewrite( 0x4B, ProtocolDirection.TO_CLIENT, true ); // Entity Properties : PacketPlayOutUpdateAttributes
--        addRewrite( 0x4C, ProtocolDirection.TO_CLIENT, true ); // Entity Effect : PacketPlayOutEntityEffect
+-        addRewrite( 0x00, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Object : PacketPlayOutSpawnEntity
+-        addRewrite( 0x01, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Experience Orb : PacketPlayOutSpawnEntityExperienceOrb
+-        addRewrite( 0x03, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Mob : PacketPlayOutSpawnEntityLiving
+-        addRewrite( 0x04, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Painting : PacketPlayOutSpawnEntityPainting
+-        addRewrite( 0x05, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Player : PacketPlayOutNamedEntitySpawn
+-        addRewrite( 0x06, ProtocolConstants.Direction.TO_CLIENT, true ); // Animation : PacketPlayOutAnimation
+-        addRewrite( 0x08, ProtocolConstants.Direction.TO_CLIENT, true ); // Block Break Animation : PacketPlayOutBlockBreakAnimation
+-        addRewrite( 0x1B, ProtocolConstants.Direction.TO_CLIENT, false ); // Entity Status : PacketPlayOutEntityStatus
+-        addRewrite( 0x25, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Relative Move : PacketPlayOutRelEntityMove
+-        addRewrite( 0x26, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Look and Relative Move : PacketPlayOutRelEntityMoveLook
+-        addRewrite( 0x27, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Look : PacketPlayOutEntityLook
+-        addRewrite( 0x28, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity : PacketPlayOutEntity
+-        addRewrite( 0x2F, ProtocolConstants.Direction.TO_CLIENT, true ); // Use bed : PacketPlayOutBed
+-        addRewrite( 0x31, ProtocolConstants.Direction.TO_CLIENT, true ); // Remove Entity Effect : PacketPlayOutRemoveEntityEffect
+-        addRewrite( 0x34, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Head Look : PacketPlayOutEntityHeadRotation
+-        addRewrite( 0x36, ProtocolConstants.Direction.TO_CLIENT, true ); // Camera : PacketPlayOutCamera
+-        addRewrite( 0x39, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Metadata : PacketPlayOutEntityMetadata
+-        addRewrite( 0x3A, ProtocolConstants.Direction.TO_CLIENT, false ); // Attach Entity : PacketPlayOutAttachEntity
+-        addRewrite( 0x3B, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Velocity : PacketPlayOutEntityVelocity
+-        addRewrite( 0x3C, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Equipment : PacketPlayOutEntityEquipment
+-        addRewrite( 0x40, ProtocolConstants.Direction.TO_CLIENT, true ); // Attach Entity : PacketPlayOutMount
+-        addRewrite( 0x49, ProtocolConstants.Direction.TO_CLIENT, true ); // Collect Item : PacketPlayOutCollect
+-        addRewrite( 0x4A, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Teleport : PacketPlayOutEntityTeleport
+-        addRewrite( 0x4B, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Properties : PacketPlayOutUpdateAttributes
+-        addRewrite( 0x4C, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Effect : PacketPlayOutEntityEffect
 -
--        addRewrite( 0x0A, ProtocolDirection.TO_SERVER, true ); // Use Entity : PacketPlayInUseEntity
--        addRewrite( 0x14, ProtocolDirection.TO_SERVER, true ); // Entity Action : PacketPlayInEntityAction
+-        addRewrite( 0x0A, ProtocolConstants.Direction.TO_SERVER, true ); // Use Entity : PacketPlayInUseEntity
+-        addRewrite( 0x14, ProtocolConstants.Direction.TO_SERVER, true ); // Entity Action : PacketPlayInEntityAction
 -    }
 -
 -    @Override
@@ -2791,7 +2781,7 @@ index 3b41ca6c..00000000
 -}
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_9_4.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_9_4.java
 deleted file mode 100644
-index f133bda0..00000000
+index bfbc8432..00000000
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_9_4.java
 +++ /dev/null
 @@ -1,182 +0,0 @@
@@ -2799,12 +2789,12 @@ index f133bda0..00000000
 -
 -import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 -import io.netty.buffer.ByteBuf;
--import io.sapphiremc.amethyst.api.protocol.ProtocolDirection;
 -import java.util.UUID;
 -import net.md_5.bungee.BungeeCord;
 -import net.md_5.bungee.UserConnection;
 -import net.md_5.bungee.api.connection.ProxiedPlayer;
 -import net.md_5.bungee.protocol.DefinedPacket;
+-import net.md_5.bungee.protocol.ProtocolConstants;
 -
 -class EntityMap_1_9_4 extends EntityMap
 -{
@@ -2813,34 +2803,34 @@ index f133bda0..00000000
 -
 -    EntityMap_1_9_4()
 -    {
--        addRewrite( 0x00, ProtocolDirection.TO_CLIENT, true ); // Spawn Object : PacketPlayOutSpawnEntity
--        addRewrite( 0x01, ProtocolDirection.TO_CLIENT, true ); // Spawn Experience Orb : PacketPlayOutSpawnEntityExperienceOrb
--        addRewrite( 0x03, ProtocolDirection.TO_CLIENT, true ); // Spawn Mob : PacketPlayOutSpawnEntityLiving
--        addRewrite( 0x04, ProtocolDirection.TO_CLIENT, true ); // Spawn Painting : PacketPlayOutSpawnEntityPainting
--        addRewrite( 0x05, ProtocolDirection.TO_CLIENT, true ); // Spawn Player : PacketPlayOutNamedEntitySpawn
--        addRewrite( 0x06, ProtocolDirection.TO_CLIENT, true ); // Animation : PacketPlayOutAnimation
--        addRewrite( 0x08, ProtocolDirection.TO_CLIENT, true ); // Block Break Animation : PacketPlayOutBlockBreakAnimation
--        addRewrite( 0x1B, ProtocolDirection.TO_CLIENT, false ); // Entity Status : PacketPlayOutEntityStatus
--        addRewrite( 0x25, ProtocolDirection.TO_CLIENT, true ); // Entity Relative Move : PacketPlayOutRelEntityMove
--        addRewrite( 0x26, ProtocolDirection.TO_CLIENT, true ); // Entity Look and Relative Move : PacketPlayOutRelEntityMoveLook
--        addRewrite( 0x27, ProtocolDirection.TO_CLIENT, true ); // Entity Look : PacketPlayOutEntityLook
--        addRewrite( 0x28, ProtocolDirection.TO_CLIENT, true ); // Entity : PacketPlayOutEntity
--        addRewrite( 0x2F, ProtocolDirection.TO_CLIENT, true ); // Use bed : PacketPlayOutBed
--        addRewrite( 0x31, ProtocolDirection.TO_CLIENT, true ); // Remove Entity Effect : PacketPlayOutRemoveEntityEffect
--        addRewrite( 0x34, ProtocolDirection.TO_CLIENT, true ); // Entity Head Look : PacketPlayOutEntityHeadRotation
--        addRewrite( 0x36, ProtocolDirection.TO_CLIENT, true ); // Camera : PacketPlayOutCamera
--        addRewrite( 0x39, ProtocolDirection.TO_CLIENT, true ); // Entity Metadata : PacketPlayOutEntityMetadata
--        addRewrite( 0x3A, ProtocolDirection.TO_CLIENT, false ); // Attach Entity : PacketPlayOutAttachEntity
--        addRewrite( 0x3B, ProtocolDirection.TO_CLIENT, true ); // Entity Velocity : PacketPlayOutEntityVelocity
--        addRewrite( 0x3C, ProtocolDirection.TO_CLIENT, true ); // Entity Equipment : PacketPlayOutEntityEquipment
--        addRewrite( 0x40, ProtocolDirection.TO_CLIENT, true ); // Attach Entity : PacketPlayOutMount
--        addRewrite( 0x48, ProtocolDirection.TO_CLIENT, true ); // Collect Item : PacketPlayOutCollect
--        addRewrite( 0x49, ProtocolDirection.TO_CLIENT, true ); // Entity Teleport : PacketPlayOutEntityTeleport
--        addRewrite( 0x4A, ProtocolDirection.TO_CLIENT, true ); // Entity Properties : PacketPlayOutUpdateAttributes
--        addRewrite( 0x4B, ProtocolDirection.TO_CLIENT, true ); // Entity Effect : PacketPlayOutEntityEffect
+-        addRewrite( 0x00, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Object : PacketPlayOutSpawnEntity
+-        addRewrite( 0x01, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Experience Orb : PacketPlayOutSpawnEntityExperienceOrb
+-        addRewrite( 0x03, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Mob : PacketPlayOutSpawnEntityLiving
+-        addRewrite( 0x04, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Painting : PacketPlayOutSpawnEntityPainting
+-        addRewrite( 0x05, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Player : PacketPlayOutNamedEntitySpawn
+-        addRewrite( 0x06, ProtocolConstants.Direction.TO_CLIENT, true ); // Animation : PacketPlayOutAnimation
+-        addRewrite( 0x08, ProtocolConstants.Direction.TO_CLIENT, true ); // Block Break Animation : PacketPlayOutBlockBreakAnimation
+-        addRewrite( 0x1B, ProtocolConstants.Direction.TO_CLIENT, false ); // Entity Status : PacketPlayOutEntityStatus
+-        addRewrite( 0x25, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Relative Move : PacketPlayOutRelEntityMove
+-        addRewrite( 0x26, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Look and Relative Move : PacketPlayOutRelEntityMoveLook
+-        addRewrite( 0x27, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Look : PacketPlayOutEntityLook
+-        addRewrite( 0x28, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity : PacketPlayOutEntity
+-        addRewrite( 0x2F, ProtocolConstants.Direction.TO_CLIENT, true ); // Use bed : PacketPlayOutBed
+-        addRewrite( 0x31, ProtocolConstants.Direction.TO_CLIENT, true ); // Remove Entity Effect : PacketPlayOutRemoveEntityEffect
+-        addRewrite( 0x34, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Head Look : PacketPlayOutEntityHeadRotation
+-        addRewrite( 0x36, ProtocolConstants.Direction.TO_CLIENT, true ); // Camera : PacketPlayOutCamera
+-        addRewrite( 0x39, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Metadata : PacketPlayOutEntityMetadata
+-        addRewrite( 0x3A, ProtocolConstants.Direction.TO_CLIENT, false ); // Attach Entity : PacketPlayOutAttachEntity
+-        addRewrite( 0x3B, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Velocity : PacketPlayOutEntityVelocity
+-        addRewrite( 0x3C, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Equipment : PacketPlayOutEntityEquipment
+-        addRewrite( 0x40, ProtocolConstants.Direction.TO_CLIENT, true ); // Attach Entity : PacketPlayOutMount
+-        addRewrite( 0x48, ProtocolConstants.Direction.TO_CLIENT, true ); // Collect Item : PacketPlayOutCollect
+-        addRewrite( 0x49, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Teleport : PacketPlayOutEntityTeleport
+-        addRewrite( 0x4A, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Properties : PacketPlayOutUpdateAttributes
+-        addRewrite( 0x4B, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Effect : PacketPlayOutEntityEffect
 -
--        addRewrite( 0x0A, ProtocolDirection.TO_SERVER, true ); // Use Entity : PacketPlayInUseEntity
--        addRewrite( 0x14, ProtocolDirection.TO_SERVER, true ); // Entity Action : PacketPlayInEntityAction
+-        addRewrite( 0x0A, ProtocolConstants.Direction.TO_SERVER, true ); // Use Entity : PacketPlayInUseEntity
+-        addRewrite( 0x14, ProtocolConstants.Direction.TO_SERVER, true ); // Entity Action : PacketPlayInEntityAction
 -    }
 -
 -    @Override
@@ -3015,13 +3005,13 @@ index cb81d1dd..00000000
 -// Waterfall end
 \ No newline at end of file
 diff --git a/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java b/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java
-index d33dc314..da9f9343 100644
+index bea2bbff..ef00bcb9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java
-@@ -10,7 +10,6 @@ import lombok.NonNull;
- import lombok.RequiredArgsConstructor;
+@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
  import lombok.Setter;
  import net.md_5.bungee.UserConnection;
+ import net.md_5.bungee.protocol.ProtocolConstants;
 -import net.md_5.bungee.protocol.packet.EntityRemoveEffect;
  import net.md_5.bungee.protocol.packet.PluginMessage;
  

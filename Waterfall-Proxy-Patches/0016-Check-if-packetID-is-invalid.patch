@@ -1,14 +1,14 @@
-From 2d4dbf0103d5ae67d755cbcf1c7320bda36d555f Mon Sep 17 00:00:00 2001
+From efcdd61631a927a3fb5b39d0c11524da0ebaecb6 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Fri, 7 Jan 2022 01:09:18 +0500
 Subject: [PATCH] Check if packetID is invalid.
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index dfe60ab5..fab61368 100644
+index cde732f7..1695cd30 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-@@ -68,6 +68,12 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+@@ -67,6 +67,12 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
              int packetId = DefinedPacket.readVarInt( in );
              packetTypeInfo = packetId;
  
@@ -22,5 +22,5 @@ index dfe60ab5..fab61368 100644
              if ( packet != null )
              {
 -- 
-2.35.1
+2.37.1.windows.1
 

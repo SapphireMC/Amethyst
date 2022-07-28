@@ -1,11 +1,11 @@
-From ae2412cdfe445fb6f5fbbb8a70b858a703a4c4eb Mon Sep 17 00:00:00 2001
+From d6d24d8f3e92e1f40951fd6c037d51c275d91193 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Thu, 3 Mar 2022 01:31:49 +0500
 Subject: [PATCH] InitialHandler Processing State
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 4d8de315..61419b0f 100644
+index 2bba722a..9fa73820 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -124,12 +124,12 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -74,7 +74,7 @@ index 4d8de315..61419b0f 100644
          HttpClient.get( authURL, ch.getHandle().eventLoop(), handler );
      }
  
-@@ -723,14 +728,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -718,14 +723,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      @Override
      public void setOnlineMode(boolean onlineMode)
      {

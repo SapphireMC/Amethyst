@@ -1,30 +1,29 @@
-From d97897045ed0cd64d667c7ad28076ea86176b666 Mon Sep 17 00:00:00 2001
+From c3e1bda033e571ef5dacd0172919cfcc45fd59f7 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 25 Apr 2022 18:25:05 +0500
 Subject: [PATCH] Upgrade bungee command
 
 
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
-index 615f75b9..cbaf47a1 100644
+index 641465ac..a520e2aa 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
 @@ -22,6 +22,8 @@ public class MessagesConfig extends AbstractYamlConfig {
      public void loadContent() {
-         formattedMessages.put("command.alert.success", ChatColor.translateAlternateColorCodes('&', getString("command.alert.success", "8[&4Alert&8]&r ")));
-         formattedMessages.put("command.alert.error.message-needed", ChatColor.translateAlternateColorCodes('&', getString("command.alert.error.message-needed", "&cYou must supply a message.")));
-+        formattedMessages.put("command.bungee.usage", ChatColor.translateAlternateColorCodes('&', getString("command.bungee.usage", "&cUse: /bungee <version|plugins>")));
-+        formattedMessages.put("command.bungee.plugins", ChatColor.translateAlternateColorCodes('&', getString("command.bungee.plugins", "&fPlugins ({0}): &r{1}")));
-         formattedMessages.put("command.find.success", ChatColor.translateAlternateColorCodes('&', getString("command.find.success", "&a{0} &ris online at {1}")));
-         formattedMessages.put("command.ip.success", ChatColor.translateAlternateColorCodes('&', getString("command.ip.success", "&9IP of {0} is {1}")));
-         formattedMessages.put("command.kick.success", ChatColor.translateAlternateColorCodes('&', getString("command.kick.success", "&cYou have been kicked off the proxy.")));
+         formattedMessages.put("alert", ChatColor.translateAlternateColorCodes('&', getString("command.alert.success", "8[&4Alert&8]&r ")));
+         formattedMessages.put("message_needed", ChatColor.translateAlternateColorCodes('&', getString("command.alert.error.message-needed", "&cYou must supply a message.")));
++        formattedMessages.put("bungee_cmd_usage", ChatColor.translateAlternateColorCodes('&', getString("command.bungee.usage", "&cUse: /bungee <version|plugins>")));
++        formattedMessages.put("bungee_plugins", ChatColor.translateAlternateColorCodes('&', getString("command.bungee.plugins", "&fPlugins ({0}): &r{1}")));
+         formattedMessages.put("user_online_at", ChatColor.translateAlternateColorCodes('&', getString("command.find.success", "&a{0} &ris online at {1}")));
+         formattedMessages.put("command_ip", ChatColor.translateAlternateColorCodes('&', getString("command.ip.success", "&9IP of {0} is {1}")));
+         formattedMessages.put("kick_message", ChatColor.translateAlternateColorCodes('&', getString("command.kick.success", "&cYou have been kicked off the proxy.")));
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
-index 88486f5b..87feb6a5 100644
+index 88486f5b..0e3b996a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
 +++ b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
-@@ -1,9 +1,15 @@
+@@ -1,9 +1,14 @@
  package net.md_5.bungee.command;
  
-+import io.sapphiremc.amethyst.api.protocol.ProtocolVersion;
 +import net.md_5.bungee.BungeeCord;
  import net.md_5.bungee.api.ChatColor;
  import net.md_5.bungee.api.CommandSender;
@@ -37,20 +36,20 @@ index 88486f5b..87feb6a5 100644
  
  public class CommandBungee extends Command
  {
-@@ -17,6 +23,74 @@ public class CommandBungee extends Command
+@@ -17,6 +22,72 @@ public class CommandBungee extends Command
      public void execute(CommandSender sender, String[] args)
      {
          ProxyServer proxy = ProxyServer.getInstance();
 -        sender.sendMessage( ChatColor.BLUE + "This server is running " + proxy.getName() + " version " + proxy.getVersion() + " by md_5, DenaryDev" ); // Amethyst
 +        if ( !sender.hasPermission( "bungeecord.command.plugins" ) && !sender.hasPermission( "bungeecord.command.version" ) )
 +        {
-+            sender.sendMessage( proxy.getTranslationComponent( "error.no-perms.command" ) );
++            sender.sendMessage( proxy.getTranslation( "no_permission" ) );
 +            return;
 +        }
 +
 +        if ( args.length < 1 )
 +        {
-+            sender.sendMessage( proxy.getTranslationComponent( "command.bungee.usage" ) );
++            sender.sendMessage( proxy.getTranslation( "bungee_cmd_usage" ) );
 +            return;
 +        }
 +        String arg = args[0];
@@ -100,16 +99,14 @@ index 88486f5b..87feb6a5 100644
 +                        builder.append("*");
 +                    }
 +                }
-+                sender.sendMessage( BungeeCord.getInstance().getTranslationComponent( "command.bungee.plugins", plugins.size(), ChatColor.translateAlternateColorCodes( '&', builder.toString() ) ) );
++                sender.sendMessage( BungeeCord.getInstance().getTranslation( "bungee_plugins", plugins.size(), ChatColor.translateAlternateColorCodes( '&', builder.toString() ) ) );
 +                break;
 +            case "version":
 +            case "ver":
-+                String minMcVersion = ProtocolVersion.values()[4].getVersionIntroducedIn();
-+                String maxMcVersion = ProtocolVersion.values()[ProtocolVersion.values().length - 1].getMostRecentSupportedVersion();
-+                sender.sendMessage("This proxy is running " + proxy.getName() + " version " + proxy.getGitInfo() + " (MC: " + minMcVersion + "-" + maxMcVersion + ") (Implemented API version: " + proxy.getVersion() + ")");
++                sender.sendMessage("This proxy is running " + proxy.getName() + " version " + proxy.getGitInfo() + " (MC: 1.8-1.19 ) (Implemented API version: " + proxy.getVersion() + ")");
 +                break;
 +            default:
-+                sender.sendMessage( proxy.getTranslationComponent( "command.bungee.usage" ) );
++                sender.sendMessage( proxy.getTranslation( "bungee_cmd_usage" ) );
 +        }
      }
  }

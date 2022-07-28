@@ -1,0 +1,387 @@
+From 7982529936cf2b5939679d86914365ed257a0b42 Mon Sep 17 00:00:00 2001
+From: DenaryDev <denaryplanet@gmail.com>
+Date: Thu, 6 Jan 2022 18:32:40 +0500
+Subject: [PATCH] Amethyst message system
+
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
+index 0fa0c0dd..cff49826 100644
+--- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
++++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
+@@ -59,7 +59,7 @@ public abstract class ProxyServer
+     public abstract String getGitInfo();
+ 
+     /**
+-     * Gets a localized string from the .properties file.
++     * Gets a localized string from Amethyst messages.yml file.
+      *
+      * @param name translation name
+      * @param args translation arguments
+diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
+index 90031156..b24888f2 100644
+--- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
++++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
+@@ -212,7 +212,7 @@ public final class PluginManager
+                 command.execute( sender, args );
+         // Waterfall start - split command & tab complete exception handlers for exception event
+         } catch ( Exception ex ) {
+-            sender.sendMessage( ChatColor.RED + "An internal error occurred whilst executing this command, please check the console log for details." );
++            sender.sendMessage( proxy.getTranslation( "internal_command_error" ) );
+             ProxyServer.getInstance().getLogger().log( Level.WARNING, "Error in dispatching command", ex );
+             this.callEvent( new ProxyExceptionEvent( new ProxyCommandException( ex, command, sender, args ) ) ); //Waterfall - throw error event
+         }
+diff --git a/flame/src/main/java/io/sapphiremc/amethyst/Amethyst.java b/flame/src/main/java/io/sapphiremc/amethyst/Amethyst.java
+index aad66497..934c0ccf 100644
+--- a/flame/src/main/java/io/sapphiremc/amethyst/Amethyst.java
++++ b/flame/src/main/java/io/sapphiremc/amethyst/Amethyst.java
+@@ -1,6 +1,7 @@
+ package io.sapphiremc.amethyst;
+ 
+ import io.sapphiremc.amethyst.conf.AmethystConfig;
++import io.sapphiremc.amethyst.conf.MessagesConfig;
+ import java.util.logging.Logger;
+ import lombok.Getter;
+ import net.md_5.bungee.config.ConfigurationProvider;
+@@ -27,7 +28,7 @@ public class Amethyst {
+      * @see YamlConfiguration
+      */
+     @Getter
+-    private final ConfigurationProvider provider = ConfigurationProvider.getProvider(YamlConfiguration.class);
++    private ConfigurationProvider provider;
+     /**
+      * Proxy logger instance
+      */
+@@ -39,13 +40,21 @@ public class Amethyst {
+      */
+     @Getter
+     private AmethystConfig config;
++    /**
++     * Amethyst messages config.
++     * @see MessagesConfig
++     */
++    @Getter
++    private MessagesConfig messages;
+ 
+     /**
+      * This method is used by the proxy to initialize this
+      * Doesn't use this if you don't know what you are doing
+      */
+     public void load(Logger logger) {
++        this.provider = ConfigurationProvider.getProvider(YamlConfiguration.class);
+         this.logger = logger;
+         this.config = new AmethystConfig(provider);
++        this.messages = new MessagesConfig(provider);
+     }
+ }
+diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
+new file mode 100644
+index 00000000..1888aef1
+--- /dev/null
++++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
+@@ -0,0 +1,85 @@
++package io.sapphiremc.amethyst.conf;
++
++import io.sapphiremc.amethyst.Amethyst;
++import java.text.MessageFormat;
++import java.util.HashMap;
++import java.util.Map;
++
++import net.md_5.bungee.api.ChatColor;
++import net.md_5.bungee.config.ConfigurationProvider;
++
++public class MessagesConfig extends AbstractYamlConfig {
++
++    private final Map<String, String> formattedMessages = new HashMap<>();
++
++    public MessagesConfig(ConfigurationProvider provider) {
++        super(provider, "messages.yml");
++        init();
++        save();
++    }
++
++    @Override
++    public void loadContent() {
++        formattedMessages.put("alert", ChatColor.translateAlternateColorCodes('&', getString("command.alert.success", "8[&4Alert&8]&r ")));
++        formattedMessages.put("message_needed", ChatColor.translateAlternateColorCodes('&', getString("command.alert.error.message-needed", "&cYou must supply a message.")));
++        formattedMessages.put("user_online_at", ChatColor.translateAlternateColorCodes('&', getString("command.find.success", "&a{0} &ris online at {1}")));
++        formattedMessages.put("command_ip", ChatColor.translateAlternateColorCodes('&', getString("command.ip.success", "&9IP of {0} is {1}")));
++        formattedMessages.put("kick_message", ChatColor.translateAlternateColorCodes('&', getString("command.kick.success", "&cYou have been kicked off the proxy.")));
++        formattedMessages.put("command_list_header", ChatColor.translateAlternateColorCodes('&', getString("command.list.header", "Available servers:")));
++        formattedMessages.put("command_list", ChatColor.translateAlternateColorCodes('&', getString("command.list.entry", "&a[{0}] &e({1}): &r{2}")));
++        formattedMessages.put("total_players", ChatColor.translateAlternateColorCodes('&', getString("command.list.total", "Total players online: {0}")));
++        formattedMessages.put("command_perms_groups", ChatColor.translateAlternateColorCodes('&', getString("command.perms.groups", "&6You have the following groups: {0}")));
++        formattedMessages.put("command_perms_permission", ChatColor.translateAlternateColorCodes('&', getString("command.perms.permissions", "=&9- {0}")));
++        formattedMessages.put("command_reload", ChatColor.translateAlternateColorCodes('&', getString("command.reload.success", "&c&lAmethyst has been reloaded. This is NOT advisable and you will not be supported with any issues that arise! Please restart Amethyst ASAP.")));
++        formattedMessages.put("send_attemt", ChatColor.translateAlternateColorCodes('&', getString("command.send.attempt", "Attempting to send {0} players to {1}")));
++        formattedMessages.put("send_header", ChatColor.translateAlternateColorCodes('&', getString("command.send.result", "Send results:")));
++        formattedMessages.put("you_got_summoned", ChatColor.translateAlternateColorCodes('&', getString("command.send.target", "&6Summoned to {0} by {1}")));
++        formattedMessages.put("send_cmd_usage", ChatColor.translateAlternateColorCodes('&', getString("command.send.usage", "&cNot enough arguments, usage: /send <server|player|all|current> <target>")));
++        formattedMessages.put("current_server", ChatColor.translateAlternateColorCodes('&', getString("command.server.current", "&6You are currently connected to {0}.")));
++        formattedMessages.put("server_list", ChatColor.translateAlternateColorCodes('&', getString("command.server.available", "&6You may connect to the following servers at this time: ")));
++        formattedMessages.put("click_to_connect", ChatColor.translateAlternateColorCodes('&', getString("command.server.hover", "{0} player(-s) online\nClick to connect to this server")));
++
++        formattedMessages.put("fallback_kick", ChatColor.translateAlternateColorCodes('&', getString("event.fallback.kick", "&cCould not connect to a default or fallback server. Incorrectly configured address/port/firewall? {0}")));
++        formattedMessages.put("fallback_kick_not_found", ChatColor.translateAlternateColorCodes('&', getString("event.fallback.reason.not-found", "&cThe server you were on was not found on reload")));
++        formattedMessages.put("fallback_lobby", ChatColor.translateAlternateColorCodes('&', getString("event.fallback.lobby", "&cCould not connect to target server, you have been moved to a fallback server.")));
++        formattedMessages.put("restart", ChatColor.translateAlternateColorCodes('&', getString("event.restart", "[Proxy] Proxy restarting.")));
++        formattedMessages.put("server_went_down", ChatColor.translateAlternateColorCodes('&', getString("event.server-down", "&cThe server you were previously on went down, you have been connected to a fallback server")));
++
++        formattedMessages.put("already_connected", ChatColor.translateAlternateColorCodes('&', getString("error.already.connected", "&cYou are already connected to this server!")));
++        formattedMessages.put("already_connected_proxy", ChatColor.translateAlternateColorCodes('&', getString("error.already.connected-proxy", "&cYou are already connected to this proxy")));
++        formattedMessages.put("already_connecting", ChatColor.translateAlternateColorCodes('&', getString("error.already.connecting", "&cAlready connecting to this server!")));
++        formattedMessages.put("internal_command_error", ChatColor.translateAlternateColorCodes('&', getString("error.command.internal", "&cAn internal error occurred whilst executing this command, please check the console log for details.")));
++        formattedMessages.put("command_not_found", ChatColor.translateAlternateColorCodes('&', getString("error.command.not-found", "&cCommand not found!")));
++        formattedMessages.put("error_occurred_player", ChatColor.translateAlternateColorCodes('&', getString("error.json.player", "&cAn error occurred while parsing your message. (Hover for details)")));
++        formattedMessages.put("error_occurred_console", ChatColor.translateAlternateColorCodes('&', getString("error.json.console", "&cAn error occurred while parsing your message: {0}")));
++        formattedMessages.put("no_permission", ChatColor.translateAlternateColorCodes('&', getString("error.no-perms.command", "&cYou do not have permission to execute this command!")));
++        formattedMessages.put("no_server_permission", ChatColor.translateAlternateColorCodes('&', getString("error.no-perms.server", "&cYou don't have permission to access this server.")));
++        formattedMessages.put("outdated_client", ChatColor.translateAlternateColorCodes('&', getString("error.outdated.client", "Outdated client! Please use {0}")));
++        formattedMessages.put("outdated_server", ChatColor.translateAlternateColorCodes('&', getString("error.outdated.server", "Outdated server! I'm still on {0}")));
++        formattedMessages.put("connect_kick", ChatColor.translateAlternateColorCodes('&', getString("error.connect-kick", "&cKicked whilst connecting to {0}: {1}")));
++        formattedMessages.put("illegal_chat_characters", ChatColor.translateAlternateColorCodes('&', getString("error.illegal-chat-characters", "&cIllegal characters in chat ({0})")));
++        formattedMessages.put("lost_connection", ChatColor.translateAlternateColorCodes('&', getString("error.lost-connection", "[Proxy] Lost connection to server.")));
++        formattedMessages.put("mojang_fail", ChatColor.translateAlternateColorCodes('&', getString("error.mojang-fail", "Error occurred while contacting login servers, are they down?")));
++        formattedMessages.put("name_invalid", ChatColor.translateAlternateColorCodes('&', getString("error.name-invalid", "Username contains invalid characters.")));
++        formattedMessages.put("no_server", ChatColor.translateAlternateColorCodes('&', getString("error.no-server", "&cThe specified server does not exist.")));
++        formattedMessages.put("offline_mode_player", ChatColor.translateAlternateColorCodes('&', getString("error.not-authenticated", "Not authenticated with Minecraft.net")));
++        formattedMessages.put("user_not_online", ChatColor.translateAlternateColorCodes('&', getString("error.not-online", "&cThat user is not online.")));
++        formattedMessages.put("ping_cannot_connect", ChatColor.translateAlternateColorCodes('&', getString("error.ping-cannot-connect", "&c[Bungee] Can't connect to server.")));
++        formattedMessages.put("player_only", ChatColor.translateAlternateColorCodes('&', getString("error.players-only", "&cOnly in game players can use this command")));
++        formattedMessages.put("proxy_full", ChatColor.translateAlternateColorCodes('&', getString("error.proxy-full", "Server is full!")));
++        formattedMessages.put("secure_profile_required", ChatColor.translateAlternateColorCodes('&', getString("error.secure-profile.required", "A secure profile is required to join this server.")));
++        formattedMessages.put("secure_profile_expired", ChatColor.translateAlternateColorCodes('&', getString("error.secure-profile.expired", "Secure profile expired.")));
++        formattedMessages.put("secure_profile_invalid", ChatColor.translateAlternateColorCodes('&', getString("error.secure-profile.invalid", "Secure profile invalid.")));
++        formattedMessages.put("username_needed", ChatColor.translateAlternateColorCodes('&', getString("error.username-needed", "&cPlease follow this command by a user name.")));
++    }
++
++    public String getTranslation(final String name, final Object... args) {
++        if (!formattedMessages.containsKey(name) && !config.contains(name)) {
++            Amethyst.getInstance().getLogger().warning("Tried to get translation '" + name
++                    + "' from messages.yml file but wasn't found. Please try resetting this file or report to a developer.");
++            return "<translation '" + name + "' missing>";
++        }
++
++        return MessageFormat.format(formattedMessages.get(name), args);
++    }
++}
+diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/console/WaterfallConsole.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/console/WaterfallConsole.java
+index 6cec0b5a..e2224d29 100644
+--- a/proxy/src/main/java/io/github/waterfallmc/waterfall/console/WaterfallConsole.java
++++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/console/WaterfallConsole.java
+@@ -28,7 +28,7 @@ public final class WaterfallConsole extends SimpleTerminalConsole {
+     protected void runCommand(String command) {
+         ProxyServer proxy = ProxyServer.getInstance();
+         if (!proxy.getPluginManager().dispatchCommand(proxy.getConsole(), command)) {
+-            proxy.getConsole().sendMessage(new ComponentBuilder("Command not found").color(ChatColor.RED).create());
++            proxy.getConsole().sendMessage(proxy.getTranslation("command_not_found"));
+         }
+     }
+ 
+diff --git a/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandList.java b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandList.java
+index a7b85178..903bc976 100644
+--- a/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandList.java
++++ b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandList.java
+@@ -26,6 +26,7 @@ public class CommandList extends Command
+     public void execute(CommandSender sender, String[] args)
+     {
+         ProxyServer proxy = ProxyServer.getInstance();
++        sender.sendMessage( proxy.getTranslation( "command_list_header" ) );
+         for ( ServerInfo server : proxy.getServers().values() )
+         {
+             if ( !server.canAccess( sender ) )
+diff --git a/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandSend.java b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandSend.java
+index e12c1f65..d4ae3eff 100644
+--- a/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandSend.java
++++ b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandSend.java
+@@ -45,7 +45,7 @@ public class CommandSend extends Command implements TabExecutor
+ 
+         public void lastEntryDone()
+         {
+-            sender.sendMessage( ChatColor.GREEN.toString() + ChatColor.BOLD + "Send Results:" );
++            sender.sendMessage( proxy.getTranslation( "send_header" ) );
+             for ( Map.Entry<ServerConnectRequest.Result, List<String>> entry : results.entrySet() )
+             {
+                 ComponentBuilder builder = new ComponentBuilder( "" );
+@@ -156,7 +156,7 @@ public class CommandSend extends Command implements TabExecutor
+             player.connect( request );
+         }
+ 
+-        sender.sendMessage( ChatColor.DARK_GREEN + "Attempting to send " + targets.size() + " players to " + server.getName() );
++        sender.sendMessage( proxy.getTranslation( "send_attempt", targets.size(), server.getName() ) );
+     }
+ 
+     @Override
+diff --git a/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandServer.java b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandServer.java
+index c3116ac0..a79cd918 100644
+--- a/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandServer.java
++++ b/proxy/src/main/java/io/sapphiremc/amethyst/module/CommandServer.java
+@@ -51,7 +51,7 @@ public class CommandServer extends Command implements TabExecutor
+                     int count = server.getPlayers().size();
+                     serverTextComponent.setHoverEvent( new HoverEvent(
+                             HoverEvent.Action.SHOW_TEXT,
+-                            new ComponentBuilder( count + ( count == 1 ? " player" : " players" ) + "\n" ).appendLegacy( proxy.getTranslation( "click_to_connect" ) ).create() )
++                            TextComponent.fromLegacyText( proxy.getTranslation( "click_to_connect", count ) ) )
+                     );
+                     serverTextComponent.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/server " + server.getName() ) );
+                     serverList.append( serverTextComponent );
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index d1f4f826..cc3ae50f 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -111,8 +111,8 @@ public class BungeeCord extends ProxyServer
+     /**
+      * Localization bundle.
+      */
+-    private ResourceBundle baseBundle;
+-    private ResourceBundle customBundle;
++   // private ResourceBundle baseBundle; // Amethyst
++   // private ResourceBundle customBundle; // Amethyst
+     public EventLoopGroup bossEventLoopGroup, workerEventLoopGroup;
+     /**
+      * locations.yml save thread.
+@@ -190,6 +190,8 @@ public class BungeeCord extends ProxyServer
+         // Java uses ! to indicate a resource inside of a jar/zip/other container. Running Bungee from within a directory that has a ! will cause this to muck up.
+         // Preconditions.checkState( new File( "." ).getAbsolutePath().indexOf( '!' ) == -1, "Cannot use Amethyst in directory with ! in path." ); // Amethyst - move this to bootstrap
+ 
++        // Amethyst start - New messages system
++        /*
+         try
+         {
+             baseBundle = ResourceBundle.getBundle( "messages" );
+@@ -198,6 +200,8 @@ public class BungeeCord extends ProxyServer
+             baseBundle = ResourceBundle.getBundle( "messages", Locale.ENGLISH );
+         }
+         reloadMessages();
++        */
++        // Amethyst end
+ 
+         // This is a workaround for quite possibly the weirdest bug I have ever encountered in my life!
+         // When jansi attempts to extract its natives, by default it tries to extract a specific version,
+@@ -566,6 +570,8 @@ public class BungeeCord extends ProxyServer
+         return ( BungeeCord.class.getPackage().getImplementationVersion() == null ) ? "git-Amethyst-unknown" : BungeeCord.class.getPackage().getImplementationVersion(); // Amethyst
+     }
+ 
++    // Amethyst start - New messages system
++   /*
+     public void reloadMessages()
+     {
+         File file = new File( "messages.properties" );
+@@ -580,10 +586,15 @@ public class BungeeCord extends ProxyServer
+             }
+         }
+     }
++    */
++    // Amethyst end
+ 
+     @Override
+     public String getTranslation(String name, Object... args)
+     {
++        // Amethyst start - New messages system
++        return getAmethyst().getMessages().getTranslation( name, args );
++       /*
+         String translation = "<translation '" + name + "' missing>";
+         try
+         {
+@@ -594,6 +605,8 @@ public class BungeeCord extends ProxyServer
+         {
+         }
+         return translation;
++        */
++        // Amethyst end
+     }
+ 
+     @Override
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
+index 431f268a..1adc8aa0 100644
+--- a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
++++ b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
+@@ -3,7 +3,6 @@ package net.md_5.bungee.command;
+ import io.sapphiremc.amethyst.Amethyst;
+ import io.sapphiremc.amethyst.AmethystModulesManager;
+ import net.md_5.bungee.BungeeCord;
+-import net.md_5.bungee.api.ChatColor;
+ import net.md_5.bungee.api.CommandSender;
+ import net.md_5.bungee.api.event.ProxyReloadEvent;
+ import net.md_5.bungee.api.plugin.Command;
+@@ -21,7 +20,7 @@ public class CommandReload extends Command
+     {
+         BungeeCord proxy = BungeeCord.getInstance();
+         proxy.config.load();
+-        proxy.reloadMessages();
++       // proxy.reloadMessages(); // Amethyst
+         proxy.stopListeners();
+         proxy.startListeners();
+         proxy.getPluginManager().callEvent( new ProxyReloadEvent( sender ) );
+@@ -29,7 +28,6 @@ public class CommandReload extends Command
+         Amethyst.getInstance().load( BungeeCord.getInstance().getLogger() ); // Amethyst - load our configs
+         AmethystModulesManager.registerModules( BungeeCord.getInstance() ); // Amethyst - register modules
+ 
+-        sender.sendMessage( ChatColor.BOLD.toString() + ChatColor.RED.toString() + "Amethyst has been reloaded."
+-                + " This is NOT advisable and you will not be supported with any issues that arise! Please restart Amethyst ASAP." );
++        sender.sendMessage( proxy.getTranslation( "command_reload" ) );
+     }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
+index 76677c35..93400997 100644
+--- a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
++++ b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
+@@ -137,7 +137,7 @@ public abstract class Configuration implements ProxyConfig
+                         ServerInfo destination = newServers.get(destinationName);
+                         if (destination == null) {
+                             BungeeCord.getInstance().getLogger().severe("Couldn't find server " + listener.getDefaultServer() + " or " + listener.getFallbackServer() + " to put player " + player.getName() + " on");
+-                            player.disconnect(BungeeCord.getInstance().getTranslation("fallback_kick", "Not found on reload"));
++                            player.disconnect(BungeeCord.getInstance().getTranslation("fallback_kick", BungeeCord.getInstance().getTranslation("fallback_kick_not_found")));
+                             continue;
+                         }
+                         player.connect(destination, (success, cause) -> {
+diff --git a/proxy/src/main/resources/messages.properties b/proxy/src/main/resources/messages.properties
+deleted file mode 100644
+index 58380d4a..00000000
+--- a/proxy/src/main/resources/messages.properties
++++ /dev/null
+@@ -1,42 +0,0 @@
+-alert=\u00a78[\u00a74Alert\u00a78]\u00a7r 
+-already_connected=\u00a7cYou are already connected to this server!
+-already_connected_proxy=\u00a7cYou are already connected to this proxy!
+-already_connecting=\u00a7cAlready connecting to this server!
+-command_list=\u00a7a[{0}] \u00a7e({1}): \u00a7r{2}
+-connect_kick=\u00a7cKicked whilst connecting to {0}: {1}
+-current_server=\u00a76You are currently connected to {0}.
+-fallback_kick=\u00a7cCould not connect to a default or fallback server. Incorrectly configured address/port/firewall? {0}
+-fallback_lobby=\u00a7cCould not connect to target server, you have been moved to a fallback server.
+-lost_connection=[Proxy] Lost connection to server.
+-mojang_fail=Error occurred while contacting login servers, are they down?
+-no_permission=\u00a7cYou do not have permission to execute this command!
+-no_server=\u00a7cThe specified server does not exist.
+-no_server_permission=\u00a7cYou don''t have permission to access this server.
+-outdated_client=Outdated client! Please use {0}
+-outdated_server=Outdated server! I''m still on {0}
+-proxy_full=Server is full!
+-restart=[Proxy] Proxy restarting.
+-server_list=\u00a76You may connect to the following servers at this time: 
+-server_went_down=\u00a7cThe server you were previously on went down, you have been connected to a fallback server
+-total_players=Total players online: {0}
+-name_invalid=Username contains invalid characters.
+-ping_cannot_connect=\u00a7c[Bungee] Can''t connect to server.
+-offline_mode_player=Not authenticated with Minecraft.net
+-secure_profile_required=A secure profile is required to join this server.
+-secure_profile_expired=Secure profile expired.
+-secure_profile_invalid=Secure profile invalid.
+-message_needed=\u00a7cYou must supply a message.
+-error_occurred_player=\u00a7cAn error occurred while parsing your message. (Hover for details)
+-error_occurred_console=\u00a7cAn error occurred while parsing your message: {0}
+-click_to_connect=Click to connect to the server
+-username_needed=\u00a7cPlease follow this command by a user name.
+-user_not_online=\u00a7cThat user is not online.
+-user_online_at=\u00a7a{0} \u00a7ris online at {1}
+-send_cmd_usage=\u00a7cNot enough arguments, usage: /send <server|player|all|current> <target>
+-player_only=\u00a7cOnly in game players can use this command
+-you_got_summoned=\u00a76Summoned to {0} by {1}
+-command_perms_groups=\u00a76You have the following groups: {0}
+-command_perms_permission=\u00a79- {0}
+-command_ip=\u00a79IP of {0} is {1}
+-illegal_chat_characters=\u00a7cillegal characters in chat ({0})
+-kick_message=\u00a7cYou have been kicked off the proxy.
+-- 
+2.37.1.windows.1
+

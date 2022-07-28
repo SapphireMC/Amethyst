@@ -1,4 +1,4 @@
-From 6c0395e418646a8dff2b143e7871564c613c9c89 Mon Sep 17 00:00:00 2001
+From c3d90936a632d186a2f3d1d4b428e926c2af553d Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 7 Mar 2022 17:55:13 +0500
 Subject: [PATCH] More plugin api
@@ -349,7 +349,7 @@ index ea5c0d37..4bdaf6ec 100644
       * Plugin hard dependencies.
       */
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index 359ce881..590002ef 100644
+index c03fb079..a72122e4 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 @@ -32,6 +32,7 @@ import io.github.waterfallmc.waterfall.exception.ProxyCommandException; // Water
@@ -524,22 +524,23 @@ index 00000000..08c4fa7d
 +    ERROR
 +}
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-index 5d5cabd5..1205c1bf 100644
+index b9c48351..2d71bf55 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-@@ -64,6 +64,11 @@ public class AmethystConfig extends AbstractYamlConfig {
-      * Default: 1.18.2
+@@ -54,6 +54,12 @@ public class AmethystConfig extends AbstractYamlConfig {
       */
-     public String maxVersion = "1.18.2";
+     public List<String> motdHoverBoxContent = Arrays.asList("&eAmethyst", "", "&7Online: &f%online%", "", "&bServers:", "&8- &7Lobby: &f%online_lobby%", "", "&eexample.net");
+ 
 +    /**
 +     * Minimum api version that required for all plugins.
 +     * Default: none
 +     */
 +    public String minApiVersion = "none";
- 
++
      /**
       * A module that provides the /lobby and /hub commands.
-@@ -114,6 +119,10 @@ public class AmethystConfig extends AbstractYamlConfig {
+      */
+@@ -103,6 +109,10 @@ public class AmethystConfig extends AbstractYamlConfig {
       * Log exception when connection to backend server failed
       */
      public boolean logBackendConnectionFailed = true;
@@ -550,15 +551,16 @@ index 5d5cabd5..1205c1bf 100644
  
      /**
       * A module that provides the /alert and /alertraw commands.
-@@ -172,6 +181,7 @@ public class AmethystConfig extends AbstractYamlConfig {
+@@ -159,6 +169,8 @@ public class AmethystConfig extends AbstractYamlConfig {
+         motdHoverBoxEnabled = getBoolean("motd.hoverBox.enabled", motdHoverBoxEnabled);
+         motdHoverBoxContent = getStringList("motd.hoverBox.content", motdHoverBoxContent);
  
-         minVersion = getString( "versions.min", minVersion );
-         maxVersion = getString( "versions.max", maxVersion );
 +        minApiVersion = getString("versions.minApi", minApiVersion);
- 
++
          lobbyEnabled = getBoolean("lobby.enabled", lobbyEnabled);
          lobbyMessage = getBoolean("lobby.message", lobbyMessage);
-@@ -184,6 +194,7 @@ public class AmethystConfig extends AbstractYamlConfig {
+         lobbyServers = getStringList("lobby.servers", lobbyServers);
+@@ -170,6 +182,7 @@ public class AmethystConfig extends AbstractYamlConfig {
          logExceptions = getBoolean("logger.exceptions", logExceptions);
          logHaProxy = getBoolean("logger.haProxy", logHaProxy);
          logBackendConnectionFailed = getBoolean("logger.backendConnectionFailed", logBackendConnectionFailed);
@@ -567,17 +569,17 @@ index 5d5cabd5..1205c1bf 100644
          alertEnabled = getBoolean( "modules.alert", alertEnabled );
          findEnabled = getBoolean( "modules.find", findEnabled );
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
-index 5e0a3e27..6ae95a2e 100644
+index 1adc8aa0..207cb654 100644
 --- a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
 +++ b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
-@@ -29,6 +29,7 @@ public class CommandReload extends Command
+@@ -23,6 +23,7 @@ public class CommandReload extends Command
         // proxy.reloadMessages(); // Amethyst
          proxy.stopListeners();
          proxy.startListeners();
 +        proxy.getPluginManager().reloadPlugins(); // Amethyst
          proxy.getPluginManager().callEvent( new ProxyReloadEvent( sender ) );
  
-         Amethyst.getInstance().load( BungeeCord.getInstance().getLogger()); // Amethyst - load our configs
+         Amethyst.getInstance().load( BungeeCord.getInstance().getLogger() ); // Amethyst - load our configs
 -- 
 2.37.1.windows.1
 

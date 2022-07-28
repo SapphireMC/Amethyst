@@ -1,4 +1,4 @@
-From f0926d6a6d5e962722710f3ebea756b40cc55788 Mon Sep 17 00:00:00 2001
+From 81f61776e24373412f131ab9ade978505f8f9f84 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Sun, 6 Mar 2022 02:47:48 +0500
 Subject: [PATCH] Antibot system from FlameCord
@@ -923,27 +923,27 @@ index 00000000..dc21bf8d
 +    }
 +}
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
-index ae72e7a3..046d80a8 100644
+index c093cafd..d3d81ffa 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
-@@ -41,6 +41,15 @@ public class MessagesConfig extends AbstractYamlConfig {
-         formattedMessages.put("command.server.available", ChatColor.translateAlternateColorCodes('&', getString("command.server.available", "&6You may connect to the following servers at this time: ")));
-         formattedMessages.put("command.server.hover", ChatColor.translateAlternateColorCodes('&', getString("command.server.hover", "{0} players online\nClick to connect to this server")));
+@@ -42,6 +42,15 @@ public class MessagesConfig extends AbstractYamlConfig {
+         formattedMessages.put("server_list", ChatColor.translateAlternateColorCodes('&', getString("command.server.available", "&6You may connect to the following servers at this time: ")));
+         formattedMessages.put("click_to_connect", ChatColor.translateAlternateColorCodes('&', getString("command.server.hover", "{0} player(-s) online\nClick to connect to this server")));
  
-+        formattedMessages.put("event.antibot.account", ChatColor.translateAlternateColorCodes('&', getString("event.antibot.accounts", "&cYou have too many accounts! ({0})")));
-+        formattedMessages.put("event.antibot.country", ChatColor.translateAlternateColorCodes('&', getString("event.antibot.country", "&cYour country is blacklisted! ({0})")));
-+        formattedMessages.put("event.antibot.fast-chat", ChatColor.translateAlternateColorCodes('&', getString("event.antibot.fast-chat", "&cYou are chatting too fast!")));
-+        formattedMessages.put("event.antibot.firewall", ChatColor.translateAlternateColorCodes('&', getString("event.antibot.firewall", "&cYou are blocked from this server!")));
-+        formattedMessages.put("event.antibot.nickname", ChatColor.translateAlternateColorCodes('&', getString("event.antibot.nickname", "&cYour nickname was detected as bot! ({0})")));
-+        formattedMessages.put("event.antibot.password", ChatColor.translateAlternateColorCodes('&', getString("event.antibot.password", "&cYour password is used by other players! ({0})")));
-+        formattedMessages.put("event.antibot.rate-limit", ChatColor.translateAlternateColorCodes('&', getString("event.antibot.rate-limit", "&cYou are connecting too fast! ({0})")));
-+        formattedMessages.put("event.antibot.reconnect", ChatColor.translateAlternateColorCodes('&', getString("event.antibot.reconnect", "&cReconnect {0} more times to enter!")));
++        formattedMessages.put("antibot_account", ChatColor.translateAlternateColorCodes('&', getString("event.antibot.accounts", "&cYou have too many accounts! ({0})")));
++        formattedMessages.put("antibot_country", ChatColor.translateAlternateColorCodes('&', getString("event.antibot.country", "&cYour country is blacklisted! ({0})")));
++        formattedMessages.put("antibot_fast-chat", ChatColor.translateAlternateColorCodes('&', getString("event.antibot.fast-chat", "&cYou are chatting too fast!")));
++        formattedMessages.put("antibot_firewall", ChatColor.translateAlternateColorCodes('&', getString("event.antibot.firewall", "&cYou are blocked from this server!")));
++        formattedMessages.put("antibot_nickname", ChatColor.translateAlternateColorCodes('&', getString("event.antibot.nickname", "&cYour nickname was detected as bot! ({0})")));
++        formattedMessages.put("antibot_password", ChatColor.translateAlternateColorCodes('&', getString("event.antibot.password", "&cYour password is used by other players! ({0})")));
++        formattedMessages.put("antibot_rate-limit", ChatColor.translateAlternateColorCodes('&', getString("event.antibot.rate-limit", "&cYou are connecting too fast! ({0})")));
++        formattedMessages.put("antibot_reconnect", ChatColor.translateAlternateColorCodes('&', getString("event.antibot.reconnect", "&cReconnect {0} more times to enter!")));
 +
-         formattedMessages.put("event.fallback.kick", ChatColor.translateAlternateColorCodes('&', getString("event.fallback.kick", "&cCould not connect to a default or fallback server. Incorrectly configured address/port/firewall? {0}")));
-         formattedMessages.put("event.fallback.lobby", ChatColor.translateAlternateColorCodes('&', getString("event.fallback.lobby", "&cCould not connect to target server, you have been moved to a fallback server.")));
-         formattedMessages.put("event.restart", ChatColor.translateAlternateColorCodes('&', getString("event.restart", "[Proxy] Proxy restarting.")));
+         formattedMessages.put("fallback_kick", ChatColor.translateAlternateColorCodes('&', getString("event.fallback.kick", "&cCould not connect to a default or fallback server. Incorrectly configured address/port/firewall? {0}")));
+         formattedMessages.put("fallback_kick_not_found", ChatColor.translateAlternateColorCodes('&', getString("event.fallback.reason.not-found", "&cThe server you were on was not found on reload")));
+         formattedMessages.put("fallback_lobby", ChatColor.translateAlternateColorCodes('&', getString("event.fallback.lobby", "&cCould not connect to target server, you have been moved to a fallback server.")));
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 61419b0f..7cd35f01 100644
+index 9fa73820..0e1551a7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -3,6 +3,8 @@ package net.md_5.bungee.connection;
@@ -952,9 +952,9 @@ index 61419b0f..7cd35f01 100644
  import com.google.gson.Gson;
 +import io.sapphiremc.amethyst.antibot.CheckManager;
 +import io.sapphiremc.amethyst.antibot.address.AddressData;
- import io.sapphiremc.amethyst.api.protocol.ProtocolVersion;
  import java.math.BigInteger;
  import java.net.InetSocketAddress;
+ import java.net.SocketAddress;
 @@ -365,6 +367,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
  
          bungee.getPluginManager().callEvent( new PlayerHandshakeEvent( InitialHandler.this, handshake ) );
@@ -981,7 +981,7 @@ index 61419b0f..7cd35f01 100644
 +                    {
 +                        bungee.getLogger().log( Level.INFO, "[AntiBot] [{0}] is pinging too fast", ch.getRemoteAddress() );
 +                    }
-+                    disconnect( bungee.getTranslationComponent( "event.antibot.rate-limit", data.getPingsSecond() ) );
++                    disconnect( bungee.getTranslation( "antibot_rate-limit", data.getPingsSecond() ) );
 +                    return;
 +                }
 +                // Amethyst end
@@ -1001,12 +1001,12 @@ index 61419b0f..7cd35f01 100644
 +                    {
 +                        bungee.getLogger().log( Level.INFO, "[AntiBot] [{0}] is connecting too fast", ch.getRemoteAddress() );
 +                    }
-+                    disconnect( bungee.getTranslationComponent( "event.antibot.rate-limit", data.getConnectionsSecond() ) );
++                    disconnect( bungee.getTranslation( "antibot_rate-limit", data.getConnectionsSecond() ) );
 +                    return;
 +                }
 +                // Amethyst end
 +
-                 if ( !ProtocolVersion.isSupported( handshake.getProtocolVersion() ) )
+                 if ( !ProtocolConstants.SUPPORTED_VERSION_IDS.contains( handshake.getProtocolVersion() ) )
                  {
                      if ( handshake.getProtocolVersion() > bungee.getProtocolVersion() )
 @@ -445,6 +480,55 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -1027,7 +1027,7 @@ index 61419b0f..7cd35f01 100644
 +            {
 +                bungee.getLogger().log( Level.INFO, "[AntiBot] [{0}] has too many accounts", ch.getRemoteAddress() );
 +            }
-+            disconnect( bungee.getTranslationComponent( "event.antibot.accounts", data.getNicknames().size() ) );
++            disconnect( bungee.getTranslation( "antibot_accounts", data.getNicknames().size() ) );
 +            return;
 +        }
 +        // Check nickname
@@ -1037,7 +1037,7 @@ index 61419b0f..7cd35f01 100644
 +            {
 +                bungee.getLogger().log( Level.INFO, "[AntiBot] [{0}] has a blacklisted nickname", ch.getRemoteAddress() );
 +            }
-+            disconnect( bungee.getTranslationComponent( "event.antibot.nickname", loginRequest.getData() ) );
++            disconnect( bungee.getTranslation( "antibot_nickname", loginRequest.getData() ) );
 +            return;
 +        }
 +        // Check reconnect
@@ -1047,7 +1047,7 @@ index 61419b0f..7cd35f01 100644
 +            {
 +                bungee.getLogger().log( Level.INFO, "[AntiBot] [{0}] has to reconnect to join", ch.getRemoteAddress() );
 +            }
-+            disconnect( bungee.getTranslationComponent( "event.antibot.reconnect", bungee.getAmethyst().getAntibotConfig().reconnectAttempts - data.getTotalConnections()));
++            disconnect( bungee.getTranslation( "antibot_reconnect", bungee.getAmethyst().getAntibotConfig().reconnectAttempts - data.getTotalConnections()));
 +            return;
 +        }
 +        // Check country
@@ -1057,7 +1057,7 @@ index 61419b0f..7cd35f01 100644
 +            {
 +                bungee.getLogger().log( Level.INFO, "[AntiBot] [{0}] has his country blocked from the server", ch.getRemoteAddress() );
 +            }
-+            disconnect( bungee.getTranslationComponent( "event.antibot.country", data.getCountry() ) );
++            disconnect( bungee.getTranslation( "antibot_country", data.getCountry() ) );
 +            return;
 +        }
 +        // Amethyst end
@@ -1066,16 +1066,15 @@ index 61419b0f..7cd35f01 100644
          // We can just check by UUID here as names are based on UUID
          if ( !isOnlineMode() && bungee.getPlayer( getUniqueId() ) != null )
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 0336ff9a..8a47e8e2 100644
+index 6240204e..535e3be8 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -5,10 +5,14 @@ import com.mojang.brigadier.context.StringRange;
+@@ -5,9 +5,13 @@ import com.mojang.brigadier.context.StringRange;
  import com.mojang.brigadier.suggestion.Suggestion;
  import com.mojang.brigadier.suggestion.Suggestions;
  import io.netty.channel.Channel;
 +import io.sapphiremc.amethyst.antibot.CheckManager;
 +import io.sapphiremc.amethyst.antibot.address.AddressData;
- import io.sapphiremc.amethyst.api.protocol.ProtocolVersion;
  import java.util.ArrayList;
  import java.util.LinkedList;
  import java.util.List;
@@ -1098,7 +1097,7 @@ index 0336ff9a..8a47e8e2 100644
 +            {
 +                bungee.getLogger().log( Level.INFO, "[AntiBot] [{0}] is chatting too fast", con.getCh().getRemoteAddress() );
 +            }
-+            con.disconnect( bungee.getTranslationComponent( "event.antibot.fast-chat" ) );
++            con.disconnect( bungee.getTranslation( "antibot_fast-chat" ) );
 +            throw CancelSendSignal.INSTANCE;
 +        }
 +        // Check password
@@ -1108,7 +1107,7 @@ index 0336ff9a..8a47e8e2 100644
 +            {
 +                bungee.getLogger().log( Level.INFO, "[AntiBot] [{0}] has entered a repeated password", con.getCh().getRemoteAddress() );
 +            }
-+            con.disconnect( bungee.getTranslationComponent( "event.antibot.password", checkManager.getPasswordCheck().getRepeatCount() ) );
++            con.disconnect( bungee.getTranslation( "antibot_password", checkManager.getPasswordCheck().getRepeatCount() ) );
 +            throw CancelSendSignal.INSTANCE;
 +        }
 +        // Amethyst end
@@ -1117,17 +1116,26 @@ index 0336ff9a..8a47e8e2 100644
          if ( !bungee.getPluginManager().callEvent( chatEvent ).isCancelled() )
          {
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index 1e51b4ce..077feabf 100644
+index 868f4211..e4515bf4 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-@@ -151,6 +151,14 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+@@ -10,6 +10,8 @@ import io.netty.handler.timeout.ReadTimeoutException;
+ import java.io.IOException;
+ import java.net.InetSocketAddress;
+ import java.util.logging.Level;
++
++import io.sapphiremc.amethyst.Amethyst;
+ import net.md_5.bungee.api.ProxyServer;
+ import net.md_5.bungee.connection.CancelSendSignal;
+ import net.md_5.bungee.connection.InitialHandler;
+@@ -151,6 +153,14 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
          {
-             boolean logExceptions = ProxyServer.getInstance().getAmethyst().getConfig().logExceptions && !(handler instanceof PingHandler); // Amethyst - Option to fully disable exceptions logging.
+             boolean logExceptions = !( handler instanceof PingHandler ) && ProxyServer.getInstance().getAmethyst().getConfig().logExceptions; // Amethyst - Option to fully disable exceptions logging.
  
 +            // Amethyst start - Antibot system
-+            if ( ProxyServer.getInstance().getAmethyst().getAntibotConfig().firewallPackets.contains( cause.getClass().getName() ) )
++            if ( Amethyst.getInstance().getAntibotConfig().firewallPackets.contains( cause.getClass().getName() ) )
 +            {
-+                ProxyServer.getInstance().getAmethyst().getAddressDataManager().getAddressData( ctx.channel().remoteAddress() ).firewall();
++                Amethyst.getInstance().getAddressDataManager().getAddressData( ctx.channel().remoteAddress() ).firewall();
 +                ProxyServer.getInstance().getLogger().log( Level.INFO, "[AntiBot] [{0}] was firewalled because of " + cause.getClass().getName(), ctx.channel().remoteAddress() );
 +            }
 +            // Amethyst end
@@ -1136,26 +1144,25 @@ index 1e51b4ce..077feabf 100644
              {
                  if ( cause instanceof ReadTimeoutException )
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index f1b11b9d..986f112e 100644
+index f1b11b9d..8054d6a9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -32,6 +32,8 @@ import java.net.SocketAddress;
+@@ -32,6 +32,7 @@ import java.net.SocketAddress;
  import java.util.concurrent.ThreadFactory;
  import java.util.concurrent.TimeUnit;
  import java.util.logging.Level;
-+
 +import io.sapphiremc.amethyst.Amethyst;
  import net.md_5.bungee.BungeeCord;
  import net.md_5.bungee.Util;
  import net.md_5.bungee.api.ProxyServer;
-@@ -57,6 +59,18 @@ public class PipelineUtils
+@@ -57,6 +58,18 @@ public class PipelineUtils
          {
              SocketAddress remoteAddress = ( ch.remoteAddress() == null ) ? ch.parent().localAddress() : ch.remoteAddress();
  
 +            // Amethyst start - Antibot system
-+            if ( BungeeCord.getInstance().getAmethyst().getCheckManager().getFirewallCheck().check( ch.remoteAddress() ) )
++            if ( Amethyst.getInstance().getCheckManager().getFirewallCheck().check( ch.remoteAddress() ) )
 +            {
-+                if (Amethyst.getInstance().getAntibotConfig().firewallLog )
++                if ( Amethyst.getInstance().getAntibotConfig().firewallLog )
 +                {
 +                    BungeeCord.getInstance().getLogger().log( Level.INFO, "[AntiBot] [{0}] is firewalled from the server", ch.remoteAddress() );
 +                }

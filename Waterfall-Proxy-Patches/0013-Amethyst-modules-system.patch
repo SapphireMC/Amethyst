@@ -1,4 +1,4 @@
-From a92ff95b3abd45e55d944581124c78d56bf646c7 Mon Sep 17 00:00:00 2001
+From 0a2fa3d877f7c7825f4e13b963101af410d21a8e Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Tue, 4 Jan 2022 20:41:35 +0500
 Subject: [PATCH] Amethyst modules system
@@ -780,7 +780,7 @@ index 3a514a76..a703665b 100644
  import java.io.File;
  import java.io.FileReader;
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index ceff1ea1..610911d4 100644
+index 3c645cad..d1f4f826 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -23,6 +23,7 @@ import io.netty.channel.EventLoopGroup;
@@ -788,10 +788,10 @@ index ceff1ea1..610911d4 100644
  import io.sapphiremc.amethyst.BuildData;
  import io.sapphiremc.amethyst.Amethyst;
 +import io.sapphiremc.amethyst.AmethystModulesManager;
- import io.sapphiremc.amethyst.api.protocol.ProtocolVersion;
  import java.io.File;
  import java.io.FileReader;
-@@ -79,15 +80,12 @@ import net.md_5.bungee.chat.TextComponentSerializer;
+ import java.io.IOException;
+@@ -78,15 +79,12 @@ import net.md_5.bungee.chat.TextComponentSerializer;
  import net.md_5.bungee.chat.TranslatableComponentSerializer;
  import net.md_5.bungee.command.CommandBungee;
  import net.md_5.bungee.command.CommandEnd;
@@ -806,7 +806,7 @@ index ceff1ea1..610911d4 100644
 -import net.md_5.bungee.module.ModuleManager;
  import net.md_5.bungee.netty.PipelineUtils;
  import net.md_5.bungee.protocol.DefinedPacket;
- import net.md_5.bungee.protocol.packet.PluginMessage;
+ import net.md_5.bungee.protocol.ProtocolConstants;
 @@ -173,7 +171,7 @@ public class BungeeCord extends ProxyServer
              .registerTypeAdapter( Favicon.class, Favicon.getFaviconTypeAdapter() ).create();
      @Getter
@@ -816,7 +816,7 @@ index ceff1ea1..610911d4 100644
      private final long serverStartTime; // Amethyst - add logging on startup
  
      {
-@@ -232,11 +230,13 @@ public class BungeeCord extends ProxyServer
+@@ -230,11 +228,13 @@ public class BungeeCord extends ProxyServer
          serverStartTime = System.nanoTime(); // Amethyst - add logging on startup
  
          pluginManager = new PluginManager( this );
@@ -835,7 +835,7 @@ index ceff1ea1..610911d4 100644
  
          if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
          {
-@@ -277,9 +277,11 @@ public class BungeeCord extends ProxyServer
+@@ -275,9 +275,11 @@ public class BungeeCord extends ProxyServer
          bossEventLoopGroup = PipelineUtils.newEventLoopGroup( 0, new ThreadFactoryBuilder().setNameFormat( "Netty Boss IO Thread #%1$d" ).build() );
          workerEventLoopGroup = PipelineUtils.newEventLoopGroup( 0, new ThreadFactoryBuilder().setNameFormat( "Netty Worker IO Thread #%1$d" ).build() );
  
@@ -850,7 +850,7 @@ index ceff1ea1..610911d4 100644
  
          pluginsFolder.mkdir();
          pluginManager.detectPlugins( pluginsFolder );
-@@ -288,6 +290,7 @@ public class BungeeCord extends ProxyServer
+@@ -286,6 +288,7 @@ public class BungeeCord extends ProxyServer
          config.load();
  
          Amethyst.getInstance().load(logger); // Amethyst - load our configs

@@ -1,14 +1,14 @@
-From 393a35b8f10947e1ab25f10e2c0c92aa6a426853 Mon Sep 17 00:00:00 2001
+From 44fbffb7da9f7e9973f7103e0aa0dadc9e177baf Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Thu, 3 Mar 2022 00:54:41 +0500
 Subject: [PATCH] TCP Fast Open
 
 
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-index ea7affe9..c45b34f8 100644
+index 857b77e7..0125b4ca 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/AmethystConfig.java
-@@ -78,6 +78,17 @@ public class AmethystConfig extends AbstractYamlConfig {
+@@ -67,6 +67,17 @@ public class AmethystConfig extends AbstractYamlConfig {
          return lobbyServers.get(random.nextInt(lobbyServers.size()));
      }
  
@@ -26,7 +26,7 @@ index ea7affe9..c45b34f8 100644
      /**
       * Enable or disable InitialHandler logging.
       */
-@@ -150,6 +161,9 @@ public class AmethystConfig extends AbstractYamlConfig {
+@@ -136,6 +147,9 @@ public class AmethystConfig extends AbstractYamlConfig {
          lobbyMessage = getBoolean("lobby.message", lobbyMessage);
          lobbyServers = getStringList("lobby.servers", lobbyServers);
  
