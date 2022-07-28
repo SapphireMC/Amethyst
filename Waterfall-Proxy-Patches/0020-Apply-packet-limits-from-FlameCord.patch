@@ -1,11 +1,11 @@
-From 2fe6a47d293918e016efa7507d80cf1e9993abb1 Mon Sep 17 00:00:00 2001
+From 112bef9246cb6b1f6722d2fb968bda90b0a23f74 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 10 Jan 2022 01:51:44 +0500
 Subject: [PATCH] Apply packet limits from FlameCord
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionRequest.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionRequest.java
-index a29524ca..8755d032 100644
+index a29524ca..80159adc 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionRequest.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionRequest.java
 @@ -41,4 +41,18 @@ public class EncryptionRequest extends DefinedPacket
@@ -15,30 +15,30 @@ index a29524ca..8755d032 100644
 +
 +    // Amethyst start - Apply packet limits (from FlameCord)
 +    @Override
-+    public int expectedMaxLength(ByteBuf buf, ProtocolDirection direction, int protocolVersion)
++    public int expectedMaxLength(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
 +    {
 +        return 532;
 +    }
 +
 +    @Override
-+    public int expectedMinLength(ByteBuf buf, ProtocolDirection direction, int protocolVersion)
++    public int expectedMinLength(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
 +    {
 +        return 22;
 +    }
 +    // Amethyst end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Handshake.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Handshake.java
-index 7dbbfd3c..32c0eafd 100644
+index 7dbbfd3c..0689f245 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Handshake.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Handshake.java
-@@ -1,6 +1,7 @@
- package net.md_5.bungee.protocol.packet;
+@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
+ import lombok.NoArgsConstructor;
+ import net.md_5.bungee.protocol.AbstractPacketHandler;
+ import net.md_5.bungee.protocol.DefinedPacket;
++import net.md_5.bungee.protocol.ProtocolConstants;
  
- import io.netty.buffer.ByteBuf;
-+import io.sapphiremc.amethyst.api.protocol.ProtocolDirection;
- import lombok.AllArgsConstructor;
- import lombok.Data;
- import lombok.EqualsAndHashCode;
+ @Data
+ @NoArgsConstructor
 @@ -43,4 +44,18 @@ public class Handshake extends DefinedPacket
      {
          handler.handle( this );
@@ -46,13 +46,13 @@ index 7dbbfd3c..32c0eafd 100644
 +
 +    // Amethyst start - Apply packet limits (from FlameCord)
 +    @Override
-+    public int expectedMaxLength(ByteBuf buf, ProtocolDirection direction, int protocolVersion)
++    public int expectedMaxLength(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
 +    {
 +        return 1292;
 +    }
 +
 +    @Override
-+    public int expectedMinLength(ByteBuf buf, ProtocolDirection direction, int protocolVersion)
++    public int expectedMinLength(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
 +    {
 +        return 5;
 +    }
