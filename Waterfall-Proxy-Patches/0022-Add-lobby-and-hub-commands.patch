@@ -1,4 +1,4 @@
-From e3c16a09714256e29515eabb8aa1190b97c9673e Mon Sep 17 00:00:00 2001
+From 7368b485b1459f7002dbebaef4d57927df74dbe5 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 10 Jan 2022 18:39:08 +0500
 Subject: [PATCH] Add lobby and hub commands
@@ -125,6 +125,19 @@ index 00000000..de46cc83
 +        }
 +    }
 +}
+diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
+index 06bbcb01..5e401a4a 100644
+--- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
++++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
+@@ -133,7 +133,7 @@ public class YamlConfig implements ConfigurationAdapter
+         Map<String, Object> permissions = get( "permissions.groups", null );
+         if ( permissions == null )
+         {
+-            set( "permissions.groups.default", Arrays.asList("bungeecord.command.server", "bungeecord.command.list", "bungeecord.command.perms") ); // Amethyst - add permission to /gperms command
++            set( "permissions.groups.default", Arrays.asList("bungeecord.command.server", "bungeecord.command.list", "bungeecord.command.perms", "bungeecord.command.lobby") ); // Amethyst - add permission to /gperms command
+             set( "permissions.groups.admin", Arrays.asList("bungeecord.command.alert", "bungeecord.command.end", "bungeecord.command.find", "bungeecord.command.ip", "bungeecord.command.reload", "bungeecord.command.send", "bungeecord.command.kick") ); // Amethyst - add more permissions
+         }
+ 
 -- 
 2.37.1.windows.1
 

@@ -1,4 +1,4 @@
-From c77349fd448006ab1827d3cef3e8bc3bbb462490 Mon Sep 17 00:00:00 2001
+From c07719d058ceba0916417b18f486adc704d195a6 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Tue, 4 Jan 2022 20:41:35 +0500
 Subject: [PATCH] Amethyst modules system
@@ -841,7 +841,7 @@ index fe643a8e..431f268a 100644
          sender.sendMessage( ChatColor.BOLD.toString() + ChatColor.RED.toString() + "Amethyst has been reloaded."
                  + " This is NOT advisable and you will not be supported with any issues that arise! Please restart Amethyst ASAP." );
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-index a8aae89e..61ccca1d 100644
+index a8aae89e..06bbcb01 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 @@ -115,23 +115,42 @@ public class YamlConfig implements ConfigurationAdapter
@@ -851,7 +851,7 @@ index a8aae89e..61ccca1d 100644
 -        Map<String, Object> permissions = get( "permissions", null );
 -        if ( permissions == null )
 +
-+        if ( !config.containsKey( "permissions.groups" ) )
++        if ( !config.isEmpty() && !config.containsKey( "permissions.groups" ) )
          {
 -            set( "permissions.default", Arrays.asList( new String[]
 +            Map<String, Object> toConvert = get( "permissions", null );
