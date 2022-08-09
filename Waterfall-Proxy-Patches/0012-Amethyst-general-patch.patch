@@ -1,4 +1,4 @@
-From 24665d42ee3d817fd5e22266b78b02c1e5780474 Mon Sep 17 00:00:00 2001
+From a15dd6fe3c70fb0555a8d1167e63087f4de5f8d2 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Mon, 3 Jan 2022 01:19:36 +0500
 Subject: [PATCH] Amethyst general patch
@@ -416,51 +416,6 @@ index 6951c911..070f84aa 100644
 +        </dependency>
      </dependencies>
  </project>
-diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
-index aa5daf47..6e558c88 100644
---- a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
-+++ b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
-@@ -6,7 +6,7 @@ import java.util.List;
- public class ProtocolConstants
- {
- 
--    private static final boolean SNAPSHOT_SUPPORT = Boolean.getBoolean( "net.md_5.bungee.protocol.snapshot" );
-+   // private static final boolean SNAPSHOT_SUPPORT = Boolean.getBoolean( "net.md_5.bungee.protocol.snapshot" ); // Amethyst - remove this because its no longer needed
-     public static final int MINECRAFT_1_8 = 47;
-     public static final int MINECRAFT_1_9 = 107;
-     public static final int MINECRAFT_1_9_1 = 108;
-@@ -95,16 +95,22 @@ public class ProtocolConstants
-                 ProtocolConstants.MINECRAFT_1_19_1
-         );
- 
-+        // Amethyst start - remove this because its no longer needed
-+        /*
-         if ( SNAPSHOT_SUPPORT )
-         {
-             // supportedVersions.add( "1.19.x" );
-             // supportedVersionIds.add( ProtocolConstants.MINECRAFT_1_19 );
-         }
-+        */
-+        // Amethyst end
- 
-         SUPPORTED_VERSIONS = supportedVersions.build();
-         SUPPORTED_VERSION_IDS = supportedVersionIds.build();
-     }
- 
-+    // Amethyst start - remove this methods
-+    /*
-     public static final boolean isBeforeOrEq(int before, int other)
-     {
-             return before <= other;
-@@ -114,6 +120,8 @@ public class ProtocolConstants
-     {
-             return after >= other;
-     }
-+    */
-+    // Amethyst end
- 
-     public enum Direction
-     {
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 index ae2fe176..51c1351b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
