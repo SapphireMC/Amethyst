@@ -1,4 +1,4 @@
-From 05904e9ed24929160f23218a2e51e2fa134f978b Mon Sep 17 00:00:00 2001
+From 52a732744c51569e2150b1f2582510d1fc1d80ba Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Tue, 26 Apr 2022 13:52:59 +0500
 Subject: [PATCH] Drop 1.8-1.11.2 support
@@ -503,15 +503,15 @@ index 331ac5c9..dc52f630 100644
          switch ( action )
          {
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index c5461bd6..39c23213 100644
+index b4771c59..c510890a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -228,7 +228,7 @@ public class BungeeCord extends ProxyServer
          logger = io.github.waterfallmc.waterfall.log4j.WaterfallLogger.create();
          // Waterfall end
  
--        logger.info("Booting up proxy server for minecraft 1.8 - 1.19.1"); // Amethyst - add logging on startup
-+        logger.info("Booting up proxy server for minecraft 1.12 - 1.19.1"); // Amethyst - add logging on startup
+-        logger.info("Booting up proxy server for minecraft 1.8 - 1.19.2"); // Amethyst - add logging on startup
++        logger.info("Booting up proxy server for minecraft 1.12 - 1.19.2"); // Amethyst - add logging on startup
          serverStartTime = System.nanoTime(); // Amethyst - add logging on startup
  
          pluginManager = new PluginManager( this );
@@ -519,8 +519,8 @@ index c5461bd6..39c23213 100644
              }
          }
  
--        logger.info("This proxy is running " + getName() + " version " + getGitInfo() + " (MC: 1.8 - 1.19.1) (Implementing API version " + getVersion() + ")"); // Amethyst - add logging on startup
-+        logger.info("This proxy is running " + getName() + " version " + getGitInfo() + " (MC: 1.12 - 1.19.1) (Implementing API version " + getVersion() + ")"); // Amethyst - add logging on startup
+-        logger.info("This proxy is running " + getName() + " version " + getGitInfo() + " (MC: 1.8 - 1.19.2) (Implementing API version " + getVersion() + ")"); // Amethyst - add logging on startup
++        logger.info("This proxy is running " + getName() + " version " + getGitInfo() + " (MC: 1.12 - 1.19.2) (Implementing API version " + getVersion() + ")"); // Amethyst - add logging on startup
      }
  
      /**
