@@ -1,0 +1,128 @@
+From 25c68ed6c4fd4c5f9cac8cb18eed64f05c09aa10 Mon Sep 17 00:00:00 2001
+From: DenaryDev <denaryplanet@gmail.com>
+Date: Thu, 11 Aug 2022 02:16:20 +0500
+Subject: [PATCH] Added connection version information in logs
+
+
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
+index 774f9e06..40b303c9 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
+@@ -95,6 +95,65 @@ public class ProtocolConstants
+             return after >= other;
+     }
+ 
++    public static String getFriendlyName(int protocol)
++    {
++        switch ( protocol )
++        {
++            case 335:
++                return "1.12";
++            case 338:
++                return "1.12.1";
++            case 340:
++                return "1.12.2";
++            case 393:
++                return "1.13";
++            case 401:
++                return "1.13.1";
++            case 404:
++                return "1.13.2";
++            case 477:
++                return "1.14";
++            case 480:
++                return "1.14.1";
++            case 485:
++                return "1.14.2";
++            case 490:
++                return "1.14.3";
++            case 498:
++                return "1.14.4";
++            case 573:
++                return "1.15";
++            case 575:
++                return "1.15.1";
++            case 578:
++                return "1.15.2";
++            case 735:
++                return "1.16";
++            case 736:
++                return "1.16.1";
++            case 751:
++                return "1.16.2";
++            case 753:
++                return "1.16.3";
++            case 754:
++                return "1.16.5";
++            case 755:
++                return "1.17";
++            case 756:
++                return "1.17.1";
++            case 757:
++                return "1.18.1";
++            case 758:
++                return "1.18.2";
++            case 759:
++                return "1.19";
++            case 760:
++                return "1.19.2";
++            default:
++                return "Unknown";
++        }
++    }
++
+     public enum Direction
+     {
+ 
+diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+index 04727bfc..397cea0c 100644
+--- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
++++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+@@ -460,6 +460,6 @@ public class ServerConnector extends PacketHandler
+     @Override
+     public String toString()
+     {
+-        return "[" + user.getName() + "|" + user.getAddress() + "] <-> ServerConnector [" + target.getName() + "]";
++        return "[" + user.getName() + "|" + user.getAddress() + "|" + ProtocolConstants.getFriendlyName(user.getPendingConnection().getVersion()) + "] <-> ServerConnector [" + target.getName() + "]";
+     }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+index 487cecec..bc5ed981 100644
+--- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
++++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+@@ -404,7 +404,7 @@ public final class UserConnection implements ProxiedPlayer
+         // Amethyst start - More user-friendly connection fail messages
+         if ( Amethyst.getInstance().getConfig().logBackendConnectionFailed )
+         {
+-            bungee.getLogger().log( Level.WARNING, "[" + pendingConnection.getName() + "|" + pendingConnection.getAddress() + "] Failed to connect to server " + server, cause );
++            bungee.getLogger().log( Level.WARNING, "[" + pendingConnection.getName() + "|" + pendingConnection.getAddress() + "|" + ProtocolConstants.getFriendlyName(pendingConnection.getVersion()) + "] Failed to connect to server " + server, cause );
+         }
+ 
+         if ( cause instanceof ConnectTimeoutException )
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+index 4b1fe8a0..4ad5318e 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+@@ -718,6 +718,6 @@ public class DownstreamBridge extends PacketHandler
+     @Override
+     public String toString()
+     {
+-        return "[" + con.getAddress() + "|" + con.getName() + "] <-> DownstreamBridge <-> [" + server.getInfo().getName() + "]";
++        return "[" + con.getAddress() + "|" + con.getName() + "|" + ProtocolConstants.getFriendlyName(con.getPendingConnection().getVersion()) + "] <-> DownstreamBridge <-> [" + server.getInfo().getName() + "]";
+     }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
+index 50af98a3..9d73feb5 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
+@@ -341,6 +341,6 @@ public class UpstreamBridge extends PacketHandler
+     @Override
+     public String toString()
+     {
+-        return "[" + con.getAddress() + "|" + con.getName() + "] -> UpstreamBridge";
++        return "[" + con.getAddress() + "|" + con.getName() + "|" + ProtocolConstants.getFriendlyName(con.getPendingConnection().getVersion()) + "] -> UpstreamBridge";
+     }
+ }
+-- 
+2.37.1.windows.1
+
