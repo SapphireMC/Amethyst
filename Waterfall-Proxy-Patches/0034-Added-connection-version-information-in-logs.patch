@@ -1,4 +1,4 @@
-From 25c68ed6c4fd4c5f9cac8cb18eed64f05c09aa10 Mon Sep 17 00:00:00 2001
+From ec7ca806d8925daab2cf002bd248678ec55c6979 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Thu, 11 Aug 2022 02:16:20 +0500
 Subject: [PATCH] Added connection version information in logs
@@ -100,10 +100,10 @@ index 487cecec..bc5ed981 100644
  
          if ( cause instanceof ConnectTimeoutException )
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 4b1fe8a0..4ad5318e 100644
+index 76fbe1a2..bb6c2f32 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -718,6 +718,6 @@ public class DownstreamBridge extends PacketHandler
+@@ -728,6 +728,6 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public String toString()
      {

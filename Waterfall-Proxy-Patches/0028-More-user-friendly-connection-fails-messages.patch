@@ -1,4 +1,4 @@
-From efcfae7a699756160324b315db25ed772bcc2d78 Mon Sep 17 00:00:00 2001
+From 1cb69dfd820d445c845dabdd9ca57f4c9b814174 Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Sun, 6 Mar 2022 23:35:34 +0500
 Subject: [PATCH] More user-friendly connection fails messages
@@ -28,13 +28,13 @@ index d9db2a97..b9c48351 100644
          alertEnabled = getBoolean( "modules.alert", alertEnabled );
          findEnabled = getBoolean( "modules.find", findEnabled );
 diff --git a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
-index 39b35422..b0710a50 100644
+index a3c64dcb..c8ac503d 100644
 --- a/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
 +++ b/flame/src/main/java/io/sapphiremc/amethyst/conf/MessagesConfig.java
 @@ -84,6 +84,8 @@ public class MessagesConfig extends AbstractYamlConfig {
-         formattedMessages.put("secure_profile_required", ChatColor.translateAlternateColorCodes('&', getString("error.secure-profile.required", "A secure profile is required to join this server.")));
+         formattedMessages.put("secure_profile_required", ChatColor.translateAlternateColorCodes('&', getString("error.secure-profile.required", "&cA secure profile is required to join this server.")));
          formattedMessages.put("secure_profile_unsupported", ChatColor.translateAlternateColorCodes('&', getString("error.secure-profile.unsupported", "Outdated client, secure profile not supported. Please use 1.19 or newer.")));
-         formattedMessages.put("username_needed", ChatColor.translateAlternateColorCodes('&', getString("error.username-needed", "&cPlease follow this command by a user name.")));
+         formattedMessages.put("username_needed", ChatColor.translateAlternateColorCodes('&', getString("error.username-needed", "&cPlease follow this command by a username.")));
 +        formattedMessages.put("timeout", ChatColor.translateAlternateColorCodes('&', getString("error.timeout", "Server not reachable (timeout). Offline? Incorrectly configured address/port/firewall?")));
 +        formattedMessages.put("server_unavailable", ChatColor.translateAlternateColorCodes('&', getString("error.server-unavailable", "This server is unavailable")));
      }
