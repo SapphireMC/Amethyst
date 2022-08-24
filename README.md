@@ -1,7 +1,7 @@
 [downloads]: https://github.com/SapphireMC/Amethyst/releases/
 [wiki]: https://github.com/SapphireMC/Amethyst/wiki/
 
-# Amethyst
+# Amethyst [![CI](https://github.com/SapphireMC/Amethyst/actions/workflows/build.yml/badge.svg)](https://github.com/SapphireMC/Amethyst/actions/workflows/build.yml)
 
 Waterfall fort that is used on our server
 
@@ -9,6 +9,9 @@ Waterfall fort that is used on our server
 
 ## License
 [![MIT License](https://img.shields.io/github/license/SapphireMC/Amethyst)](LICENSE)
+
+### Other licenses
+[BungeeCord](https://github.com/SpigotMC/BungeeCord/blob/master/LICENSE) - [Waterfall](https://github.com/PaperMC/Waterfall/blob/master/LICENSE.txt) - [FlameCord]()
 
 ## API
 

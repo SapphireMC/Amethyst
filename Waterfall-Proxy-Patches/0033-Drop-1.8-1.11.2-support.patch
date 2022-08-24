@@ -1,4 +1,4 @@
-From 8b4f2bc4b8ee35be813222c3300c55bce85f2da5 Mon Sep 17 00:00:00 2001
+From 979a1e2c39e43281144c92a25d2030da78c10f3c Mon Sep 17 00:00:00 2001
 From: DenaryDev <denaryplanet@gmail.com>
 Date: Tue, 26 Apr 2022 13:52:59 +0500
 Subject: [PATCH] Drop 1.8-1.11.2 support
@@ -330,7 +330,7 @@ index aa5daf47..774f9e06 100644
                  ProtocolConstants.MINECRAFT_1_12_1,
                  ProtocolConstants.MINECRAFT_1_12_2,
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java
-index dc986609..86b54557 100644
+index dc986609..c4c71fa1 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java
 @@ -40,7 +40,7 @@ public class Chat extends DefinedPacket
@@ -342,6 +342,15 @@ index dc986609..86b54557 100644
          if ( direction == ProtocolConstants.Direction.TO_CLIENT )
          {
              position = buf.readByte();
+@@ -54,7 +54,7 @@ public class Chat extends DefinedPacket
+     @Override
+     public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
+     {
+-        writeString( message, buf, ( direction == ProtocolConstants.Direction.TO_CLIENT ) ? 262144 : ( protocolVersion >= ProtocolConstants.MINECRAFT_1_11 ? 256 : 100 ) );
++        writeString( message, buf, ( direction == ProtocolConstants.Direction.TO_CLIENT ) ? 262144 : 256 );
+         if ( direction == ProtocolConstants.Direction.TO_CLIENT )
+         {
+             buf.writeByte( position );
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientSettings.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientSettings.java
 index d7d4e6ab..30027ad8 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientSettings.java
