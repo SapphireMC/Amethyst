@@ -11,7 +11,7 @@ Waterfall fort that is used on our server
 [![MIT License](https://img.shields.io/github/license/SapphireMC/Amethyst)](LICENSE)
 
 ### Other licenses
-[BungeeCord](https://github.com/SpigotMC/BungeeCord/blob/master/LICENSE) - [Waterfall](https://github.com/PaperMC/Waterfall/blob/master/LICENSE.txt) - [FlameCord]()
+[BungeeCord](https://github.com/SpigotMC/BungeeCord/blob/master/LICENSE) - [Waterfall](https://github.com/PaperMC/Waterfall/blob/master/LICENSE.txt) - [FlameCord](https://github.com/2lstudios-mc/FlameCord/blob/master/LICENSE.txt)
 
 ## API
 
